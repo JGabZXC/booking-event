@@ -17,7 +17,7 @@ export const postTicket = asyncHandler(async (req, res) => {
   req.body.date = new Date();
   console.log(req.body);
   const response = await Ticket.create(req.body);
-  console.log(HTTPSTATUS.CREATED);
+
   res.status(HTTPSTATUS.CREATED).json({
     status: "success",
     message: "Ticket created successfully",

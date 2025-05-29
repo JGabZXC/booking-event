@@ -1,6 +1,5 @@
 import { ErrorCode } from "../config/errorCode.js";
 import { HTTPSTATUS } from "../config/http.js";
-import { BadRequestException } from "../utils/appError.js";
 
 export const errorHandler = (error, req, res, next) => {
   // console.error("ERROR ON PATH: ", req.path, error);
