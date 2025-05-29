@@ -26,8 +26,6 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
     );
   }
 
-  console.log(token);
-
   try {
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     const currentUser = await User.findById(decoded.id);
@@ -76,3 +74,17 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
     }
   }
 });
+
+export const isAuthorized = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(
+        new UnauthorizedException(
+          "You do not have permission to perform this action.",
+          ErrorCode.AUTH_UNAUTHORIZED
+        )
+      );
+
+    next();
+  };
+};

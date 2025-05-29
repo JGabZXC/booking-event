@@ -6,6 +6,7 @@ import { HTTPSTATUS } from "./config/http.js";
 
 import ticketRoute from "./routes/ticketRoute.js";
 import authRoute from "./routes/authRoute.js";
+import userRoute from "./routes/userRoute.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/v1/tickets", ticketRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/users", userRoute);
 app.use(/.*/, (req, res) => {
   res.status(HTTPSTATUS.NOT_FOUND).json({
     status: "fail",

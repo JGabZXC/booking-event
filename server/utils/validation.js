@@ -20,8 +20,5 @@ export const validatePassword = (password) => {
 };
 
 export const validatePasswordConfirm = (password, passwordConfirm) => {
-  if (password !== passwordConfirm) {
-    return false;
-  }
-  return true;
+  return password === passwordConfirm;
 };

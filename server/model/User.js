@@ -44,27 +44,17 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", function (next) {
-  if (!this.isModified("password")) next();
-
-  if (this.password !== this.passwordConfirm) {
-    return next(
-      new BadRequestException(
-        "Password and password confirmation do not match",
-        ErrorCode.AUTH_PASSWORD_MISMATCH
-      )
-    );
-  }
+  if (!this.isModified("password")) return next();
 
   this.password = bcrypt.hashSync(this.password, 12);
   this.passwordConfirm = undefined;
-  console.log("done");
   next();
 });
 
 userSchema.pre("save", async function (next) {
   const isDuplicateEmail = async (email) => {
     const user = await mongoose.models.User.findOne({ email });
-    if (user.email === this.email) return false; // Allow updating own email
+    if (user && user.email === this.email) return false; // Allow updating own email
     return user !== null;
   };
 
@@ -84,7 +74,6 @@ userSchema.methods.comparePassword = async function (
   password,
   candidatePassword
 ) {
-  console.log();
   return await bcrypt.compare(candidatePassword, password);
 };
 
@@ -99,8 +88,6 @@ userSchema.methods.isValidToken = function (tokenDate) {
   if (!this.validTokenDate) return false;
   const tokenTimestamp = Math.floor(this.validTokenDate.getTime() / 1000);
 
-  console.log(tokenTimestamp);
-  console.log(tokenDate);
   return tokenTimestamp > tokenDate;
 };
 

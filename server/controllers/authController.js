@@ -5,6 +5,7 @@ import * as validation from "../utils/validation.js";
 import { createSendToken } from "../utils/createSendToken.js";
 import { BadRequestException } from "../utils/appError.js";
 import { ErrorCode } from "../config/errorCode.js";
+import { capitalizedFirstLetter } from "../utils/capitalizeName.js";
 
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -29,16 +30,12 @@ export const login = asyncHandler(async (req, res, next) => {
     );
 
   user.validTokenDate = Date.now();
-  await user.save({ validateBeforeSave: false });
+  await user.save({ validateModifiedOnly: true });
   createSendToken(user, HTTPSTATUS.OK, res);
 });
 
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password, passwordConfirm } = req.body;
-
-  const capitalizedLetters = name
-    .split(" ")
-    .map((name) => name.charAt(0).toUpperCase() + name.slice(1));
 
   let errors = {};
   if (!validation.validateName(name))
@@ -65,12 +62,8 @@ export const register = asyncHandler(async (req, res) => {
       errors,
     });
 
-  console.log("Creating user...");
-
-  console.log(req.body);
-
   const user = await User.create({
-    name: capitalizedLetters.join(" "),
+    name: capitalizedFirstLetter(name),
     email,
     password,
     passwordConfirm,

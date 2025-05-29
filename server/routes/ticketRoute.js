@@ -6,9 +6,17 @@ const router = express.Router();
 router
   .route("/")
   .get(ticketController.getAllTickets)
-  .post(authMiddleware.isAuthenticated, ticketController.postTicket);
+  .post(
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAuthorized("admin"),
+    ticketController.postTicket
+  );
 
 router
   .route("/:id")
-  .delete(authMiddleware.isAuthenticated, ticketController.deleteTicket);
+  .delete(
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAuthorized("admin"),
+    ticketController.deleteTicket
+  );
 export default router;
