@@ -25,14 +25,19 @@ const ticketSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  attendees: {
-    type: [String],
-    default: [],
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
   },
   status: {
     type: String,
     enum: ["in-progress", "completed", "cancelled", "coming-soon"],
     default: "in-progress",
+  },
+  attendees: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: [],
   },
 });
 

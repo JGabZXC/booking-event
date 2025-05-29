@@ -13,7 +13,6 @@ const app = express();
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/v1/tickets", ticketRoute);

@@ -14,9 +14,19 @@ router
 
 router
   .route("/:id")
+  .get(ticketController.getTicket)
+  .patch(
+    authMiddleware.isAuthenticated,
+    authMiddleware.isAuthorized("admin"),
+    ticketController.updateTicket
+  )
   .delete(
     authMiddleware.isAuthenticated,
     authMiddleware.isAuthorized("admin"),
     ticketController.deleteTicket
   );
+
+router
+  .route("/:id/purchase")
+  .post(authMiddleware.isAuthenticated, ticketController.purchaseTicket);
 export default router;
