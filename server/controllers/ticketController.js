@@ -1,16 +1,43 @@
 import { HTTPSTATUS } from "../config/http.js";
+import { ErrorCode } from "../config/errorCode.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import QueryOptions from "../utils/queryOptions.js";
+import { BadRequestException, NotFoundException } from "../utils/appError.js";
 import Ticket from "../model/Ticket.js";
 import User from "../model/User.js";
-import { BadRequestException, NotFoundException } from "../utils/appError.js";
-import { ErrorCode } from "../config/errorCode.js";
 
-export const getAllTickets = asyncHandler(async (req, res) => {
-  const ticket = await Ticket.find();
+export const getAllTickets = asyncHandler(async (req, res, next) => {
+  const { page, limit } = req.query;
+  if (Number.isNaN(+page) || Number.isNaN(+limit) || +page < 1 || +limit < 1)
+    return next(
+      new BadRequestException(
+        "Page and limit must be positive integers.",
+        ErrorCode.VALIDATION_ERROR
+      )
+    );
+
+  const query = new QueryOptions(Ticket.find(), req.query).sort().paginate();
+
+  const [tickets, totalTickets] = await Promise.all([
+    query.query,
+    Ticket.countDocuments(),
+  ]);
+  const totalPages = Math.ceil(totalTickets / (req.query.limit || 10));
+
+  if (page > totalPages)
+    return next(
+      new BadRequestException(
+        `Page number exceeds total pages. Total pages: ${totalPages}`,
+        ErrorCode.VALIDATION_ERROR
+      )
+    );
+
   res.status(HTTPSTATUS.OK).json({
     status: "success",
     message: "Fetched all tickets successfully",
-    data: ticket,
+    totalTickets,
+    totalPages,
+    data: tickets,
   });
 });
 

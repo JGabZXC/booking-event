@@ -35,9 +35,18 @@ const ticketSchema = new mongoose.Schema({
     enum: ["in-progress", "completed", "cancelled", "coming-soon"],
     default: "in-progress",
   },
+  genre: {
+    type: String,
+    required: true,
+    enum: ["concert", "theater", "sports", "exhibition", "festival", "other"],
+  },
   attendees: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
