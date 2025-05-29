@@ -40,6 +40,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  passwordChangedAt: Date,
 });
 
 userSchema.pre("save", function (next) {
@@ -63,6 +64,7 @@ userSchema.pre("save", function (next) {
 userSchema.pre("save", async function (next) {
   const isDuplicateEmail = async (email) => {
     const user = await mongoose.models.User.findOne({ email });
+    if (user.email === this.email) return false; // Allow updating own email
     return user !== null;
   };
 
@@ -86,11 +88,20 @@ userSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, password);
 };
 
+userSchema.methods.isPasswordChangedAfter = function (timestamp) {
+  if (!this.passwordChangedAt) return false;
+
+  const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
+  return changedTimestamp > timestamp;
+};
+
 userSchema.methods.isValidToken = function (tokenDate) {
   if (!this.validTokenDate) return false;
-  const tokenTimeStamp = Math.floor(this.validTokenDate.getTime() / 1000);
+  const tokenTimestamp = Math.floor(this.validTokenDate.getTime() / 1000);
 
-  return tokenDate < tokenTimeStamp;
+  console.log(tokenTimestamp);
+  console.log(tokenDate);
+  return tokenTimestamp > tokenDate;
 };
 
 const User = mongoose.model("User", userSchema);

@@ -28,6 +28,8 @@ export const login = asyncHandler(async (req, res, next) => {
       )
     );
 
+  user.validTokenDate = Date.now();
+  await user.save({ validateBeforeSave: false });
   createSendToken(user, HTTPSTATUS.OK, res);
 });
 

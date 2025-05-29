@@ -15,7 +15,7 @@ export const getAllTickets = asyncHandler(async (req, res) => {
 
 export const postTicket = asyncHandler(async (req, res) => {
   req.body.date = new Date();
-  console.log(req.body);
+
   const response = await Ticket.create(req.body);
 
   res.status(HTTPSTATUS.CREATED).json({
