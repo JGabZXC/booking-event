@@ -12,7 +12,7 @@ export default function MainNavigation() {
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <Button
                 type="button"
-                className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
+                className="relative inline-flex items-center justify-center rounded-md p-2 text-pink-900 hover:bg-pink-900 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
                 aria-controls="mobile-menu"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((prev) => !prev)}
@@ -59,20 +59,20 @@ export default function MainNavigation() {
                 <div className="flex space-x-4">
                   <Link
                     to=""
-                    className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                    className="rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
                     // aria-current="page"
                   >
                     Home
                   </Link>
                   <Link
                     to=""
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    className="rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
                   >
                     Events
                   </Link>
                   <Link
                     to=""
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    className="rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
                   >
                     Projects
                   </Link>
@@ -80,13 +80,11 @@ export default function MainNavigation() {
               </div>
             </div>
             <div class="absolute hidden inset-y-0 right-0 sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <Link to="">
-                <Button
-                  type="button"
-                  className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-white focus:ring-offset-2"
-                >
-                  Log in
-                </Button>
+              <Link
+                to=""
+                className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
+              >
+                Log in
               </Link>
             </div>
           </div>
@@ -99,26 +97,25 @@ export default function MainNavigation() {
           <div className="space-y-1 px-2 pt-2 pb-3">
             <Link
               to=""
-              className="block rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
-              // aria-current="page"
+              className="block rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
             >
               Home
             </Link>
             <Link
               to=""
-              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
             >
               Events
             </Link>
             <Link
               to=""
-              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
             >
               Projects
             </Link>
             <Link
               to=""
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
             >
               Log in
             </Link>
