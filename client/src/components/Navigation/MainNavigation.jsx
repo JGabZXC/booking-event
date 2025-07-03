@@ -23,14 +23,14 @@ export default function MainNavigation() {
                   className={`size-6 ${menuOpen ? "hidden" : "block"}`}
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   aria-hidden="true"
                   data-slot="icon"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                   />
                 </svg>
@@ -38,14 +38,14 @@ export default function MainNavigation() {
                   className={`size-6 ${menuOpen ? "block" : "hidden"}`}
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   aria-hidden="true"
                   data-slot="icon"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M6 18 18 6M6 6l12 12"
                   />
                 </svg>
@@ -79,9 +79,9 @@ export default function MainNavigation() {
                 </div>
               </div>
             </div>
-            <div class="absolute hidden inset-y-0 right-0 sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <div className="absolute hidden inset-y-0 right-0 sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <Link
-                to=""
+                to="login"
                 className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
               >
                 Log in
@@ -114,7 +114,7 @@ export default function MainNavigation() {
               Projects
             </Link>
             <Link
-              to=""
+              to="login"
               className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
             >
               Log in

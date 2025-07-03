@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { HTTPSTATUS } from "./config/http.js";
@@ -15,6 +16,13 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use("/api/v1/tickets", ticketRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);

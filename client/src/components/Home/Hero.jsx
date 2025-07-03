@@ -16,13 +16,13 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
             href="#events"
-            className="bg-pink-900 hover:bg-pink-700 text-white px-6 py-3 rounded-full font-semibold transition"
+            className="border-2 bg-pink-900 border-pink-900 hover:bg-pink-700 hover:border-pink-700 px-6 py-3 rounded-full font-semibold transition"
           >
             Browse Events
           </a>
           <a
             href="#how-it-works"
-            className="border-2 border-pink-900 px-6 py-3 rounded-full font-semibold hover:bg-pink-900 hover:text-white transition"
+            className="border-2 border-pink-900 hover:bg-pink-900 px-6 py-3 rounded-full font-semibold transition"
           >
             How It Works
           </a>

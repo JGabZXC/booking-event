@@ -8,13 +8,14 @@ import User from "../model/User.js";
 
 export const getAllTickets = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
-  if (Number.isNaN(+page) || Number.isNaN(+limit) || +page < 1 || +limit < 1)
-    return next(
-      new BadRequestException(
-        "Page and limit must be positive integers.",
-        ErrorCode.VALIDATION_ERROR
-      )
-    );
+  if (page && limit)
+    if (Number.isNaN(+page) || Number.isNaN(+limit) || +page < 1 || +limit < 1)
+      return next(
+        new BadRequestException(
+          "Page and limit must be positive integers.",
+          ErrorCode.VALIDATION_ERROR
+        )
+      );
 
   const query = new QueryOptions(Ticket.find(), req.query).sort().paginate();
 
@@ -24,7 +25,7 @@ export const getAllTickets = asyncHandler(async (req, res, next) => {
   ]);
   const totalPages = Math.ceil(totalTickets / (req.query.limit || 10));
 
-  if (page > totalPages)
+  if (page && page > totalPages)
     return next(
       new BadRequestException(
         `Page number exceeds total pages. Total pages: ${totalPages}`,
