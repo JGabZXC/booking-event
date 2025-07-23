@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { ErrorCode } from "../config/errorCode.js";
 import { UnauthorizedException } from "../utils/appError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import User from "../model/User.js";
+import User from "../models/User.js";
 
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
   let token = undefined;

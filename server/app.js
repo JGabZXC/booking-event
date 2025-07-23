@@ -2,12 +2,11 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { errorHandler } from "./middlewares/errorHandler.js";
-import { HTTPSTATUS } from "./config/http.js";
+import { errorHandler } from "./src/middlewares/errorHandler.js";
 
-import ticketRoute from "./routes/ticketRoute.js";
-import authRoute from "./routes/authRoute.js";
-import userRoute from "./routes/userRoute.js";
+import ticketRoute from "./src/routes/ticketRoute.js";
+import authRoute from "./src/routes/authRoute.js";
+import userRoute from "./src/routes/userRoute.js";
 
 const app = express();
 
@@ -26,12 +25,6 @@ app.use(
 app.use("/api/v1/tickets", ticketRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
-app.use(/.*/, (req, res) => {
-  res.status(HTTPSTATUS.NOT_FOUND).json({
-    status: "fail",
-    message: "Route not found",
-  });
-});
 
 app.use(errorHandler);
 

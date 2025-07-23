@@ -5,7 +5,7 @@ import * as validation from "../utils/validation.js";
 import { BadRequestException } from "../utils/appError.js";
 import { capitalizedFirstLetter } from "../utils/capitalizeName.js";
 import { createSendToken } from "../utils/createSendToken.js";
-import User from "../model/User.js";
+import User from "../models/User.js";
 
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, password, passwordConfirm } = req.body;

@@ -3,8 +3,8 @@ import { ErrorCode } from "../config/errorCode.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import QueryOptions from "../utils/queryOptions.js";
 import { BadRequestException, NotFoundException } from "../utils/appError.js";
-import Ticket from "../model/Ticket.js";
-import User from "../model/User.js";
+import Ticket from "../models/Ticket.js";
+import User from "../models/User.js";
 
 export const getAllTickets = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
