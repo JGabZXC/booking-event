@@ -8,7 +8,7 @@ export default (error) => {
     );
     error.message = "Duplicate key error: " + keys;
     error.errorCode = ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
-    error.statusCode = HTTPSTATUS.BAD_REQUEST;
+    error.statusCode = HTTPSTATUS.CONFLICT;
   }
 
   if (error.name === "CastError") {

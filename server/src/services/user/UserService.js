@@ -4,6 +4,8 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from "../../utils/appError.js";
+import { capitalizeFullName } from "../../utils/capitalizeName.js";
+import * as validation from "../../utils/validation.js";
 
 export default class UserService {
   constructor(userRepository, tokenService, passwordService) {
@@ -28,8 +30,6 @@ export default class UserService {
         ErrorCode.AUTH_USER_NOT_FOUND
       );
 
-    console.log(data);
-
     if (
       !(await this.passwordService.verify(data.currentPassword, user.password))
     )
@@ -50,6 +50,41 @@ export default class UserService {
     const token = await this.tokenService.generateToken(updatedUser);
 
     return { token, sanitizeUser };
+  }
+
+  async updateUserDetails(userId, data) {
+    if (data.password) delete data.password;
+    if (data.passwordConfirm) delete data.passwordConfirm;
+    if (data.validTokenDate) delete data.validTokenDate;
+    if (data.passwordChangedAt) delete data.passwordChangedAt;
+    if (data.validTokenDate) delete data.validTokenDate;
+    if (data.role) delete data.role;
+
+    if (data.email && !validation.validateEmail(data.email)) {
+      throw new BadRequestException(
+        "Invalid email format",
+        ErrorCode.VALIDATION_ERROR
+      );
+    }
+
+    if (data.name && !validation.validateFullName(data.name)) {
+      throw new BadRequestException(
+        "Invalid name format",
+        ErrorCode.VALIDATION_ERROR
+      );
+    }
+
+    if (data.name) {
+      data.name = capitalizeFullName(data.name);
+    }
+
+    const user = await this.userRepository.updateUserById(userId, data);
+    if (!user)
+      throw new BadRequestException(
+        "User not found",
+        ErrorCode.AUTH_USER_NOT_FOUND
+      );
+    return sanitizeReturnUserObject(user);
   }
 
   async validateAuthenticatedUser(token) {
