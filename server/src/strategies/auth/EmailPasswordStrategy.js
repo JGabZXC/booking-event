@@ -1,32 +1,34 @@
+import { HTTPSTATUS } from "../../config/http.js";
 import IAuthStrategy from "../../interfaces/IAuthStrategy.js";
+import { sanitizeReturnUserObject } from "../../sanitizers/userSanitizer.js";
+import { BadRequestException } from "../../utils/appError.js";
 
 export default class EmailPasswordStrategy extends IAuthStrategy {
-  constructor(userRepository, passwordService) {
+  constructor(userRepository, passwordService, tokenService) {
     super();
     this.userRepository = userRepository;
     this.passwordService = passwordService;
+    this.tokenService = tokenService;
   }
 
   async authenticate(credentials) {
     const { email, password } = credentials;
-    if (!email || !password) {
-      throw new Error("Email and password are required for authentication.");
-    }
 
-    const user = await this.userRepository.findByEmail(email);
-    if (!user) {
-      throw new Error("User not found.");
-    }
+    const user = await this.userRepository.getUserByEmailAuth(email);
+    if (!user)
+      throw new BadRequestException("User not found", HTTPSTATUS.NOT_FOUND);
 
-    const isValidPassword = await this.passwordService.verify(
-      password,
-      user.password
-    );
-    if (!isValidPassword) {
-      throw new Error("Invalid credentials.");
-    }
+    if (!(await this.passwordService.verify(password, user.password)))
+      throw new BadRequestException(
+        "Invalid credential",
+        HTTPSTATUS.UNAUTHORIZED
+      );
 
-    return user;
+    const token = await this.tokenService.generateToken(user);
+
+    const sanitizeUser = sanitizeReturnUserObject(user);
+
+    return { token, user: sanitizeUser };
   }
 
   async register(userData) {
@@ -38,10 +40,9 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
       name,
       email,
       password: passwordHash,
-      passwordConfirm: passwordHash, // For consistency, use the same hash
-      role: "user",
+      passwordConfirm: passwordHash,
     };
 
-    return await this.userRepository.create(newUser);
+    return await this.userRepository.createUser(newUser);
   }
 }

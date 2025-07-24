@@ -21,7 +21,7 @@ export default function RootLayout() {
       />
       <MainNavigation />
       <main>
-        <div className="max-w-[80rem] mx-auto">
+        <div>
           <Outlet />
         </div>
       </main>

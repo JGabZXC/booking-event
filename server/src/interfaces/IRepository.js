@@ -1,21 +1,29 @@
 export default class IRepository {
-  async findById(id) {
+  async getAllUsers() {
     throw new Error("Method not implemented");
   }
 
-  async findAll() {
+  async createUser(userData) {
     throw new Error("Method not implemented");
   }
 
-  async create(data) {
+  async updateUserById(userId, userData) {
     throw new Error("Method not implemented");
   }
 
-  async update(id, data) {
+  async deleteUserById(userId) {
     throw new Error("Method not implemented");
   }
 
-  async deleteById(id) {
+  async getUserById(userId) {
+    throw new Error("Method not implemented");
+  }
+
+  async getUserByEmail(email) {
+    throw new Error("Method not implemented");
+  }
+
+  async getUserByEmailAuth(email) {
     throw new Error("Method not implemented");
   }
 }

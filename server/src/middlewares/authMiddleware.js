@@ -5,6 +5,15 @@ import { UnauthorizedException } from "../utils/appError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import User from "../models/User.js";
 
+import UserService from "../services/user/UserService.js";
+import TokenService from "../services/auth/TokenService.js";
+import MongoUserRepository from "../repositories/MongoUserRepository.js";
+
+const userService = new UserService(
+  new MongoUserRepository(),
+  new TokenService()
+);
+
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
   let token = undefined;
   if (
@@ -26,34 +35,10 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
     );
   }
 
+  console.log(token);
+
   try {
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    const currentUser = await User.findById(decoded.id);
-
-    if (!currentUser)
-      return next(
-        new UnauthorizedException(
-          "User not found.",
-          ErrorCode.AUTH_USER_NOT_FOUND
-        )
-      );
-
-    if (currentUser.isPasswordChangedAfter(decoded.iat))
-      return next(
-        new UnauthorizedException(
-          "Password has been changed. Please log in again.",
-          ErrorCode.AUTH_PASSWORD_CHANGED
-        )
-      );
-
-    if (currentUser.isValidToken(decoded.iat))
-      return next(
-        new UnauthorizedException(
-          "This token is no longer valid, please log in again.",
-          ErrorCode.AUTH_INVALID_TOKEN
-        )
-      );
-
+    const currentUser = await userService.validateAuthenticatedUser(token);
     req.user = currentUser;
     next();
   } catch (error) {

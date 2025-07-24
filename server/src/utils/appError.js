@@ -31,7 +31,7 @@ export class InternalServerException extends AppError {
     super(
       message,
       HTTPSTATUS.INTERNAL_SERVER_ERROR,
-      errorCode || ErrorCode.INTERNAL_SERVER_ERROR
+      ErrorCode.INTERNAL_SERVER_ERROR
     );
   }
 }

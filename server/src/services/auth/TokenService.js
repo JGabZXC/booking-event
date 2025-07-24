@@ -1,38 +1,39 @@
 import jwt from "jsonwebtoken";
+import { promisify } from "util";
 
 export default class TokenService {
-  constructor(secret, options = {}) {
-    this.secret = secret || process.env.JWT_SECRET;
+  constructor() {
     this.defaultOptions = {
-      expiresIn: options.expiresIn || "24h",
+      expiresIn: process.env.JWT_EXPIRES_IN || "1d",
     };
   }
 
-  generateToken(payload, options = {}) {
-    const tokenOptions = { ...this.defaultOptions, ...options };
-
+  generateToken(payload) {
     const tokenPayload = {
-      id: payload.user._id,
+      id: payload._id,
     };
 
-    return jwt.sign(tokenPayload, this.secret, tokenOptions);
+    return jwt.sign(tokenPayload, process.env.JWT_SECRET, this.defaultOptions);
   }
 
   async verifyToken(token) {
-    try {
-      return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    } catch (error) {
-      if (error.name === "TokenExpiredError") {
-        throw new Error("Token has expired");
-      }
-      if (error.name === "JsonWebTokenError") {
-        throw new Error("Invalid token");
-      }
-      throw new Error("Token verification failed");
-    }
+    return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   }
 
-  async decodeToken(token) {
-    return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  static async isPasswordChangedTimestamp(token, passwordChangedAt) {
+    if (!passwordChangedAt) return false;
+
+    const decoded = await this.verifyToken(token);
+    const changedTimestamp = Math.floor(passwordChangedAt / 1000);
+
+    return changedTimestamp > decoded.iat;
+  }
+
+  static async isValidToken(tokenDate, validTokenDate) {
+    if (!validTokenDate) return false;
+
+    const tokenTimestamp = Math.floor(tokenDate / 1000);
+
+    return tokenTimestamp > validTokenDate;
   }
 }

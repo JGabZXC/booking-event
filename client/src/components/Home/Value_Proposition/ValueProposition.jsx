@@ -2,17 +2,17 @@ import ValuePropositionCard from "./ValuePropositionCard";
 
 export default function ValueProposition() {
   return (
-    <section class="py-20 text-gray-800">
-      <div class="max-w-6xl mx-auto px-6 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-6">
-          Why Choose <span class="text-pink-900">ShowUp</span>?
+    <section className="py-20 text-gray-800">
+      <div className="max-w-6xl mx-auto px-6 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          Why Choose <span className="text-pink-900">ShowUp</span>?
         </h2>
-        <p class="text-lg text-gray-600 mb-12">
+        <p className="text-lg text-gray-600 mb-12">
           We make it easy and exciting to get tickets to your favorite events.
           Here’s what sets us apart.
         </p>
 
-        <div class="grid md:grid-cols-4 gap-8 text-left">
+        <div className="grid md:grid-cols-4 gap-8 text-left">
           <ValuePropositionCard
             icon="🎟️"
             title="Instant Tickets"

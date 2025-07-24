@@ -1,10 +1,16 @@
-import { capitalizedFirstLetter } from "../utils/capitalizeName.js";
+import { capitalizeFullName } from "../utils/capitalizeName.js";
 
 export function sanitizeRegistrationInput(data) {
   return {
-    name: capitalizedFirstLetter(data.name),
+    ...data,
+    name: capitalizeFullName(data.name),
     email: data.email.trim(),
     password: data.password.trim(),
     passwordConfirm: data.passwordConfirm.trim(),
   };
+}
+
+export function sanitizeReturnUserObject(user) {
+  user.password = undefined;
+  return user;
 }

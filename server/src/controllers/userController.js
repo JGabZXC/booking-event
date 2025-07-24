@@ -3,7 +3,7 @@ import { HTTPSTATUS } from "../config/http.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import * as validation from "../utils/validation.js";
 import { BadRequestException } from "../utils/appError.js";
-import { capitalizedFirstLetter } from "../utils/capitalizeName.js";
+import { capitalizeFullName } from "../utils/capitalizeName.js";
 import { createSendToken } from "../utils/createSendToken.js";
 import User from "../models/User.js";
 

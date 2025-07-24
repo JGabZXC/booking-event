@@ -1,37 +1,38 @@
 import EmailPasswordStrategy from "../strategies/auth/EmailPasswordStrategy.js";
 import TokenService from "../services/auth/TokenService.js";
-import UserRepository from "../repositories/UserRepository.js";
 import PasswordService from "../services/auth/PasswordService.js";
 import AuthService from "../services/auth/AuthService.js";
+import MongoUserRepository from "../repositories/MongoUserRepository.js";
 
 import { HTTPSTATUS } from "../config/http.js";
-import { BadRequestException } from "../utils/appError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-import { validateRegistrationInput } from "../validators/userValidator.js";
-import { sanitizeRegistrationInput } from "../sanitizers/userSanitizer.js";
+const authService = new AuthService(
+  new EmailPasswordStrategy(
+    new MongoUserRepository(),
+    new PasswordService(),
+    new TokenService()
+  )
+);
 
 export const login = asyncHandler(async (req, res, next) => {
-  return next(
-    new BadRequestException("Login functionality is not implemented yet.")
-  );
+  const user = await authService.login(req.body);
+
+  res.cookie("jwt", user.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+  });
+
+  res.status(HTTPSTATUS.OK).json({
+    status: "success",
+    data: user,
+  });
 });
 
 export const register = asyncHandler(async (req, res, next) => {
-  const authService = new AuthService(
-    new EmailPasswordStrategy(new UserRepository(), new PasswordService()),
-    new TokenService(process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    }),
-    new UserRepository()
-  );
-
-  const { isValid, errorCode, errors } = validateRegistrationInput(req.body);
-
-  if (!isValid) return { status: "error", errorCode, errors };
-
-  req.body = sanitizeRegistrationInput(req.body);
-
   const newUser = await authService.register(req.body);
 
   res.status(HTTPSTATUS.CREATED).json({
