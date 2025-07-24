@@ -3,7 +3,10 @@ import { HTTPSTATUS } from "../config/http.js";
 
 export default (error) => {
   if (error.code === 11000) {
-    error.message = "Duplicate key error: " + JSON.stringify(error.keyValue);
+    const keys = Object.keys(error.keyValue).map((key) =>
+      key.replace(" ", ",")
+    );
+    error.message = "Duplicate key error: " + keys;
     error.errorCode = ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
     error.statusCode = HTTPSTATUS.BAD_REQUEST;
   }

@@ -1,18 +1,10 @@
-import { promisify } from "util";
-import jwt from "jsonwebtoken";
 import { ErrorCode } from "../config/errorCode.js";
 import { UnauthorizedException } from "../utils/appError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import User from "../models/User.js";
 
-import UserService from "../services/user/UserService.js";
-import TokenService from "../services/auth/TokenService.js";
-import MongoUserRepository from "../repositories/MongoUserRepository.js";
+import container from "../container/container.js";
 
-const userService = new UserService(
-  new MongoUserRepository(),
-  new TokenService()
-);
+const userService = container.get("userService");
 
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
   let token = undefined;
@@ -35,29 +27,9 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
     );
   }
 
-  console.log(token);
-
-  try {
-    const currentUser = await userService.validateAuthenticatedUser(token);
-    req.user = currentUser;
-    next();
-  } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return next(
-        new UnauthorizedException(
-          "Token has expired. Please log in again.",
-          ErrorCode.AUTH_TOKEN_EXPIRED
-        )
-      );
-    } else {
-      return next(
-        new UnauthorizedException(
-          "Invalid token. Please log in again.",
-          ErrorCode.AUTH_INVALID_TOKEN
-        )
-      );
-    }
-  }
+  const currentUser = await userService.validateAuthenticatedUser(token);
+  req.user = currentUser;
+  next();
 });
 
 export const isAuthorized = (...roles) => {

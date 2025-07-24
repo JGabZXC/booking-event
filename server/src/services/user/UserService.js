@@ -8,7 +8,7 @@ export default class UserService {
   }
 
   async validateAuthenticatedUser(token) {
-    const decoded = this.tokenService.verifyToken(token);
+    const decoded = await this.tokenService.verifyToken(token);
     const user = await this.userRepository.getUserById(decoded.id);
 
     if (!user)
@@ -18,7 +18,7 @@ export default class UserService {
       );
 
     if (
-      await this.tokenService.isPasswordChangedTimestamp(
+      await this.tokenService.constructor.isPasswordChangedTimestamp(
         token,
         user.passwordChangedAt
       )
@@ -28,7 +28,12 @@ export default class UserService {
         ErrorCode.AUTH_PASSWORD_CHANGED
       );
 
-    if (await this.tokenService.isValidToken(user.validTokenDate, decoded.iat))
+    if (
+      await this.tokenService.constructor.isValidToken(
+        user.validTokenDate,
+        decoded.iat
+      )
+    )
       throw new UnauthorizedException(
         "This token is no longer valid, please log in again",
         ErrorCode.AUTH_INVALID_TOKEN

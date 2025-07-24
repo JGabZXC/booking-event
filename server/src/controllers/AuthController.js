@@ -1,19 +1,8 @@
-import EmailPasswordStrategy from "../strategies/auth/EmailPasswordStrategy.js";
-import TokenService from "../services/auth/TokenService.js";
-import PasswordService from "../services/auth/PasswordService.js";
-import AuthService from "../services/auth/AuthService.js";
-import MongoUserRepository from "../repositories/MongoUserRepository.js";
-
 import { HTTPSTATUS } from "../config/http.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import container from "../container/container.js";
 
-const authService = new AuthService(
-  new EmailPasswordStrategy(
-    new MongoUserRepository(),
-    new PasswordService(),
-    new TokenService()
-  )
-);
+const authService = container.get("authService");
 
 export const login = asyncHandler(async (req, res, next) => {
   const user = await authService.login(req.body);
@@ -40,5 +29,14 @@ export const register = asyncHandler(async (req, res, next) => {
     data: {
       newUser,
     },
+  });
+});
+
+export const logout = asyncHandler(async (req, res, next) => {
+  res.clearCookie("jwt");
+
+  res.status(HTTPSTATUS.OK).json({
+    status: "success",
+    message: "Logged out successfully",
   });
 });

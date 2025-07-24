@@ -28,6 +28,10 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
 
     const sanitizeUser = sanitizeReturnUserObject(user);
 
+    await this.userRepository.updateUserById(user._id, {
+      validTokenDate: new Date(),
+    });
+
     return { token, user: sanitizeUser };
   }
 
