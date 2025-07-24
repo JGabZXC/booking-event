@@ -49,7 +49,8 @@ class DIContainer {
     this.register("userService", (container) => {
       return new UserService(
         container.get("userRepository"),
-        container.get("tokenService")
+        container.get("tokenService"),
+        container.get("passwordService")
       );
     });
 

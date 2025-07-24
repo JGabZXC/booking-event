@@ -20,7 +20,7 @@ export default class TokenService {
     return await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   }
 
-  static async isPasswordChangedTimestamp(token, passwordChangedAt) {
+  async isPasswordChangedTimestamp(token, passwordChangedAt) {
     if (!passwordChangedAt) return false;
 
     const decoded = await this.verifyToken(token);
@@ -29,7 +29,7 @@ export default class TokenService {
     return changedTimestamp > decoded.iat;
   }
 
-  static async isValidToken(tokenDate, validTokenDate) {
+  async isValidToken(tokenDate, validTokenDate) {
     if (!validTokenDate) return false;
 
     const tokenTimestamp = Math.floor(tokenDate / 1000);

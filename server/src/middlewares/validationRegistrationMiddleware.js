@@ -17,6 +17,5 @@ export default (req, res, next) => {
   }
 
   req.body = sanitizeRegistrationInput(req.body);
-
   next();
 };

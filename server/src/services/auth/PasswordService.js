@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import * as validation from "../../utils/validation.js";
 
 export default class PasswordService {
   constructor(saltRounds = 12) {
@@ -13,33 +14,27 @@ export default class PasswordService {
     return await bcrypt.compare(password, hash);
   }
 
-  validatePasswordStrength(password) {
-    const minLength = 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChars = /[!@$^*?.]/.test(password);
-
+  validatePassword(data) {
     const errors = [];
-    if (password.length < minLength) {
-      errors.push(`Password must be at least ${minLength} characters long.`);
-    }
-    if (!hasUpperCase) {
-      errors.push("Password must contain at least one uppercase letter.");
-    }
-    if (!hasLowerCase) {
-      errors.push("Password must contain at least one lowercase letter.");
-    }
-    if (!hasNumbers) {
-      errors.push("Password must contain at least one number.");
-    }
-    if (!hasSpecialChars) {
-      errors.push("Password must contain at least one special character.");
+    if (!data.password) errors.push("Password is required");
+
+    if (!validation.validatePassword(data.password))
+      errors.push(
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      );
+
+    if (
+      !validation.validatePasswordConfirm(data.password, data.passwordConfirm)
+    )
+      errors.push("Password and password confirmation do not match");
+
+    if (errors.length > 0) {
+      return {
+        isValid: false,
+        errors,
+      };
     }
 
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+    return { isValid: true };
   }
 }

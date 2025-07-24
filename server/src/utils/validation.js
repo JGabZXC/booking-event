@@ -1,4 +1,4 @@
-export const validateName = (name) => {
+export const validateWord = (name) => {
   const arrayName = name.split(" ");
   const validatedName = arrayName.every((name) => {
     const nameRegex = /^[A-Za-z]+$/;
@@ -21,4 +21,11 @@ export const validatePassword = (password) => {
 
 export const validatePasswordConfirm = (password, passwordConfirm) => {
   return password === passwordConfirm;
+};
+
+export const validateFullName = (name) => {
+  return name
+    .trim()
+    .split(/\s+/)
+    .every((part) => validateWord(part));
 };

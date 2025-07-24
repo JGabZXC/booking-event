@@ -17,12 +17,25 @@ export default class MongoUserRepository extends IRepository {
     });
   }
 
+  async updateUserPasswordById(
+    userId,
+    candidatePassword,
+    password,
+    passwordConfirm
+  ) {
+    throw new Error("Method not implemented");
+  }
+
   async deleteUserById(userId) {
     return await User.findByIdAndDelete(userId);
   }
 
   async getUserById(userId) {
     return await User.findById(userId);
+  }
+
+  async getUserByIdAuth(userId) {
+    return await User.findById(userId).select("+password");
   }
 
   async getUserByEmail(email) {

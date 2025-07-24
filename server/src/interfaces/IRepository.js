@@ -19,6 +19,10 @@ export default class IRepository {
     throw new Error("Method not implemented");
   }
 
+  async getUserByIdAuth(userId) {
+    throw new Error("Method not implemented");
+  }
+
   async getUserByEmail(email) {
     throw new Error("Method not implemented");
   }
