@@ -10,7 +10,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
 
   const usersData = await userService.getAllUsers(sort, page, limit);
 
-  if (usersData.totalPages < page || page > usersData.totalPages)
+  if (page > usersData.totalPages)
     throw new BadRequestException("Page number exceeds total pages");
 
   res.status(HTTPSTATUS.OK).json({

@@ -1,15 +1,32 @@
-export default (req, res, next) => {
-  const allowedFields = ["name", "role", "email", "-name", "-role", "-email"];
-  if (req.query.sort) {
-    const values = req.query.sort.split(",");
+import QuerySanitizer from "../sanitizers/querySanitizer.js";
 
-    const sanitized = values
-      .filter((field) => allowedFields.includes(field))
-      .join(" ");
+export default (req, res, next) => {
+  if (req.query.sort) {
+    const sanitizedSort = QuerySanitizer.sanitizeSortQuery(req);
 
     Object.defineProperty(req, "query", {
       ...Object.getOwnPropertyDescriptor(req, "query"),
-      value: { ...req.query, sort: sanitized },
+      value: { ...req.query, sort: sanitizedSort },
+      writable: true,
+    });
+  }
+
+  if (req.query.page) {
+    const sanitzedPage = QuerySanitizer.sanitizePaginationQuery(req);
+
+    Object.defineProperty(req, "query", {
+      ...Object.getOwnPropertyDescriptor(req, "query"),
+      value: { ...req.query, page: sanitzedPage },
+      writable: true,
+    });
+  }
+
+  if (req.query.limit) {
+    const sanitizedLimit = QuerySanitizer.sanitizeLimitQuery(req);
+
+    Object.defineProperty(req, "query", {
+      ...Object.getOwnPropertyDescriptor(req, "query"),
+      value: { ...req.query, limit: sanitizedLimit },
       writable: true,
     });
   }
