@@ -14,7 +14,64 @@ export default class UserService {
     this.passwordService = passwordService;
   }
 
-  async updatePassword(userId, data) {
+  async getAllUsers() {
+    return this.userRepository
+      .getAllUsers()
+      .then((users) =>
+        users.map((user) =>
+          sanitizeReturnUserObject(user, [
+            "password",
+            "validTokenDate",
+            "passwordChangedAt",
+            "ticketsPurchased",
+          ])
+        )
+      );
+  }
+
+  async getUserByIdOrEmail(identifier) {
+    const isEmail = validation.validateEmail(identifier);
+
+    let user;
+    if (isEmail) user = await this.userRepository.getUserByEmail(identifier);
+    else user = await this.userRepository.getUserById(identifier);
+
+    if (!user)
+      throw new BadRequestException(
+        "User not found",
+        ErrorCode.AUTH_USER_NOT_FOUND
+      );
+
+    return sanitizeReturnUserObject(user, [
+      "password",
+      "validTokenDate",
+      "passwordChangedAt",
+      "ticketsPurchased",
+    ]);
+  }
+
+  async getUserByIdOrEmailAuth(identifier) {
+    const isEmail = validation.validateEmail(identifier);
+
+    let user;
+    if (isEmail)
+      user = await this.userRepository.getUserByEmailAuth(identifier);
+    else user = await this.userRepository.getUserByIdAuth(identifier);
+
+    if (!user)
+      throw new BadRequestException(
+        "User not found",
+        ErrorCode.AUTH_USER_NOT_FOUND
+      );
+
+    return sanitizeReturnUserObject(user, [
+      "password",
+      "validTokenDate",
+      "passwordChangedAt",
+    ]);
+  }
+
+  async updateUserPassword(identifier, data, isAdmin = false) {
     const validationResult = this.passwordService.validatePassword(data);
 
     if (!validationResult.isValid)
@@ -23,20 +80,29 @@ export default class UserService {
         ErrorCode.VALIDATION_ERROR
       );
 
-    const user = await this.userRepository.getUserByIdAuth(userId);
+    const isEmail = validation.validateEmail(identifier);
+    let user;
+    if (isEmail)
+      user = await this.userRepository.getUserByEmailAuth(identifier);
+    else user = await this.userRepository.getUserByIdAuth(identifier);
+
     if (!user)
       throw new BadRequestException(
         "User not found",
         ErrorCode.AUTH_USER_NOT_FOUND
       );
 
-    if (
-      !(await this.passwordService.verify(data.currentPassword, user.password))
-    )
-      throw new BadRequestException(
-        "Incorrect password",
-        ErrorCode.AUTH_INCORRECT_PASSWORD
-      );
+    if (!isAdmin)
+      if (
+        !(await this.passwordService.verify(
+          data.currentPassword,
+          user.password
+        ))
+      )
+        throw new BadRequestException(
+          "Incorrect password",
+          ErrorCode.AUTH_INCORRECT_PASSWORD
+        );
 
     const passwordHash = await this.passwordService.hash(data.password);
 
@@ -45,21 +111,19 @@ export default class UserService {
     user.passwordConfirm = passwordHash;
     user.passwordChangedAt = new Date();
     const updatedUser = await user.save();
-    const sanitizeUser = sanitizeReturnUserObject(updatedUser);
+    const sanitizeUser = sanitizeReturnUserObject(updatedUser, [
+      "password",
+      "validTokenDate",
+      "passwordChangedAt",
+      "ticketsPurchased",
+    ]);
 
     const token = await this.tokenService.generateToken(updatedUser);
 
     return { token, sanitizeUser };
   }
 
-  async updateUserDetails(userId, data) {
-    if (data.password) delete data.password;
-    if (data.passwordConfirm) delete data.passwordConfirm;
-    if (data.validTokenDate) delete data.validTokenDate;
-    if (data.passwordChangedAt) delete data.passwordChangedAt;
-    if (data.validTokenDate) delete data.validTokenDate;
-    if (data.role) delete data.role;
-
+  async updateUserDetails(identifier, data) {
     if (data.email && !validation.validateEmail(data.email)) {
       throw new BadRequestException(
         "Invalid email format",
@@ -78,13 +142,23 @@ export default class UserService {
       data.name = capitalizeFullName(data.name);
     }
 
-    const user = await this.userRepository.updateUserById(userId, data);
+    const isEmail = validation.validateEmail(identifier);
+    let user;
+    if (isEmail)
+      user = await this.userRepository.updateUserByEmail(identifier, data);
+    else user = await this.userRepository.updateUserById(identifier, data);
+
     if (!user)
       throw new BadRequestException(
         "User not found",
         ErrorCode.AUTH_USER_NOT_FOUND
       );
-    return sanitizeReturnUserObject(user);
+    return sanitizeReturnUserObject(user, [
+      "password",
+      "validTokenDate",
+      "passwordChangedAt",
+      "ticketsPurchased",
+    ]);
   }
 
   async validateAuthenticatedUser(token) {

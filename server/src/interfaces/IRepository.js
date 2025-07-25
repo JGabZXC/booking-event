@@ -11,6 +11,10 @@ export default class IRepository {
     throw new Error("Method not implemented");
   }
 
+  async updateUserByEmail(email, userData) {
+    throw new Error("Method not implemented");
+  }
+
   async deleteUserById(userId) {
     throw new Error("Method not implemented");
   }

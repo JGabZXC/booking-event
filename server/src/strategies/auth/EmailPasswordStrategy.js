@@ -26,7 +26,12 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
 
     const token = await this.tokenService.generateToken(user);
 
-    const sanitizeUser = sanitizeReturnUserObject(user);
+    const sanitizeUser = sanitizeReturnUserObject(user, [
+      "password",
+      "ticketsPurchased",
+      "validTokenDate",
+      "passwordChangedAt",
+    ]);
 
     await this.userRepository.updateUserById(user._id, {
       validTokenDate: new Date(),
@@ -47,6 +52,9 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
       passwordConfirm: passwordHash,
     };
 
-    return await this.userRepository.createUser(newUser);
+    return sanitizeReturnUserObject(
+      await this.userRepository.createUser(newUser),
+      ["password", "validTokenDate", "passwordChangedAt", "ticketsPurchased"]
+    );
   }
 }

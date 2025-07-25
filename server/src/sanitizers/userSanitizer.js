@@ -10,7 +10,12 @@ export function sanitizeRegistrationInput(data) {
   };
 }
 
-export function sanitizeReturnUserObject(user) {
-  user.password = undefined;
+export function sanitizeReturnUserObject(user, notAllowedFields) {
+  if (!user) return null;
+  if (notAllowedFields) {
+    notAllowedFields.forEach((field) => {
+      user[field] = undefined;
+    });
+  }
   return user;
 }

@@ -1,10 +1,12 @@
 import { HTTPSTATUS } from "../config/http.js";
 import { sanitizeRegistrationInput } from "../sanitizers/userSanitizer.js";
+import removeDataBody from "../utils/removeDataBody.js";
 import { validateRegistrationInput } from "../validators/userValidator.js";
 
 export default (req, res, next) => {
-  const { role } = req.body;
-  if (role) delete req.body.role; // Remove role from request body if it exists
+  const allowedFields = ["name", "email", "password", "passwordConfirm"];
+  const sanitizeBody = removeDataBody(allowedFields, req.body);
+  req.body = sanitizeBody;
 
   const validator = validateRegistrationInput(req.body);
 

@@ -17,13 +17,11 @@ export default class MongoUserRepository extends IRepository {
     });
   }
 
-  async updateUserPasswordById(
-    userId,
-    candidatePassword,
-    password,
-    passwordConfirm
-  ) {
-    throw new Error("Method not implemented");
+  async updateUserByEmail(email, userData) {
+    return await User.findOneAndUpdate({ email }, userData, {
+      new: true,
+      runValidators: true,
+    });
   }
 
   async deleteUserById(userId) {
