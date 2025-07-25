@@ -9,10 +9,6 @@ import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
 const router = express.Router();
 
 router.use(isAuthenticated);
-router.route("/update/password").patch(userController.updatePassword);
-router
-  .route("/update/me")
-  .patch(sanitizeUserDetailsMiddleware, userController.updateMe);
 
 router
   .route("/")
@@ -21,7 +17,6 @@ router
     sanitizeSortMiddleware,
     userController.getAllUsers
   );
-
 router
   .route("/:identifier")
   .get(isAuthorized("admin"), userController.getUser)
@@ -30,9 +25,13 @@ router
     sanitizeUserDetailsMiddleware,
     userController.updateUserAdmin
   );
-
 router
   .route("/:identifier/password")
   .patch(isAuthorized("admin"), userController.updateUserPasswordAdmin);
+
+router.route("/update/password").patch(userController.updatePassword);
+router
+  .route("/update/me")
+  .patch(sanitizeUserDetailsMiddleware, userController.updateMe);
 
 export default router;

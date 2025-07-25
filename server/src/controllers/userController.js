@@ -6,9 +6,7 @@ import { BadRequestException } from "../utils/appError.js";
 const userService = container.get("userService");
 
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  let { sort, page, limit } = req.query;
-
-  sort && (sort = sort.split(",").join(" "));
+  const { sort, page, limit } = req.query;
 
   const usersData = await userService.getAllUsers(sort, page, limit);
 

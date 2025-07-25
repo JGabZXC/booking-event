@@ -18,6 +18,8 @@ export default (req, res, next) => {
     });
   }
 
+  req.query.sort = "test";
+
   req.body = sanitizeRegistrationInput(req.body);
   next();
 };
