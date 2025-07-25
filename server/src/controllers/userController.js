@@ -1,15 +1,23 @@
 import { HTTPSTATUS } from "../config/http.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import container from "../container/container.js";
+import { BadRequestException } from "../utils/appError.js";
 
 const userService = container.get("userService");
 
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  const users = await userService.getAllUsers();
+  let { sort, page, limit } = req.query;
+
+  sort && (sort = sort.split(",").join(" "));
+
+  const usersData = await userService.getAllUsers(sort, page, limit);
+
+  if (usersData.totalPages < page || page > usersData.totalPages)
+    throw new BadRequestException("Page number exceeds total pages");
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    data: users,
+    data: usersData,
   });
 });
 

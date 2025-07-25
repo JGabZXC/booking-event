@@ -2,8 +2,14 @@ import IRepository from "../interfaces/IRepository.js";
 import User from "../models/User.js";
 
 export default class MongoUserRepository extends IRepository {
-  async getAllUsers() {
-    return await User.find();
+  async getAllUsers(sort = "_id", page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [users, totalDocs] = await Promise.all([
+      User.find().sort(sort).skip(skip).limit(limit),
+      User.countDocuments(),
+    ]);
+    const totalPages = Math.ceil(totalDocs / limit);
+    return { users, totalDocs, totalPages };
   }
 
   async createUser(userData) {

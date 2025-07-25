@@ -5,6 +5,7 @@ import {
   isAuthorized,
 } from "../middlewares/authMiddleware.js";
 import sanitizeUserDetailsMiddleware from "../middlewares/sanitizeUserDetailsMiddleware.js";
+import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
 const router = express.Router();
 
 router.use(isAuthenticated);
@@ -13,7 +14,13 @@ router
   .route("/update/me")
   .patch(sanitizeUserDetailsMiddleware, userController.updateMe);
 
-router.route("/").get(userController.getAllUsers);
+router
+  .route("/")
+  .get(
+    isAuthorized("admin"),
+    sanitizeSortMiddleware,
+    userController.getAllUsers
+  );
 
 router
   .route("/:identifier")

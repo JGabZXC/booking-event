@@ -14,19 +14,19 @@ export default class UserService {
     this.passwordService = passwordService;
   }
 
-  async getAllUsers() {
-    return this.userRepository
-      .getAllUsers()
-      .then((users) =>
-        users.map((user) =>
-          sanitizeReturnUserObject(user, [
-            "password",
-            "validTokenDate",
-            "passwordChangedAt",
-            "ticketsPurchased",
-          ])
-        )
-      );
+  async getAllUsers(sort, page = 1, limit = 10) {
+    return this.userRepository.getAllUsers(sort, page, limit).then((data) => ({
+      users: data.users.map((user) =>
+        sanitizeReturnUserObject(user, [
+          "password",
+          "validTokenDate",
+          "passwordChangedAt",
+          "ticketsPurchased",
+        ])
+      ),
+      totalDocs: data.totalDocs,
+      totalPages: data.totalPages,
+    }));
   }
 
   async getUserByIdOrEmail(identifier) {
