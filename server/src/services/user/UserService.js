@@ -4,7 +4,7 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from "../../utils/appError.js";
-import { capitalizeFullName } from "../../utils/capitalizeName.js";
+import { capitalizeEachWord } from "../../utils/capitalizeWord.js";
 import * as validation from "../../utils/validation.js";
 
 export default class UserService {
@@ -139,7 +139,7 @@ export default class UserService {
     }
 
     if (data.name) {
-      data.name = capitalizeFullName(data.name);
+      data.name = capitalizeEachWord(data.name);
     }
 
     const isEmail = validation.validateEmail(identifier);

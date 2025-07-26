@@ -1,6 +1,9 @@
 import express from "express";
-import * as ticketController from "../controllers/ticketController.js";
+import * as ticketController from "../controllers/TicketController.js";
 import * as authMiddleware from "../middlewares/authMiddleware.js";
+import validateAndSanitizeTicket from "../middlewares/validateAndSanitizeTicketBodyMiddleware.js";
+import imageTicketMiddleware from "../middlewares/imageTicketMiddleware.js";
+import { uploadImages } from "../services/image/multerStorage.js";
 const router = express.Router();
 
 router
@@ -9,7 +12,10 @@ router
   .post(
     authMiddleware.isAuthenticated,
     authMiddleware.isAuthorized("admin"),
-    ticketController.postTicket
+    uploadImages,
+    imageTicketMiddleware,
+    validateAndSanitizeTicket,
+    ticketController.createTicket
   );
 
 router

@@ -6,6 +6,10 @@ import { BadRequestException, NotFoundException } from "../utils/appError.js";
 import Ticket from "../models/Ticket.js";
 import User from "../models/User.js";
 
+import container from "../container/container.js";
+
+const ticketRepository = container.get("ticketRepository");
+
 export const getAllTickets = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
   if (page && limit)
@@ -58,10 +62,10 @@ export const getTicket = asyncHandler(async (req, res) => {
   });
 });
 
-export const postTicket = asyncHandler(async (req, res) => {
+export const createTicket = asyncHandler(async (req, res) => {
   req.body.date = new Date();
 
-  const ticket = await Ticket.create(req.body);
+  const ticket = await ticketRepository.createTicket(req.body);
 
   res.status(HTTPSTATUS.CREATED).json({
     status: "success",

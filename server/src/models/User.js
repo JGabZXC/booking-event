@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "organizer"],
     default: "user",
   },
   ticketsPurchased: {
@@ -45,5 +45,7 @@ userSchema.pre("save", function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
 const User = mongoose.model("User", userSchema);
+
 export default User;

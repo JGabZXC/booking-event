@@ -1,4 +1,4 @@
-export const capitalizeFullName = (name) =>
+export const capitalizeEachWord = (name) =>
   name
     .trim()
     .split(/\s+/)

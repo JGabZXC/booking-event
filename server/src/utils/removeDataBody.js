@@ -1,9 +1,9 @@
-export default function (dataIncluded, body) {
+export default function (allowedFields, body) {
   const sanitizeBody = {};
-  for (const key of dataIncluded) {
-    if (body.hasOwnProperty(key)) {
-      sanitizeBody[key] = body[key];
+  allowedFields.forEach((field) => {
+    if (Object.keys(body).includes(field)) {
+      sanitizeBody[field] = body[field];
     }
-  }
+  });
   return sanitizeBody;
 }

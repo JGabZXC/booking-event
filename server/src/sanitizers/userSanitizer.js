@@ -1,9 +1,9 @@
-import { capitalizeFullName } from "../utils/capitalizeName.js";
+import { capitalizeEachWord } from "../utils/capitalizeWord.js";
 
 export function sanitizeRegistrationInput(data) {
   return {
     ...data,
-    name: capitalizeFullName(data.name),
+    name: capitalizeEachWord(data.name),
     email: data.email.trim(),
     password: data.password.trim(),
     passwordConfirm: data.passwordConfirm.trim(),

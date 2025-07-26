@@ -14,8 +14,15 @@ const ticketSchema = new mongoose.Schema({
   coverImage: {
     type: String,
     required: true,
-    trim: true,
   },
+  images: [String],
+  organizers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  ],
   date: {
     type: Date,
     required: true,
