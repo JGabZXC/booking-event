@@ -5,7 +5,11 @@ export default class SharpProcessorStrategy {
     return await sharp(buffer).resize(width, height).toBuffer();
   }
 
-  async convertToWebP(buffer) {
-    return await sharp(buffer).webp().toBuffer();
+  async convertToWebP(file) {
+    const buffer = await sharp(file.buffer).webp().toBuffer();
+    const mimetype = "image/webp";
+    const originalname = file.originalname.replace(/\.[^/.]+$/, ".webp");
+
+    return { buffer, mimetype, originalname };
   }
 }

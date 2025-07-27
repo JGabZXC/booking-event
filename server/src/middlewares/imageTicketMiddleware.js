@@ -9,12 +9,12 @@ export default async (req, res, next) => {
       1920,
       1080
     );
-    req.files.coverImage[0].buffer = await imageProcessorService.convertToWebP(
-      req.files.coverImage[0].buffer
-    );
-    req.files.coverImage[0].mimetype = "image/webp";
-    req.files.coverImage[0].originalname =
-      req.files.coverImage[0].originalname.replace(/\.[^/.]+$/, ".webp");
+
+    const { buffer, mimetype, originalname } =
+      await imageProcessorService.convertToWebP(req.files.coverImage[0]);
+    req.files.coverImage[0].buffer = buffer;
+    req.files.coverImage[0].mimetype = mimetype;
+    req.files.coverImage[0].originalname = originalname;
   }
 
   if (req.files?.images && req.files.images.length > 0)
@@ -25,9 +25,11 @@ export default async (req, res, next) => {
           1920,
           1080
         );
-        file.buffer = await imageProcessorService.convertToWebP(file.buffer);
-        file.mimetype = "image/webp";
-        file.originalname = file.originalname.replace(/\.[^/.]+$/, ".webp");
+        const { buffer, mimetype, originalname } =
+          await imageProcessorService.convertToWebP(file);
+        file.buffer = buffer;
+        file.mimetype = mimetype;
+        file.originalname = originalname;
         return file;
       })
     );
