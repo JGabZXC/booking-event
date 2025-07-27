@@ -6,7 +6,7 @@ export function sanitizeBody(data) {
     "description",
     "coverImage",
     "images",
-    "organizer",
+    "organizers",
     "date",
     "place",
     "price",
