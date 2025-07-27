@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import ITicketRepository from "../interfaces/ITicketRepository.js";
 import Ticket from "../models/Ticket.js";
+import { NotFoundException } from "../utils/appError.js";
 
 export default class MongoTicketRepository extends ITicketRepository {
   async getAllTickets(sort = "_id", page = 1, limit = 10) {
@@ -12,23 +14,50 @@ export default class MongoTicketRepository extends ITicketRepository {
     return { tickets, totalDocs, totalPages };
   }
 
-  async getTicketById(id) {
-    return await Ticket.findById(id);
+  async getTicket(identifier) {
+    let query;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      query = { _id: identifier };
+    } else {
+      query = { slug: identifier };
+    }
+
+    const ticket = await Ticket.findOne(query);
+
+    if (!ticket)
+      throw new NotFoundException(
+        "No ticket found with the provided identifier"
+      );
+
+    return ticket;
   }
 
   async createTicket(ticketData) {
     return await Ticket.create(ticketData);
   }
 
-  async updateTicketById(ticketId, ticketData) {
-    return await Ticket.findByIdAndUpdate(ticketId, ticketData, {
+  async updateTicket(identifier, ticketData) {
+    let query;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      query = { _id: identifier };
+    } else {
+      query = { slug: identifier };
+    }
+
+    return await Ticket.findOneAndUpdate(query, ticketData, {
       new: true,
       runValidators: true,
     });
   }
 
-  async deleteTicketById(ticketId) {
-    return await Ticket.findByIdAndDelete(ticketId);
+  async deleteTicket(identifier) {
+    let query;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      query = { _id: identifier };
+    } else {
+      query = { slug: identifier };
+    }
+    return await Ticket.findOneAndDelete(query);
   }
 
   async getTicketsByUserIdOrEmail(

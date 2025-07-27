@@ -5,6 +5,8 @@ const ticketSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
+    maxlength: 50,
   },
   description: {
     type: String,
@@ -71,6 +73,11 @@ const ticketSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  slug: {
+    type: String,
+    required: true,
+    unique: true,
   },
 });
 

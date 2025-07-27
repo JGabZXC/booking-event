@@ -4,7 +4,7 @@ export function bodyValidator(data, coverImage) {
   const errors = [];
   if (!data.title) errors.push("Title is required.");
   if (!data.description) errors.push("Description is required.");
-  if (!coverImage) errors.push("Cover image is required.");
+  // if (!coverImage) errors.push("Cover image is required.");
 
   if (
     !data.organizers ||

@@ -37,4 +37,8 @@ export default class TicketImageService {
 
     return ticket.save({ validateModifiedOnly: true });
   }
+
+  async getTicket(identifier) {
+    return await this.ticketRepository.getTicket(identifier);
+  }
 }

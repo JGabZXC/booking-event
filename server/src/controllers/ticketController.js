@@ -48,13 +48,8 @@ export const getAllTickets = asyncHandler(async (req, res, next) => {
 });
 
 export const getTicket = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const ticket = await Ticket.findById(id);
-  if (!ticket)
-    return new NotFoundException(
-      "No ticket was found with the provided ID",
-      ErrorCode.RESOURCE_NOT_FOUND
-    );
+  const { identifier } = req.params;
+  const ticket = await ticketRepository.getTicket(identifier);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",

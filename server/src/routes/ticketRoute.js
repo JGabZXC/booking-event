@@ -19,7 +19,7 @@ router
   );
 
 router
-  .route("/:id")
+  .route("/:identifier")
   .get(ticketController.getTicket)
   .patch(
     authMiddleware.isAuthenticated,
