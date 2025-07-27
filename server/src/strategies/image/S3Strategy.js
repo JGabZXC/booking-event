@@ -1,33 +1,22 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "../../services/image/s3Client.js";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import IImageServiceStrategy from "../../interfaces/IImageServiceStrategy.js";
 
 export default class AWSS3 extends IImageServiceStrategy {
-  constructor(bucketName) {
+  constructor() {
     super();
     this.s3Client = s3Client;
-    this.bucketName = bucketName;
   }
 
-  async uploadImage(data) {
-    console.log("Proceeded in uploadingImage");
-    console.log(data);
-    const params = {
-      Bucket: this.bucketName,
-      Key: data.originalname,
-      Body: data.buffer,
-      ContentType: data.mimetype,
-    };
-
+  async uploadImage(params) {
     const command = new PutObjectCommand(params);
-    return await this.s3Client({
-      accessKeyId: process.env.S3_ACCESS_KEY,
-      secretAccessKey: process.env.S3_SECRET_KEY,
-      region: process.env.S3_REGION,
-    }).send(command);
+    return await this.s3Client().send(command);
   }
 
-  getImageUrl(key) {
-    // Implement the logic to get the image URL from AWS S3
+  async getImageUrl(params) {
+    return await getSignedUrl(this.s3Client(), new GetObjectCommand(params), {
+      expiresIn: 3600,
+    });
   }
 }

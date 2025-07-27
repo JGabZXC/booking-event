@@ -2,6 +2,7 @@ import { HTTPSTATUS } from "../config/http.js";
 import errorHandlerUtil from "../utils/errorHandlerUtil.js";
 
 export const errorHandler = (err, req, res, next) => {
+  console.log(err.name);
   const error = errorHandlerUtil(err);
   return res.status(err.statusCode || HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
     status: "error",

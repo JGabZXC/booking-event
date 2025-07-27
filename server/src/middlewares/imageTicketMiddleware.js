@@ -1,7 +1,6 @@
 import container from "../container/container.js";
 
 const imageProcessorService = container.get("imageProcessorService");
-const imageService = container.get("imageService");
 
 export default async (req, res, next) => {
   if (req.files?.coverImage)
@@ -22,14 +21,5 @@ export default async (req, res, next) => {
         return file;
       })
     );
-
-  // CHANGE THIS LATER
-  // Save the image to S3 regarding the creation of the ticket is successful or not
-  if (req.files?.coverImage) {
-    req.body.coverImage = await imageService.uploadImage(
-      req.files.coverImage[0]
-    );
-  }
-
   next();
 };

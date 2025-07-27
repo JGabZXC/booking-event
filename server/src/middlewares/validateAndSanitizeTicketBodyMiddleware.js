@@ -20,5 +20,10 @@ export default (req, res, next) => {
 
   req.body = sanitizeBody(req.body);
 
+  req.body.coverImage = {};
+  req.body.coverImage.fileName = "unset";
+  req.body.coverImage.url = "unset";
+  req.body.images = [];
+
   next();
 };

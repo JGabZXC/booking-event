@@ -12,10 +12,27 @@ const ticketSchema = new mongoose.Schema({
     trim: true,
   },
   coverImage: {
-    type: String,
-    required: true,
+    fileName: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
-  images: [String],
+  images: [
+    {
+      fileName: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   organizers: [
     {
       type: mongoose.Schema.Types.ObjectId,

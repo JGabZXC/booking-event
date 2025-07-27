@@ -1,15 +1,20 @@
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.resolve(process.cwd(), "src/config/.env") });
+
 import AuthService from "../services/auth/AuthService.js";
 import PasswordService from "../services/auth/PasswordService.js";
 import TokenService from "../services/auth/TokenService.js";
 import MongoUserRepository from "../repositories/MongoUserRepository.js";
 import EmailPasswordStrategy from "../strategies/auth/EmailPasswordStrategy.js";
 import UserService from "../services/user/UserService.js";
-import { BadRequestException } from "../utils/appError.js";
 import MongoTicketRepository from "../repositories/MongoTicketRepository.js";
 import SharpProcessorStrategy from "../strategies/image/SharpProcessorStrategy.js";
 import ImageProcessorService from "../services/image/ImageProcessorService.js";
 import ImageService from "../services/image/ImageService.js";
 import S3Strategy from "../strategies/image/S3Strategy.js";
+import { BadRequestException } from "../utils/appError.js";
+import TicketImageService from "../services/image/TicketImageService.js";
 
 class DIContainer {
   constructor() {
@@ -67,7 +72,16 @@ class DIContainer {
       return new ImageProcessorService(container.get("imageProcessorStrategy"));
     });
     this.register("imageService", (container) => {
-      return new ImageService(container.get("imageStrategy"));
+      return new ImageService(
+        container.get("imageStrategy"),
+        process.env.S3_BUCKET_NAME
+      );
+    });
+    this.register("ticketImageService", (container) => {
+      return new TicketImageService(
+        container.get("imageService"),
+        container.get("ticketRepository")
+      );
     });
 
     this.register("emailPasswordStrategy", (container) => {

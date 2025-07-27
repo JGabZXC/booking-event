@@ -17,6 +17,13 @@ export default (error) => {
     error.statusCode = HTTPSTATUS.BAD_REQUEST;
   }
 
+  if (error.name === "ValidationError") {
+    const messages = Object.values(error.errors).map((err) => err.message);
+    error.message = messages.join(", ");
+    error.errorCode = ErrorCode.VALIDATION_ERROR;
+    error.statusCode = HTTPSTATUS.BAD_REQUEST;
+  }
+
   if (error.name === "TokenExpiredError") {
     error.message = "Token has expired";
     error.errorCode = ErrorCode.AUTH_UNAUTHORIZED;

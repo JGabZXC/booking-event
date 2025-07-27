@@ -9,6 +9,7 @@ import User from "../models/User.js";
 import container from "../container/container.js";
 
 const ticketRepository = container.get("ticketRepository");
+const ticketImageService = container.get("ticketImageService");
 
 export const getAllTickets = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
@@ -65,7 +66,7 @@ export const getTicket = asyncHandler(async (req, res) => {
 export const createTicket = asyncHandler(async (req, res) => {
   req.body.date = new Date();
 
-  const ticket = await ticketRepository.createTicket(req.body);
+  const ticket = await ticketImageService.createTicket(req.body, req.files);
 
   res.status(HTTPSTATUS.CREATED).json({
     status: "success",

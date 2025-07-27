@@ -1,11 +1,11 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
-export const s3Client = (data) => {
+export const s3Client = () => {
   return new S3Client({
     credentials: {
-      accessKeyId: data.accessKeyId,
-      secretAccessKey: data.secretAccessKey,
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
     },
-    region: data.region,
+    region: process.env.S3_REGION,
   });
 };
