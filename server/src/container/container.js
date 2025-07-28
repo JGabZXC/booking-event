@@ -17,6 +17,7 @@ import { BadRequestException } from "../utils/appError.js";
 import EventImageService from "../services/image/EventImageService.js";
 import CloudFrontUrlProvider from "../services/image/CloudFrontUrlProvider.js";
 import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
+import EventService from "../services/event/EventService.js";
 class DIContainer {
   constructor() {
     this.services = new Map();
@@ -52,6 +53,18 @@ class DIContainer {
   }
 
   registerServices() {
+    // PROVIDER
+    this.register("cloudFrontUrlProvider", () => {
+      return new CloudFrontUrlProvider(
+        process.env.CLOUDFRONT_URL,
+        process.env.CLOUDFRONT_PRIVATE_KEY,
+        process.env.CLOUDFRONT_KEY_PAIR_ID
+      );
+    });
+    this.register("imageUrlProvider", (container) => {
+      return new ImageUrlProvider(container.get("cloudFrontUrlProvider"));
+    });
+
     // REPOSITORY
     this.register("userRepository", () => new MongoUserRepository());
     this.register("eventRepository", () => {
@@ -83,20 +96,16 @@ class DIContainer {
     this.register("eventImageService", (container) => {
       return new EventImageService(
         container.get("imageService"),
-        container.get("eventRepository")
+        container.get("eventRepository"),
+        container.get("imageUrlProvider")
       );
     });
-
-    // PROVIDER
-    this.register("cloudFrontUrlProvider", () => {
-      return new CloudFrontUrlProvider(
-        process.env.CLOUDFRONT_URL,
-        process.env.CLOUDFRONT_PRIVATE_KEY,
-        process.env.CLOUDFRONT_KEY_PAIR_ID
+    this.register("eventService", (container) => {
+      return new EventService(
+        container.get("eventRepository"),
+        container.get("imageService"),
+        container.get("imageUrlProvider")
       );
-    });
-    this.register("imageUrlProvider", (container) => {
-      return new ImageUrlProvider(container.get("cloudFrontUrlProvider"));
     });
 
     // STRATEGY

@@ -8,8 +8,8 @@ import User from "../models/User.js";
 
 import container from "../container/container.js";
 
-const eventRepository = container.get("eventRepository");
 const eventImageService = container.get("eventImageService");
+const eventService = container.get("eventService");
 
 export const getAllEvents = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
@@ -49,7 +49,7 @@ export const getAllEvents = asyncHandler(async (req, res, next) => {
 
 export const getEvent = asyncHandler(async (req, res) => {
   const { identifier } = req.params;
-  const event = await eventRepository.getEvent(identifier);
+  const event = await eventService.getEvent(identifier);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",

@@ -2,9 +2,10 @@ import { BadRequestException } from "../../utils/appError.js";
 import generateDateExpiration from "../../utils/generateDateExpiration.js";
 
 export default class EventImageService {
-  constructor(imageService, eventRepository) {
+  constructor(imageService, eventRepository, imageUrlProvider) {
     this.imageService = imageService;
     this.eventRepository = eventRepository;
+    this.imageUrlProvider = imageUrlProvider;
   }
 
   async createEvent(body, files) {
@@ -40,9 +41,5 @@ export default class EventImageService {
     }
 
     return await event.save({ validateModifiedOnly: true });
-  }
-
-  async getEvent(identifier) {
-    return await this.eventRepository.getEvent(identifier);
   }
 }

@@ -10,6 +10,7 @@ export default class ImageUrlProvider {
   }
 
   async checkSignedExpiration(documents, eventRepository) {
+    console.log("here");
     return this.urlProvider.checkSignedExpiration(documents, eventRepository);
   }
 }
