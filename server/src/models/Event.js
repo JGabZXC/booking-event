@@ -22,6 +22,10 @@ const eventSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    urlExpires: {
+      type: Date,
+      required: true,
+    },
   },
   images: [
     {
@@ -31,6 +35,10 @@ const eventSchema = new mongoose.Schema({
       },
       url: {
         type: String,
+        required: true,
+      },
+      urlExpires: {
+        type: Date,
         required: true,
       },
     },

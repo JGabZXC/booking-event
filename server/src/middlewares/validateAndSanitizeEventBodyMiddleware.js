@@ -31,6 +31,7 @@ export default (req, res, next) => {
   req.body.coverImage = {};
   req.body.coverImage.fileName = "unset";
   req.body.coverImage.url = "unset";
+  req.body.coverImage.urlExpires = new Date("1970-01-01");
   req.body.images = [];
 
   next();

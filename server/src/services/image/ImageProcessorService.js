@@ -1,5 +1,3 @@
-import sharp from "sharp";
-
 export default class ImageProcessorService {
   constructor(imageProcessorStrategy) {
     this.imageProcessorStrategy = imageProcessorStrategy;

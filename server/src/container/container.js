@@ -15,7 +15,8 @@ import ImageService from "../services/image/ImageService.js";
 import S3Strategy from "../strategies/image/S3Strategy.js";
 import { BadRequestException } from "../utils/appError.js";
 import EventImageService from "../services/image/EventImageService.js";
-
+import CloudFrontUrlProvider from "../services/image/CloudFrontUrlProvider.js";
+import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
 class DIContainer {
   constructor() {
     this.services = new Map();
@@ -51,11 +52,13 @@ class DIContainer {
   }
 
   registerServices() {
+    // REPOSITORY
     this.register("userRepository", () => new MongoUserRepository());
     this.register("eventRepository", () => {
       return new MongoEventRepository();
     });
 
+    // SERVICE
     this.register("tokenService", () => new TokenService());
     this.register("passwordService", () => new PasswordService());
     this.register("userService", (container) => {
@@ -84,6 +87,19 @@ class DIContainer {
       );
     });
 
+    // PROVIDER
+    this.register("cloudFrontUrlProvider", () => {
+      return new CloudFrontUrlProvider(
+        process.env.CLOUDFRONT_URL,
+        process.env.CLOUDFRONT_PRIVATE_KEY,
+        process.env.CLOUDFRONT_KEY_PAIR_ID
+      );
+    });
+    this.register("imageUrlProvider", (container) => {
+      return new ImageUrlProvider(container.get("cloudFrontUrlProvider"));
+    });
+
+    // STRATEGY
     this.register("emailPasswordStrategy", (container) => {
       return new EmailPasswordStrategy(
         container.get("userRepository"),
@@ -94,8 +110,8 @@ class DIContainer {
     this.register("imageProcessorStrategy", () => {
       return new SharpProcessorStrategy();
     });
-    this.register("imageStrategy", () => {
-      return new S3Strategy("book-event");
+    this.register("imageStrategy", (container) => {
+      return new S3Strategy(container.get("imageUrlProvider"));
     });
   }
 }

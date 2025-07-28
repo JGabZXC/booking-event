@@ -2,7 +2,7 @@ import slugify from "slugify";
 
 export default class ImageService {
   constructor(imageStrategy, bucketName) {
-    this.strategy = imageStrategy;
+    this.imageStrategy = imageStrategy;
     this.bucketName = bucketName;
   }
 
@@ -15,16 +15,12 @@ export default class ImageService {
       ContentType: data.mimetype,
     };
 
-    await this.strategy.uploadImage(params);
+    await this.imageStrategy.uploadImage(params);
     return fileName;
   }
 
-  async getImageUrl(fileImage) {
-    const params = {
-      Bucket: this.bucketName,
-      Key: fileImage,
-    };
-    return this.strategy.getImageUrl(params);
+  async getImageUrl(imageName) {
+    return this.imageStrategy.getImageUrl(imageName);
   }
 
   generateImageName(originalName, eventTitle) {
