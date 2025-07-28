@@ -6,8 +6,15 @@ export default (error) => {
     const keys = Object.keys(error.keyValue).map((key) =>
       key.replace(" ", ",")
     );
-    error.message = "Duplicate key error: " + keys;
-    error.errorCode = ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
+
+    if (error.message && error.message.includes("users")) {
+      error.message = "Duplicate key error: " + keys;
+      error.errorCode = ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
+    } else if (error.message && error.message.includes("events")) {
+      error.message = "Duplicate key error: " + keys;
+      error.errorCode = ErrorCode.VALIDATION_ERROR;
+    }
+
     error.statusCode = HTTPSTATUS.CONFLICT;
   }
 

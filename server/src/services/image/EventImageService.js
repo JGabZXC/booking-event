@@ -1,14 +1,14 @@
 import { BadRequestException } from "../../utils/appError.js";
 
-export default class TicketImageService {
-  constructor(imageService, ticketRepository) {
+export default class EventImageService {
+  constructor(imageService, eventRepository) {
     this.imageService = imageService;
-    this.ticketRepository = ticketRepository;
+    this.eventRepository = eventRepository;
   }
 
-  async createTicket(body, files) {
-    let ticket = await this.ticketRepository.createTicket(body);
-    if (!ticket) throw new BadRequestException("Ticket creation failed");
+  async createEvent(body, files) {
+    let event = await this.eventRepository.createEvent(body);
+    if (!event) throw new BadRequestException("Event creation failed");
 
     if (files?.coverImage) {
       const fileName = await this.imageService.uploadImage(
@@ -16,7 +16,7 @@ export default class TicketImageService {
         body.title
       );
       const url = await this.imageService.getImageUrl(fileName);
-      ticket.coverImage = { fileName, url };
+      event.coverImage = { fileName, url };
     }
 
     if (files?.images && files.images.length > 0) {
@@ -29,16 +29,16 @@ export default class TicketImageService {
         fileNames.map((fileName) => this.imageService.getImageUrl(fileName))
       );
 
-      ticket.images = fileNames.map((fileName, index) => ({
+      event.images = fileNames.map((fileName, index) => ({
         fileName,
         url: urls[index],
       }));
     }
 
-    return ticket.save({ validateModifiedOnly: true });
+    return event.save({ validateModifiedOnly: true });
   }
 
-  async getTicket(identifier) {
-    return await this.ticketRepository.getTicket(identifier);
+  async getEvent(identifier) {
+    return await this.eventRepository.getEvent(identifier);
   }
 }

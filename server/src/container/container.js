@@ -8,13 +8,13 @@ import TokenService from "../services/auth/TokenService.js";
 import MongoUserRepository from "../repositories/MongoUserRepository.js";
 import EmailPasswordStrategy from "../strategies/auth/EmailPasswordStrategy.js";
 import UserService from "../services/user/UserService.js";
-import MongoTicketRepository from "../repositories/MongoTicketRepository.js";
+import MongoEventRepository from "../repositories/MongoEventRepository.js";
 import SharpProcessorStrategy from "../strategies/image/SharpProcessorStrategy.js";
 import ImageProcessorService from "../services/image/ImageProcessorService.js";
 import ImageService from "../services/image/ImageService.js";
 import S3Strategy from "../strategies/image/S3Strategy.js";
 import { BadRequestException } from "../utils/appError.js";
-import TicketImageService from "../services/image/TicketImageService.js";
+import EventImageService from "../services/image/EventImageService.js";
 
 class DIContainer {
   constructor() {
@@ -52,8 +52,8 @@ class DIContainer {
 
   registerServices() {
     this.register("userRepository", () => new MongoUserRepository());
-    this.register("ticketRepository", () => {
-      return new MongoTicketRepository();
+    this.register("eventRepository", () => {
+      return new MongoEventRepository();
     });
 
     this.register("tokenService", () => new TokenService());
@@ -77,10 +77,10 @@ class DIContainer {
         process.env.S3_BUCKET_NAME
       );
     });
-    this.register("ticketImageService", (container) => {
-      return new TicketImageService(
+    this.register("eventImageService", (container) => {
+      return new EventImageService(
         container.get("imageService"),
-        container.get("ticketRepository")
+        container.get("eventRepository")
       );
     });
 

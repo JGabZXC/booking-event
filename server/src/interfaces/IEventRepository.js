@@ -1,25 +1,25 @@
-export default class ITicketRepository {
-  async getAllTickets(sort = "_id", page = 1, limit = 10) {
+export default class IEventRepository {
+  async getAllEvents(sort = "_id", page = 1, limit = 10) {
     throw new Error("Method not implemented");
   }
 
-  async getTicket(id) {
+  async getEvent(id) {
     throw new Error("Method not implemented");
   }
 
-  async createTicket(ticketData) {
+  async createEvent(eventData) {
     throw new Error("Method not implemented");
   }
 
-  async updateTicketById(ticketId, ticketData) {
+  async updateEvent(eventId, eventData) {
     throw new Error("Method not implemented");
   }
 
-  async deleteTicketById(ticketId) {
+  async deleteEvent(eventId) {
     throw new Error("Method not implemented");
   }
 
-  async getTicketsByUserIdOrEmail(
+  async getEventsByUserIdOrEmail(
     identifier,
     sort = "_id",
     page = 1,

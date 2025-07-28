@@ -3,15 +3,15 @@ import { ErrorCode } from "../config/errorCode.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import QueryOptions from "../utils/queryOptions.js";
 import { BadRequestException, NotFoundException } from "../utils/appError.js";
-import Ticket from "../models/Ticket.js";
+import Event from "../models/Event.js";
 import User from "../models/User.js";
 
 import container from "../container/container.js";
 
-const ticketRepository = container.get("ticketRepository");
-const ticketImageService = container.get("ticketImageService");
+const eventRepository = container.get("eventRepository");
+const eventImageService = container.get("eventImageService");
 
-export const getAllTickets = asyncHandler(async (req, res, next) => {
+export const getAllEvents = asyncHandler(async (req, res, next) => {
   const { page, limit } = req.query;
   if (page && limit)
     if (Number.isNaN(+page) || Number.isNaN(+limit) || +page < 1 || +limit < 1)
@@ -22,11 +22,11 @@ export const getAllTickets = asyncHandler(async (req, res, next) => {
         )
       );
 
-  const query = new QueryOptions(Ticket.find(), req.query).sort().paginate();
+  const query = new QueryOptions(Event.find(), req.query).sort().paginate();
 
-  const [tickets, totalTickets] = await Promise.all([
+  const [events, totalEvents] = await Promise.all([
     query.query,
-    Ticket.countDocuments(),
+    Event.countDocuments(),
   ]);
   const totalPages = Math.ceil(totalTickets / (req.query.limit || 10));
 
@@ -47,30 +47,30 @@ export const getAllTickets = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const getTicket = asyncHandler(async (req, res) => {
+export const getEvent = asyncHandler(async (req, res) => {
   const { identifier } = req.params;
-  const ticket = await ticketRepository.getTicket(identifier);
+  const event = await eventRepository.getEvent(identifier);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    message: "Fetched ticket successfully",
-    data: ticket,
+    message: "Fetched event successfully",
+    data: event,
   });
 });
 
-export const createTicket = asyncHandler(async (req, res) => {
+export const createEvent = asyncHandler(async (req, res) => {
   req.body.date = new Date();
 
-  const ticket = await ticketImageService.createTicket(req.body, req.files);
+  const event = await eventImageService.createEvent(req.body, req.files);
 
   res.status(HTTPSTATUS.CREATED).json({
     status: "success",
-    message: "Ticket created successfully",
-    data: ticket,
+    message: "Event created successfully",
+    data: event,
   });
 });
 
-export const updateTicket = asyncHandler(async (req, res) => {
+export const updateEvent = asyncHandler(async (req, res) => {
   const { id } = req.params;
   if (req.body.attendees)
     return new BadRequestException(
@@ -78,25 +78,25 @@ export const updateTicket = asyncHandler(async (req, res) => {
       ErrorCode.VALIDATION_ERROR
     );
 
-  const ticket = await Ticket.findByIdAndUpdate(id, req.body, {
+  const event = await Event.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
   });
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    message: "Ticket updated successfully",
-    data: ticket,
+    message: "Event updated successfully",
+    data: event,
   });
 });
 
-export const deleteTicket = asyncHandler(async (req, res) => {
+export const deleteEvent = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const ticket = await Ticket.findByIdAndDelete(id);
+  const event = await Event.findByIdAndDelete(id);
 
-  if (!ticket)
+  if (!event)
     return new NotFoundException(
-      "No ticket was found with the provided ID",
+      "No event was found with the provided ID",
       ErrorCode.RESOURCE_NOT_FOUND
     );
 
@@ -107,47 +107,47 @@ export const deleteTicket = asyncHandler(async (req, res) => {
   });
 });
 
-export const purchaseTicket = asyncHandler(async (req, res, next) => {
+export const purchaseEvent = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
   const user = await User.findById(req.user._id);
-  const ticket = await Ticket.findById(id);
+  const event = await Event.findById(id);
 
-  if (!ticket)
+  if (!event)
     return next(
       new NotFoundException(
-        "No ticket was found with the provided ID",
+        "No event was found with the provided ID",
         ErrorCode.RESOURCE_NOT_FOUND
       )
     );
 
-  if (ticket.status !== "in-progress")
+  if (event.status !== "in-progress")
     return next(
       new BadRequestException(
-        "Ticket is not available for purchase",
+        "Event is not available for purchase",
         ErrorCode.VALIDATION_ERROR
       )
     );
 
-  if (ticket.attendees.includes(req.user._id))
+  if (event.attendees.includes(req.user._id))
     return next(
       new BadRequestException(
-        "You have already purchased this ticket",
+        "You have already purchased this event",
         ErrorCode.VALIDATION_ERROR
       )
     );
 
-  ticket.attendees.push(req.user._id);
-  user.ticketsPurchased.push(ticket._id);
+  event.attendees.push(req.user._id);
+  user.eventsPurchased.push(event._id);
 
-  const [updatedTicket] = await Promise.all([
-    ticket.save({ validateModifiedOnly: true }),
+  const [updatedEvent] = await Promise.all([
+    event.save({ validateModifiedOnly: true }),
     user.save({ validateModifiedOnly: true }),
   ]);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    message: "Ticket purchased successfully",
-    data: updatedTicket,
+    message: "Event purchased successfully",
+    data: updatedEvent,
   });
 });

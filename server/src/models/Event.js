@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ticketSchema = new mongoose.Schema({
+const eventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -81,5 +81,5 @@ const ticketSchema = new mongoose.Schema({
   },
 });
 
-const Ticket = new mongoose.model("Ticket", ticketSchema);
-export default Ticket;
+const Event = new mongoose.model("Event", eventSchema);
+export default Event;
