@@ -1,14 +1,16 @@
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import generateDateExpiration from "../../utils/generateDateExpiration.js";
+import { CLOUDFRONT_EXPIRATION_DAY } from "../../config/const.js";
 
 export default class CloudFrontUrlProvider {
   constructor(cloudFrontUrl, privateKey, keyPairId) {
     this.cloudFrontUrl = cloudFrontUrl;
     this.privateKey = privateKey;
     this.keyPairId = keyPairId;
+    this.expiresAt = () => generateDateExpiration(CLOUDFRONT_EXPIRATION_DAY);
   }
 
-  signUrl(imagePath, expiresAt) {
+  signUrl(imagePath, expiresAt = this.expiresAt()) {
     return getSignedUrl({
       url: `${this.cloudFrontUrl}/${imagePath}`,
       dateLessThan: expiresAt,
@@ -18,7 +20,7 @@ export default class CloudFrontUrlProvider {
   }
 
   async checkSignedExpiration(documents, eventRepository) {
-    const expiresAt = generateDateExpiration(30);
+    const expiresAt = this.expiresAt();
 
     let updatedDocs = null;
     let filteredDocs = [];

@@ -19,8 +19,8 @@ export default class ImageService {
     return fileName;
   }
 
-  async getImageUrl(imageName) {
-    return this.imageStrategy.getImageUrl(imageName);
+  async getImageUrl(imageName, expiresAt) {
+    return this.imageStrategy.getImageUrl(imageName, expiresAt);
   }
 
   generateImageName(originalName, eventTitle) {

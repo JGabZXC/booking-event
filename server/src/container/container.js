@@ -96,8 +96,7 @@ class DIContainer {
     this.register("eventImageService", (container) => {
       return new EventImageService(
         container.get("imageService"),
-        container.get("eventRepository"),
-        container.get("imageUrlProvider")
+        container.get("eventRepository")
       );
     });
     this.register("eventService", (container) => {

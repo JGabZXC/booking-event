@@ -1,0 +1,1 @@
+export const CLOUDFRONT_EXPIRATION_DAY = 30;

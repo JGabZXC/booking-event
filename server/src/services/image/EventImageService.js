@@ -1,25 +1,25 @@
+import { CLOUDFRONT_EXPIRATION_DAY } from "../../config/const.js";
 import { BadRequestException } from "../../utils/appError.js";
 import generateDateExpiration from "../../utils/generateDateExpiration.js";
 
 export default class EventImageService {
-  constructor(imageService, eventRepository, imageUrlProvider) {
+  constructor(imageService, eventRepository) {
     this.imageService = imageService;
     this.eventRepository = eventRepository;
-    this.imageUrlProvider = imageUrlProvider;
   }
 
   async createEvent(body, files) {
     let event = await this.eventRepository.createEvent(body);
     if (!event) throw new BadRequestException("Event creation failed");
 
-    const expiresAt = generateDateExpiration(30); // Set expiration to 30 days
+    const expiresAt = generateDateExpiration(CLOUDFRONT_EXPIRATION_DAY); // Set expiration to 30 days
 
     if (files?.coverImage) {
       const fileName = await this.imageService.uploadImage(
         files.coverImage[0],
         body.title
       );
-      const url = await this.imageService.getImageUrl(fileName);
+      const url = await this.imageService.getImageUrl(fileName, expiresAt);
       event.coverImage = { fileName, url, urlExpires: expiresAt };
     }
 

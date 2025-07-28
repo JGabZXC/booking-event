@@ -14,7 +14,7 @@ export default class AWSS3 extends IImageServiceStrategy {
     return await this.s3Client().send(command);
   }
 
-  async getImageUrl(imageName) {
-    return this.imageUrlProvider.signUrl(imageName);
+  async getImageUrl(imageName, expiresAt) {
+    return this.imageUrlProvider.signUrl(imageName, expiresAt);
   }
 }
