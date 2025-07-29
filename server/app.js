@@ -7,6 +7,7 @@ import { errorHandler } from "./src/middlewares/errorHandler.js";
 import eventRoute from "./src/routes/eventRoute.js";
 import authRoute from "./src/routes/authRoute.js";
 import userRoute from "./src/routes/userRoute.js";
+import ticketRoute from "./src/routes/ticketRoute.js";
 
 const app = express();
 
@@ -26,7 +27,16 @@ app.use(
 app.use("/api/v1/events", eventRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/tickets", ticketRoute);
 
 app.use(errorHandler);
+
+app.use((req, res) => {
+  const route = req.originalUrl;
+  res.status(404).json({
+    status: "fail",
+    message: `Route "${route}" not found`,
+  });
+});
 
 export default app;

@@ -27,3 +27,5 @@ const paymentSchema = new mongoose.Schema({
   stripeSessionId: String,
   paymentIntentId: String,
 });
+
+export default mongoose.model("Payment", paymentSchema);

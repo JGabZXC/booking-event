@@ -17,6 +17,8 @@ import { BadRequestException } from "../utils/appError.js";
 import CloudFrontUrlProvider from "../services/image/CloudFrontUrlProvider.js";
 import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
 import EventService from "../services/event/EventService.js";
+import TicketService from "../services/ticket/TicketService.js";
+import MongoTicketRepository from "../repositories/MongoTicketRepository.js";
 
 class DIContainer {
   constructor() {
@@ -70,6 +72,9 @@ class DIContainer {
     this.register("eventRepository", () => {
       return new MongoEventRepository();
     });
+    this.register("ticketRepository", () => {
+      return new MongoTicketRepository();
+    });
 
     // SERVICE
     this.register("tokenService", () => new TokenService());
@@ -98,6 +103,12 @@ class DIContainer {
         container.get("eventRepository"),
         container.get("imageService"),
         container.get("imageUrlProvider")
+      );
+    });
+    this.register("ticketService", (container) => {
+      return new TicketService(
+        container.get("ticketRepository"),
+        container.get("eventRepository")
       );
     });
 
