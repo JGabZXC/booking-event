@@ -59,11 +59,6 @@ const eventSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  price: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
   status: {
     type: String,
     enum: ["in-progress", "completed", "cancelled", "coming-soon"],

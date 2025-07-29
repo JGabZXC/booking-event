@@ -4,7 +4,7 @@ export function bodyValidator(data, coverImage) {
   const errors = [];
   if (!data.title) errors.push("Title is required.");
   if (!data.description) errors.push("Description is required.");
-  // if (!coverImage) errors.push("Cover image is required.");
+  if (!coverImage) errors.push("Cover image is required.");
 
   if (
     !data.organizers ||
@@ -15,7 +15,6 @@ export function bodyValidator(data, coverImage) {
   }
 
   if (!data.place) errors.push("Place is required.");
-  if (!data.price) errors.push("Price is required.");
   if (!data.genre) errors.push("Genre is required.");
 
   if (errors.length > 0)
