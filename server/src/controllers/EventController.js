@@ -47,38 +47,22 @@ export const createEvent = asyncHandler(async (req, res) => {
 });
 
 export const updateEvent = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  if (req.body.attendees)
-    return new BadRequestException(
-      "Attendees cannot be updated directly.",
-      ErrorCode.VALIDATION_ERROR
-    );
+  const { identifier } = req.params;
 
-  const event = await Event.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const event = await eventService.updateEvent(identifier, req.body, req.files);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    message: "Event updated successfully",
     data: event,
   });
 });
 
 export const deleteEvent = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const event = await Event.findByIdAndDelete(id);
-
-  if (!event)
-    return new NotFoundException(
-      "No event was found with the provided ID",
-      ErrorCode.RESOURCE_NOT_FOUND
-    );
+  const { identifier } = req.params;
+  await eventService.deleteEvent(identifier);
 
   res.status(HTTPSTATUS.NO_CONTENT).json({
     status: "success",
-    message: "Ticket deleted successfully",
     data: null,
   });
 });

@@ -1,3 +1,6 @@
+import { BadRequestException } from "../../utils/appError.js";
+import slugify from "slugify";
+
 export default class EventService {
   constructor(eventRepository, imageService, imageUrlProvider) {
     this.eventRepository = eventRepository;
@@ -51,12 +54,60 @@ export default class EventService {
     return event;
   }
 
-  async updateEvent(identifier, eventData) {
+  async updateEvent(identifier, eventData, files) {
+    if (eventData.attendees)
+      return new BadRequestException(
+        "Attendees cannot be updated directly.",
+        ErrorCode.VALIDATION_ERROR
+      );
+
+    if (eventData.title) {
+      eventData.slug = slugify(eventData.title, {
+        lower: true,
+        trim: true,
+        replacement: "-",
+      });
+    }
+
+    if (files?.coverImage) {
+      eventData.coverImage = await this.imageService.processImageFiles(
+        files.coverImage[0],
+        eventData.title
+      );
+    }
+
+    if (files?.images && files.images.length > 0) {
+      eventData.images = await this.imageService.processImageFiles(
+        files.images,
+        eventData.title
+      );
+    }
+
     return await this.eventRepository.updateEvent(identifier, eventData);
   }
 
   async deleteEvent(identifier) {
-    return await this.eventRepository.deleteEvent(identifier);
+    const event = await this.eventRepository.deleteEvent(identifier);
+
+    if (!event)
+      return new NotFoundException(
+        "No event was found with the provided ID",
+        ErrorCode.RESOURCE_NOT_FOUND
+      );
+
+    if (event.coverImage?.fileName) {
+      await this.imageService.deleteImage(event.coverImage.fileName);
+    }
+
+    if (event.images && event.images.length > 0) {
+      await Promise.all(
+        event.images.map((image) =>
+          this.imageService.deleteImage(image.fileName)
+        )
+      );
+    }
+
+    return event;
   }
 
   async getEventsByUserIdOrEmail(

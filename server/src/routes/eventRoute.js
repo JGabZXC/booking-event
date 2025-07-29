@@ -41,6 +41,9 @@ router
   .patch(
     authMiddleware.isAuthenticated,
     authMiddleware.isAuthorized("admin"),
+    uploadImages,
+    imageEventMiddleware,
+    validateAndSanitizeTicket,
     eventController.updateEvent
   )
   .delete(
