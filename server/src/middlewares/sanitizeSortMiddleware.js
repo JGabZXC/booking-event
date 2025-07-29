@@ -1,8 +1,8 @@
 import QuerySanitizer from "../sanitizers/querySanitizer.js";
 
-export default (req, res, next) => {
+export default (allowedFields) => (req, res, next) => {
   if (req.query.sort) {
-    const sanitizedSort = QuerySanitizer.sanitizeSortQuery(req);
+    const sanitizedSort = QuerySanitizer.sanitizeSortQuery(req, allowedFields);
 
     Object.defineProperty(req, "query", {
       ...Object.getOwnPropertyDescriptor(req, "query"),

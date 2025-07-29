@@ -17,6 +17,7 @@ import { BadRequestException } from "../utils/appError.js";
 import CloudFrontUrlProvider from "../services/image/CloudFrontUrlProvider.js";
 import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
 import EventService from "../services/event/EventService.js";
+
 class DIContainer {
   constructor() {
     this.services = new Map();

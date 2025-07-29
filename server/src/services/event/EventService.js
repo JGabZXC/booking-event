@@ -26,7 +26,17 @@ export default class EventService {
   }
 
   async getAllEvents(sort = "_id", page = 1, limit = 10) {
-    return await this.eventRepository.getAllEvents(sort, page, limit);
+    let events = await this.eventRepository.getAllEvents(sort, page, limit);
+    const updatedEvents = await this.imageUrlProvider.checkSignedExpiration(
+      events.events,
+      this.eventRepository
+    );
+
+    if (updatedEvents) {
+      events = updatedEvents;
+    }
+
+    return events;
   }
 
   async getEvent(identifier) {

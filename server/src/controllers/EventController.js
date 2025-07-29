@@ -1,7 +1,6 @@
 import { HTTPSTATUS } from "../config/http.js";
 import { ErrorCode } from "../config/errorCode.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import QueryOptions from "../utils/queryOptions.js";
 import { BadRequestException, NotFoundException } from "../utils/appError.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
@@ -11,38 +10,16 @@ import container from "../container/container.js";
 const eventService = container.get("eventService");
 
 export const getAllEvents = asyncHandler(async (req, res, next) => {
-  const { page, limit } = req.query;
-  if (page && limit)
-    if (Number.isNaN(+page) || Number.isNaN(+limit) || +page < 1 || +limit < 1)
-      return next(
-        new BadRequestException(
-          "Page and limit must be positive integers.",
-          ErrorCode.VALIDATION_ERROR
-        )
-      );
+  const { sort, page, limit } = req.query;
 
-  const query = new QueryOptions(Event.find(), req.query).sort().paginate();
+  const eventsData = await eventService.getAllEvents(sort, page, limit);
 
-  const [events, totalEvents] = await Promise.all([
-    query.query,
-    Event.countDocuments(),
-  ]);
-  const totalPages = Math.ceil(totalTickets / (req.query.limit || 10));
-
-  if (page && page > totalPages)
-    return next(
-      new BadRequestException(
-        `Page number exceeds total pages. Total pages: ${totalPages}`,
-        ErrorCode.VALIDATION_ERROR
-      )
-    );
+  if (page > eventsData.totalPages)
+    throw new BadRequestException("Page number exceeds total pages");
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
-    message: "Fetched all tickets successfully",
-    totalTickets,
-    totalPages,
-    data: tickets,
+    data: eventsData,
   });
 });
 

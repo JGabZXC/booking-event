@@ -62,8 +62,6 @@ export default class CloudFrontUrlProvider {
     let updatedDocs = [];
     if (Array.isArray(documents)) {
       const results = await Promise.all(documents.map(updateIfExpired));
-      console.log("Array filter:😌");
-      console.log(results.filter(Boolean));
       updatedDocs = results.filter(Boolean);
     } else {
       const result = await updateIfExpired(documents);

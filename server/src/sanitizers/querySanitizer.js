@@ -1,8 +1,7 @@
 import { BadRequestException } from "../utils/appError.js";
 
 export default class QuerySanitizer {
-  static sanitizeSortQuery(req) {
-    const allowedFields = ["name", "role", "email", "-name", "-role", "-email"];
+  static sanitizeSortQuery(req, allowedFields = []) {
     const values = req.query.sort.split(",");
 
     const sanitized = values
@@ -27,6 +26,6 @@ export default class QuerySanitizer {
   }
 
   static sanitizeLimitQuery(req) {
-    this.sanitizePaginationQuery(req, "limit");
+    return this.sanitizePaginationQuery(req, "limit");
   }
 }

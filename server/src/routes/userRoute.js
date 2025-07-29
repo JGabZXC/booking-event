@@ -14,7 +14,14 @@ router
   .route("/")
   .get(
     isAuthorized("admin"),
-    sanitizeSortMiddleware,
+    sanitizeSortMiddleware([
+      "name",
+      "role",
+      "email",
+      "-name",
+      "-role",
+      "-email",
+    ]),
     userController.getAllUsers
   );
 router

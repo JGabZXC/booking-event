@@ -4,11 +4,28 @@ import * as authMiddleware from "../middlewares/authMiddleware.js";
 import imageEventMiddleware from "../middlewares/imageEventMiddleware.js";
 import validateAndSanitizeTicket from "../middlewares/validateAndSanitizeEventBodyMiddleware.js";
 import { uploadImages } from "../services/image/multerStorage.js";
+import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
 const router = express.Router();
 
 router
   .route("/")
-  .get(eventController.getAllEvents)
+  .get(
+    sanitizeSortMiddleware([
+      "title",
+      "place",
+      "price",
+      "status",
+      "genre",
+      "createdAt",
+      "-title",
+      "-place",
+      "-price",
+      "-status",
+      "-genre",
+      "-createdAt",
+    ]),
+    eventController.getAllEvents
+  )
   .post(
     authMiddleware.isAuthenticated,
     authMiddleware.isAuthorized("admin"),
