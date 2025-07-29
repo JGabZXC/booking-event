@@ -22,86 +22,59 @@ export default class CloudFrontUrlProvider {
   async checkSignedExpiration(documents, eventRepository) {
     const expiresAt = this.expiresAt();
 
-    let updatedDocs = null;
-    let filteredDocs = [];
-    if (Array.isArray(documents)) {
-      updatedDocs = await Promise.all(
-        documents.map(async (doc) => {
-          const updateFields = {};
-          if (
-            doc.coverImage?.urlExpires &&
-            new Date(doc.coverImage.urlExpires) < new Date()
-          ) {
-            updateFields.coverImage = {
-              ...doc.coverImage,
-              url: this.signUrl(doc.coverImage.fileName, expiresAt),
-              urlExpires: expiresAt,
-            };
-          }
-          const isImagesExpired =
-            doc.images.length > 0 &&
-            doc.images[0].urlExpires &&
-            new Date(doc.images[0].urlExpires) < new Date();
-
-          if (isImagesExpired) {
-            updateFields.images = doc.images.map((image) => ({
-              ...image,
-              url: this.signUrl(image.fileName, expiresAt),
-              urlExpires: expiresAt,
-            }));
-          }
-
-          if (Object.keys(updateFields).length > 0) {
-            return await eventRepository.updateEvent(doc._id, {
-              new: true,
-            });
-          }
-
-          return null;
-        })
-      );
-      filteredDocs = updatedDocs.filter(Boolean);
-    } else {
+    // Helper to check and update a single document
+    const updateIfExpired = async (doc) => {
       const updateFields = {};
+
+      // Cover image expiration
       if (
-        documents.coverImage?.urlExpires &&
-        new Date(documents.coverImage.urlExpires) < new Date()
+        doc.coverImage?.urlExpires &&
+        new Date(doc.coverImage.urlExpires) < new Date()
       ) {
         updateFields.coverImage = {
-          ...documents.coverImage,
-          url: this.signUrl(documents.coverImage.fileName, expiresAt),
+          ...doc.coverImage,
+          url: this.signUrl(doc.coverImage.fileName, expiresAt),
           urlExpires: expiresAt,
         };
       }
+
+      // Images expiration
+      const images = doc.images || [];
       const isImagesExpired =
-        documents.images.length > 0 &&
-        documents.images[0].urlExpires &&
-        new Date(documents.images[0].urlExpires) < new Date();
+        images.length > 0 &&
+        images[0].urlExpires &&
+        new Date(images[0].urlExpires) < new Date();
 
       if (isImagesExpired) {
-        updateFields.images = documents.images.map((image) => ({
-          ...image,
+        updateFields.images = images.map((image) => ({
+          ...image._doc,
           url: this.signUrl(image.fileName, expiresAt),
           urlExpires: expiresAt,
         }));
       }
 
       if (Object.keys(updateFields).length > 0) {
-        updatedDocs = await eventRepository.updateEvent(
-          documents._id,
-          updateFields
-        );
-      } else {
-        updatedDocs = null;
+        return await eventRepository.updateEvent(doc._id, updateFields);
       }
-      filteredDocs = updatedDocs ? [updatedDocs] : [];
+      return null;
+    };
+
+    let updatedDocs = [];
+    if (Array.isArray(documents)) {
+      const results = await Promise.all(documents.map(updateIfExpired));
+      console.log("Array filter:😌");
+      console.log(results.filter(Boolean));
+      updatedDocs = results.filter(Boolean);
+    } else {
+      const result = await updateIfExpired(documents);
+      updatedDocs = result ? [result] : [];
     }
 
     console.log(
-      filteredDocs.length > 0
-        ? `Updated ${filteredDocs.length} documents with new signed URLs.`
+      updatedDocs.length > 0
+        ? `Updated ${updatedDocs.length} documents with new signed URLs.`
         : `Signed URLs are still valid for all documents.`
     );
-    return filteredDocs.length > 0 && filteredDocs;
+    return updatedDocs.length > 0 && updatedDocs;
   }
 }

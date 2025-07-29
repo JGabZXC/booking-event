@@ -8,7 +8,6 @@ import User from "../models/User.js";
 
 import container from "../container/container.js";
 
-const eventImageService = container.get("eventImageService");
 const eventService = container.get("eventService");
 
 export const getAllEvents = asyncHandler(async (req, res, next) => {
@@ -61,7 +60,7 @@ export const getEvent = asyncHandler(async (req, res) => {
 export const createEvent = asyncHandler(async (req, res) => {
   req.body.date = new Date();
 
-  const event = await eventImageService.createEvent(req.body, req.files);
+  const event = await eventService.createEvent(req.body, req.files);
 
   res.status(HTTPSTATUS.CREATED).json({
     status: "success",

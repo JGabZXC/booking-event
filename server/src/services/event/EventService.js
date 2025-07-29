@@ -5,8 +5,24 @@ export default class EventService {
     this.imageUrlProvider = imageUrlProvider;
   }
 
-  async createEvent(eventData) {
-    return await this.eventRepository.createEvent(eventData);
+  async createEvent(eventData, files) {
+    let event = await this.eventRepository.createEvent(eventData);
+
+    if (files?.coverImage) {
+      event.coverImage = await this.imageService.processImageFiles(
+        files.coverImage[0], // Ensure coverImage is always selecting the first index
+        event.title
+      );
+    }
+
+    if (files?.images && files.images.length > 0) {
+      event.images = await this.imageService.processImageFiles(
+        files.images,
+        event.title
+      );
+    }
+
+    return await event.save({ validateModifiedOnly: true });
   }
 
   async getAllEvents(sort = "_id", page = 1, limit = 10) {

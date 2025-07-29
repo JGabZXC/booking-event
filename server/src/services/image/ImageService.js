@@ -1,4 +1,6 @@
 import slugify from "slugify";
+import { CLOUDFRONT_EXPIRATION_DAY } from "../../config/const.js";
+import generateDateExpiration from "../../utils/generateDateExpiration.js";
 
 export default class ImageService {
   constructor(imageStrategy, bucketName) {
@@ -33,5 +35,28 @@ export default class ImageService {
       replacement: "_",
     });
     return `ticket-${slugifiedTitle}-${timestamp}.${extension}`;
+  }
+
+  async processImageFiles(files, title) {
+    const expiresAt = generateDateExpiration(CLOUDFRONT_EXPIRATION_DAY);
+
+    // Ensure files is always an array
+    const inputFiles = Array.isArray(files) ? files : [files];
+
+    const fileNames = await Promise.all(
+      inputFiles.map((file) => this.uploadImage(file, title))
+    );
+    const urls = await Promise.all(
+      fileNames.map((fileName) => this.getImageUrl(fileName, expiresAt))
+    );
+
+    const results = fileNames.map((fileName, index) => ({
+      fileName,
+      url: urls[index],
+      urlExpires: expiresAt,
+    }));
+
+    // Return single object if input was single file
+    return Array.isArray(files) ? results : results[0];
   }
 }

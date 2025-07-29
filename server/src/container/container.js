@@ -14,7 +14,6 @@ import ImageProcessorService from "../services/image/ImageProcessorService.js";
 import ImageService from "../services/image/ImageService.js";
 import S3Strategy from "../strategies/image/S3Strategy.js";
 import { BadRequestException } from "../utils/appError.js";
-import EventImageService from "../services/image/EventImageService.js";
 import CloudFrontUrlProvider from "../services/image/CloudFrontUrlProvider.js";
 import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
 import EventService from "../services/event/EventService.js";
@@ -91,12 +90,6 @@ class DIContainer {
       return new ImageService(
         container.get("imageStrategy"),
         process.env.S3_BUCKET_NAME
-      );
-    });
-    this.register("eventImageService", (container) => {
-      return new EventImageService(
-        container.get("imageService"),
-        container.get("eventRepository")
       );
     });
     this.register("eventService", (container) => {
