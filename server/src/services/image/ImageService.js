@@ -39,11 +39,10 @@ export default class ImageService {
     const extension = originalName.split(".").pop();
     const slugifiedTitle = slugify(eventTitle, {
       lower: true,
-      strict: true,
       trim: true,
       replacement: "_",
     });
-    return `ticket-${slugifiedTitle}-${timestamp}.${extension}`;
+    return `event-${slugifiedTitle}-${timestamp}.${extension}`;
   }
 
   async processImageFiles(files, title) {

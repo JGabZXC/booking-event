@@ -2,7 +2,7 @@ import express from "express";
 import * as eventController from "../controllers/EventController.js";
 import * as authMiddleware from "../middlewares/authMiddleware.js";
 import imageEventMiddleware from "../middlewares/imageEventMiddleware.js";
-import validateAndSanitizeTicket from "../middlewares/validateAndSanitizeEventBodyMiddleware.js";
+import validateAndSanitizeEvent from "../middlewares/validateAndSanitizeEventBodyMiddleware.js";
 import { uploadImages } from "../services/image/multerStorage.js";
 import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
 const router = express.Router();
@@ -31,7 +31,7 @@ router
     authMiddleware.isAuthorized("admin"),
     uploadImages,
     imageEventMiddleware,
-    validateAndSanitizeTicket,
+    validateAndSanitizeEvent,
     eventController.createEvent
   );
 
@@ -43,7 +43,7 @@ router
     authMiddleware.isAuthorized("admin"),
     uploadImages,
     imageEventMiddleware,
-    validateAndSanitizeTicket,
+    validateAndSanitizeEvent,
     eventController.updateEvent
   )
   .delete(
