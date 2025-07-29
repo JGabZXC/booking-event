@@ -3,15 +3,16 @@ import { HTTPSTATUS } from "../config/http.js";
 
 export default (error) => {
   if (error.code === 11000) {
-    const keys = Object.keys(error.keyValue).map((key) =>
-      key.replace(" ", ",")
-    );
+    const keys = Object.keys(error.keyValue)
+      .map((key) => key.replace(" ", ","))
+      .join(", ");
 
+    error.message = "Duplicate key error: " + keys;
     if (error.message && error.message.includes("users")) {
-      error.message = "Duplicate key error: " + keys;
       error.errorCode = ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
     } else if (error.message && error.message.includes("events")) {
-      error.message = "Duplicate key error: " + keys;
+      error.errorCode = ErrorCode.VALIDATION_ERROR;
+    } else if (error.message && error.message.includes("tickets")) {
       error.errorCode = ErrorCode.VALIDATION_ERROR;
     }
 

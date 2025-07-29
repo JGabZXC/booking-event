@@ -1,4 +1,7 @@
-import { BadRequestException } from "../../utils/appError.js";
+import {
+  BadRequestException,
+  NotFoundException,
+} from "../../utils/appError.js";
 import slugify from "slugify";
 
 export default class EventService {
@@ -44,6 +47,10 @@ export default class EventService {
 
   async getEvent(identifier) {
     let event = await this.eventRepository.getEvent(identifier);
+    if (!event)
+      throw new NotFoundException(
+        "No event found with the provided identifier"
+      );
     const updatedDoc = await this.imageUrlProvider.checkSignedExpiration(
       event,
       this.eventRepository
@@ -83,7 +90,16 @@ export default class EventService {
       );
     }
 
-    return await this.eventRepository.updateEvent(identifier, eventData);
+    const updatedEvent = await this.eventRepository.updateEvent(
+      identifier,
+      eventData
+    );
+    if (!updatedEvent)
+      return new NotFoundException(
+        "No event found with the provided identifier"
+      );
+
+    return updatedEvent;
   }
 
   async deleteEvent(identifier) {

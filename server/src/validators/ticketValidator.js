@@ -1,13 +1,13 @@
 import { ErrorCode } from "../config/errorCode.js";
 
 export class TicketValidator {
-  static validateTicketData(ticketData) {
+  static validateTicketData(ticketData, method) {
     const errors = [];
 
     if (ticketData.price < 0 || Number.isNaN(Number(ticketData.price))) {
       errors.push("Invalid ticket price");
     }
-    if (!ticketData.event) {
+    if (method !== "PATCH" && !ticketData.event) {
       errors.push("Event is required");
     }
     if (!ticketData.type) {

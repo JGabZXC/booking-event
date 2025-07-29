@@ -10,21 +10,28 @@ export default class MongoTicketRepository extends ITicketRepository {
     return await Ticket.findById(id);
   }
 
-  async getAllTickets(sort = "_id", page = 1, limit = 10) {
+  async getAllTickets(sort = "_id", page = 1, limit = 10, query = {}) {
     const skip = (page - 1) * limit;
     const [tickets, totalDocs] = await Promise.all([
-      Ticket.find().sort(sort).skip(skip).limit(limit),
-      Ticket.countDocuments(),
+      Ticket.find(query).sort(sort).skip(skip).limit(limit),
+      Ticket.countDocuments(query),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
     return { tickets, totalDocs, totalPages };
   }
 
   async updateTicket(id, ticketData) {
-    return await Ticket.findByIdAndUpdate(id, ticketData);
+    return await Ticket.findByIdAndUpdate(id, ticketData, {
+      new: true,
+      runValidators: true,
+    });
   }
 
   async deleteTicket(id) {
     return await Ticket.findByIdAndDelete(id);
+  }
+
+  async deleteAllTicketsByEvent(id) {
+    return await Ticket.deleteMany({ event: id });
   }
 }

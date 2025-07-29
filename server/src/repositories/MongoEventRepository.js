@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import IEventRepository from "../interfaces/IEventRepository.js";
 import Event from "../models/Event.js";
-import { NotFoundException } from "../utils/appError.js";
 
 export default class MongoEventRepository extends IEventRepository {
   async getAllEvents(sort = "_id", page = 1, limit = 10) {
@@ -23,11 +22,6 @@ export default class MongoEventRepository extends IEventRepository {
     }
 
     const event = await Event.findOne(query);
-
-    if (!event)
-      throw new NotFoundException(
-        "No event found with the provided identifier"
-      );
 
     return event;
   }
