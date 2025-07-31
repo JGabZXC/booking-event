@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@headlessui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import logo from "../../assets/logo.png";
+
 export default function MainNavigation() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
+
+  console.log(user);
+
   return (
     <header className="bg-slate-50/50 backdrop-blur-2xl sticky top-0 z-50 border-b border-slate-200">
       <nav>
@@ -80,12 +86,21 @@ export default function MainNavigation() {
               </div>
             </div>
             <div className="absolute hidden inset-y-0 right-0 sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <Link
-                to="login"
-                className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
-              >
-                Log in
-              </Link>
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
+                >
+                  Log out
+                </button>
+              ) : (
+                <Link
+                  to="login"
+                  className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -113,12 +128,21 @@ export default function MainNavigation() {
             >
               Projects
             </Link>
-            <Link
-              to="login"
-              className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
-            >
-              Log in
-            </Link>
+            {user ? (
+              <button
+                onClick={logout}
+                className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white w-full text-left"
+              >
+                Log out
+              </button>
+            ) : (
+              <Link
+                to="login"
+                className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+              >
+                Log in
+              </Link>
+            )}
           </div>
         </div>
       </nav>

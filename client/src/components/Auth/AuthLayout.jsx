@@ -21,7 +21,7 @@ export const AuthLayout = ({
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-xl shadow-lg p-8">{children}</div>
+        <div className="bg-white rounded-xl shadow-xl">{children}</div>
 
         {/* Bottom Link */}
         {bottomText && (

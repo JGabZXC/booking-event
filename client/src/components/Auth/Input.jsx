@@ -6,8 +6,8 @@ export default function Input({
   children,
   props,
   type,
+  onChange,
 }) {
-  console.log("type: ", type);
   return (
     <div>
       <label
@@ -23,6 +23,7 @@ export default function Input({
           name={id}
           placeholder={placeholder}
           type={type}
+          onChange={onChange}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-pink-500 focus:outline-pink-500 transition duration-200 pl-12"
         />
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
