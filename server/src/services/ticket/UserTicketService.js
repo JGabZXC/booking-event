@@ -1,4 +1,7 @@
-import { NotFoundException } from "../../utils/appError.js";
+import {
+  BadRequestException,
+  NotFoundException,
+} from "../../utils/appError.js";
 
 export default class UserTicketService {
   constructor(userTicketRepository, ticketRepository) {
@@ -25,15 +28,42 @@ export default class UserTicketService {
     return userTicket;
   }
 
+  /*
+   TODO:
+    Refactor the logic to handle ticket availability and quantity checks
+  */
   async updateUserTicket(id, userTicketData, populateOptions) {
-    // Get the existing user ticket
     const existingTicket = await this.userTicketRepository.getUserTicket(id);
     if (!existingTicket) throw new NotFoundException("User ticket not found");
 
-    // Calculate the difference
-    const diff = userTicketData.quantity - existingTicket.quantity;
+    const isTicketChanged =
+      userTicketData.ticket &&
+      userTicketData.ticket.toString() !== existingTicket.ticket.toString();
 
-    // Update the user ticket
+    let ticketToCheck, availableQuantity;
+    if (isTicketChanged) {
+      ticketToCheck = await this.ticketRepository.getTicket(
+        userTicketData.ticket
+      );
+      availableQuantity = ticketToCheck.availableQuantity;
+      if (userTicketData.quantity > availableQuantity) {
+        throw new BadRequestException(
+          "Requested quantity exceeds available tickets"
+        );
+      }
+    } else {
+      ticketToCheck = await this.ticketRepository.getTicket(
+        existingTicket.ticket
+      );
+      availableQuantity =
+        ticketToCheck.availableQuantity + existingTicket.quantity;
+      if (userTicketData.quantity > availableQuantity) {
+        throw new BadRequestException(
+          "Requested quantity exceeds available tickets"
+        );
+      }
+    }
+
     const updatedTicket = await this.userTicketRepository.updateUserTicket(
       id,
       userTicketData,
@@ -41,17 +71,35 @@ export default class UserTicketService {
     );
     if (!updatedTicket) throw new NotFoundException("User ticket not found");
 
-    // Adjust availableQuantity only if quantity changed
-    if (diff !== 0) {
+    if (isTicketChanged) {
       await this.ticketRepository.updateTicket(existingTicket.ticket, {
-        $inc: { availableQuantity: -diff },
+        $inc: { availableQuantity: existingTicket.quantity },
       });
+      await this.ticketRepository.updateTicket(userTicketData.ticket, {
+        $inc: { availableQuantity: -userTicketData.quantity },
+      });
+    } else {
+      const diff = userTicketData.quantity - existingTicket.quantity;
+      if (diff !== 0) {
+        await this.ticketRepository.updateTicket(existingTicket.ticket, {
+          $inc: { availableQuantity: -diff },
+        });
+      }
     }
 
     return updatedTicket;
   }
 
   async createUserTicket(userTicketData) {
+    const ticket = await this.ticketRepository.getTicket(userTicketData.ticket);
+    if (!ticket) throw new NotFoundException("Ticket not found");
+
+    if (userTicketData.quantity > ticket.availableQuantity) {
+      throw new BadRequestException(
+        "Requested quantity exceeds available tickets"
+      );
+    }
+
     const userTicket = await this.userTicketRepository.createUserTicket(
       userTicketData
     );
