@@ -3,19 +3,23 @@ export default class ITicketRepository {
     throw new Error("Method not implemented");
   }
 
-  async getTicket(identifier) {
+  async getTicket(id) {
     throw new Error("Method not implemented");
   }
 
-  async getAllTickets() {
+  async getAllTickets(query = {}) {
     throw new Error("Method not implemented");
   }
 
-  async updateTicket(identifier, ticketData) {
+  async deleteAllTickets(query = {}) {
     throw new Error("Method not implemented");
   }
 
-  async deleteTicket(identifier) {
+  async updateTicket(id, ticketData) {
+    throw new Error("Method not implemented");
+  }
+
+  async deleteTicket(id) {
     throw new Error("Method not implemented");
   }
 }

@@ -14,6 +14,10 @@ const userTicketSchema = new mongoose.Schema({
     required: true,
     min: 1,
   },
+  purchasedDate: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 export default mongoose.model("UserTicket", userTicketSchema);

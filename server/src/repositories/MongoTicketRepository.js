@@ -31,7 +31,7 @@ export default class MongoTicketRepository extends ITicketRepository {
     return await Ticket.findByIdAndDelete(id);
   }
 
-  async deleteAllTicketsByEvent(id) {
-    return await Ticket.deleteMany({ event: id });
+  async deleteAllTickets(query = {}) {
+    return await Ticket.deleteMany(query);
   }
 }

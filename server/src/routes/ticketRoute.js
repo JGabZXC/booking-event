@@ -2,11 +2,10 @@ import express from "express";
 import {
   createTicket,
   getTicket,
-  getAllTicketsByEvent,
   getAllTickets,
   updateTicket,
   deleteTicket,
-  deleteAllTicketsByEvent,
+  deleteAllTickets,
 } from "../controllers/TicketController.js";
 import { validateBody } from "../middlewares/ticketMiddleware.js";
 import {
@@ -14,24 +13,20 @@ import {
   isAuthorized,
 } from "../middlewares/authMiddleware.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.use(isAuthenticated);
 
 router
   .route("/")
   .get(isAuthorized("admin"), getAllTickets)
-  .post(isAuthorized("admin"), validateBody, createTicket);
+  .post(isAuthorized("admin"), validateBody, createTicket)
+  .delete(isAuthorized("admin"), deleteAllTickets);
 
 router
   .route("/:id")
   .get(isAuthorized("admin"), getTicket)
   .patch(isAuthorized("admin"), validateBody, updateTicket)
   .delete(isAuthorized("admin"), deleteTicket);
-
-router
-  .route("/event/:identifier")
-  .get(isAuthorized("admin"), getAllTicketsByEvent)
-  .delete(isAuthorized("admin"), deleteAllTicketsByEvent);
 
 export default router;

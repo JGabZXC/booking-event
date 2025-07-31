@@ -40,21 +40,14 @@ export const getTicket = asyncHandler(async (req, res) => {
 });
 
 export const getAllTickets = asyncHandler(async (req, res) => {
-  const { sort, page, limit, ...query } = req.query;
-  const tickets = await ticketService.getAllTickets(sort, page, limit, query);
-  return res.status(200).json({
-    status: "success",
-    data: tickets,
-  });
-});
-
-export const getAllTicketsByEvent = asyncHandler(async (req, res) => {
   const { sort, page, limit } = req.query;
-  const tickets = await ticketService.getAllTicketsByEvent(
+  const tickets = await ticketService.getAllTickets(
     sort,
     page,
     limit,
-    req.params.identifier
+    req.params.eventId && {
+      event: req.params.eventId,
+    }
   );
   return res.status(200).json({
     status: "success",
@@ -62,9 +55,11 @@ export const getAllTicketsByEvent = asyncHandler(async (req, res) => {
   });
 });
 
-export const deleteAllTicketsByEvent = asyncHandler(async (req, res) => {
-  const { identifier } = req.params;
-  await ticketService.deleteAllTicketsByEvent(identifier);
+export const deleteAllTickets = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+  await ticketService.deleteAllTickets(
+    req.params.eventId && { event: eventId }
+  );
 
   res.status(204).json({
     status: "success",

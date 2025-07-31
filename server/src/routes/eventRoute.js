@@ -5,7 +5,15 @@ import imageEventMiddleware from "../middlewares/imageEventMiddleware.js";
 import validateAndSanitizeEvent from "../middlewares/validateAndSanitizeEventBodyMiddleware.js";
 import { uploadImages } from "../services/image/multerStorage.js";
 import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
+import ticketRoute from "./ticketRoute.js";
 const router = express.Router();
+
+router.use(
+  "/:eventId/tickets",
+  authMiddleware.isAuthenticated,
+  authMiddleware.isAuthorized("admin"),
+  ticketRoute
+);
 
 router
   .route("/")
