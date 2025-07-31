@@ -9,7 +9,7 @@ export default class MongoUserRepository extends IRepository {
       User.countDocuments(),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
-    return { users, totalDocs, totalPages };
+    return { totalDocs, totalPages, users };
   }
 
   async createUser(userData) {

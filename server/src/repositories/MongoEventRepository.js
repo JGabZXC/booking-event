@@ -10,7 +10,7 @@ export default class MongoEventRepository extends IEventRepository {
       Event.countDocuments(),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
-    return { events, totalDocs, totalPages };
+    return { totalDocs, totalPages, events };
   }
 
   async getEvent(identifier) {

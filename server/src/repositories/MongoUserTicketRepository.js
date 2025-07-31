@@ -6,18 +6,38 @@ export default class MongoUserTicketRepository extends IUserTicketRepository {
     return await UserTicket.create(userTicketData);
   }
 
-  async getUserTicket(id) {
-    return await UserTicket.findById(id).populate("user ticket");
+  async getAllUserTickets(
+    sort = "_id",
+    page = 1,
+    limit = 10,
+    query = {},
+    populateOptions = null
+  ) {
+    const skip = (page - 1) * limit;
+
+    const [tickets, totalDocs] = await Promise.all([
+      UserTicket.find(query)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .populate(populateOptions),
+      UserTicket.countDocuments(query),
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / limit);
+
+    return { totalDocs, totalPages, tickets };
   }
 
-  async getAllUserTickets() {
-    return await UserTicket.find().populate("user ticket");
+  async getUserTicket(id, populateOptions = null) {
+    return await UserTicket.findById(id).populate(populateOptions);
   }
 
-  async updateUserTicket(id, userTicketData) {
+  async updateUserTicket(id, userTicketData, populateOptions = null) {
     return await UserTicket.findByIdAndUpdate(id, userTicketData, {
       new: true,
-    });
+      runValidators: true,
+    }).populate(populateOptions);
   }
 
   async deleteUserTicket(id) {

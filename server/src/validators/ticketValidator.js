@@ -31,3 +31,25 @@ export class TicketValidator {
     return { isValid: true };
   }
 }
+
+export class UserTicketValidator {
+  static validateUserTicketData(ticketData, method) {
+    const errors = [];
+
+    if (method !== "PATCH") {
+      if (!ticketData.ticket) errors.push("Ticket is requred");
+      if (!ticketData.quantity) errors.push("Quantity is required");
+    }
+    if (Number.isNaN(Number(ticketData.quantity)) || ticketData.quantity <= 0)
+      errors.push("Invalid quantity");
+
+    if (errors.length > 0)
+      return {
+        isValid: errors.length === 0,
+        errorCode: ErrorCode.VALIDATION_ERROR,
+        errors: errors,
+      };
+
+    return { isValid: true };
+  }
+}

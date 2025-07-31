@@ -17,7 +17,7 @@ export default class MongoTicketRepository extends ITicketRepository {
       Ticket.countDocuments(query),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
-    return { tickets, totalDocs, totalPages };
+    return { totalDocs, totalPages, tickets };
   }
 
   async updateTicket(id, ticketData) {

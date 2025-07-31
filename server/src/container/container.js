@@ -19,6 +19,8 @@ import ImageUrlProvider from "../services/image/ImageUrlProvider.js";
 import EventService from "../services/event/EventService.js";
 import TicketService from "../services/ticket/TicketService.js";
 import MongoTicketRepository from "../repositories/MongoTicketRepository.js";
+import MongoUserTicketRepository from "../repositories/MongoUserTicketRepository.js";
+import UserTicketService from "../services/ticket/UserTicketService.js";
 
 class DIContainer {
   constructor() {
@@ -75,6 +77,9 @@ class DIContainer {
     this.register("ticketRepository", () => {
       return new MongoTicketRepository();
     });
+    this.register("userTicketRepository", () => {
+      return new MongoUserTicketRepository();
+    });
 
     // SERVICE
     this.register("tokenService", () => new TokenService());
@@ -109,6 +114,12 @@ class DIContainer {
       return new TicketService(
         container.get("ticketRepository"),
         container.get("eventRepository")
+      );
+    });
+    this.register("userTicketService", (container) => {
+      return new UserTicketService(
+        container.get("userTicketRepository"),
+        container.get("ticketRepository")
       );
     });
 

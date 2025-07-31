@@ -6,9 +6,12 @@ import {
 } from "../middlewares/authMiddleware.js";
 import sanitizeUserDetailsMiddleware from "../middlewares/sanitizeUserDetailsMiddleware.js";
 import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
+import userTicketRoute from "./userTicketRoute.js";
 const router = express.Router();
 
 router.use(isAuthenticated);
+
+router.use("/:userId/user-tickets", userTicketRoute);
 
 router
   .route("/")
