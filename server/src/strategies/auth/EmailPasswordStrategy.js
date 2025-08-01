@@ -1,4 +1,4 @@
-import { HTTPSTATUS } from "../../config/http.js";
+import { ErrorCode } from "../../config/errorCode.js";
 import IAuthStrategy from "../../interfaces/IAuthStrategy.js";
 import { sanitizeReturnUserObject } from "../../sanitizers/userSanitizer.js";
 import { BadRequestException } from "../../utils/appError.js";
@@ -16,12 +16,12 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
 
     const user = await this.userRepository.getUserByEmailAuth(email);
     if (!user)
-      throw new BadRequestException("User not found", HTTPSTATUS.NOT_FOUND);
+      throw new BadRequestException("User not found", ErrorCode.USER_NOT_FOUND);
 
     if (!(await this.passwordService.verify(password, user.password)))
       throw new BadRequestException(
         "Invalid credential",
-        HTTPSTATUS.UNAUTHORIZED
+        ErrorCode.AUTH_INVALID_CREDENTIALS
       );
 
     const token = await this.tokenService.generateToken(user);
