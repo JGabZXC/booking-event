@@ -10,51 +10,57 @@ export const AuthContext = createContext({
 });
 
 function authReducer(state, action) {
-  if (action.type === "LOGIN") {
-    return {
-      ...state,
-      user: action.payload.user,
-      isLoading: false,
-    };
+  switch (action.type) {
+    case "LOGIN_START":
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case "LOGIN":
+      return {
+        ...state,
+        user: action.payload.user,
+        isLoading: false,
+      };
+    case "LOGIN_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case "REGISTER_START":
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case "REGISTER":
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case "REGISTER_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+      };
+    case "LOGOUT_START":
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case "LOGOUT":
+      return {
+        ...state,
+        user: null,
+        isLoading: false,
+      };
+    case "LOGOUT_FAILURE":
+      return {
+        ...state,
+        isLoading: false,
+      };
+    default:
+      return state;
   }
-
-  if (action.type === "LOGIN_START") {
-    return {
-      ...state,
-      isLoading: true,
-    };
-  }
-
-  if (action.type === "LOGIN_FAILURE") {
-    return {
-      ...state,
-      isLoading: false,
-    };
-  }
-
-  if (action.type === "LOGOUT") {
-    return {
-      ...state,
-      user: null,
-      isLoading: false,
-    };
-  }
-
-  if (action.type === "LOGOUT_START") {
-    return {
-      ...state,
-      isLoading: true,
-    };
-  }
-
-  if (action.type === "LOGOUT_FAILURE") {
-    return {
-      ...state,
-      isLoading: false,
-    };
-  }
-
-  return state;
 }
 
 export function AuthProvider({ children }) {
@@ -73,7 +79,6 @@ export function AuthProvider({ children }) {
           payload: { user: response.data.user },
         });
       } catch (error) {
-        console.error("Failed to fetch current user:", error);
         dispatch({ type: "LOGIN_FAILURE" });
       }
     };
@@ -95,21 +100,19 @@ export function AuthProvider({ children }) {
     }
   };
 
-  //   const register = async (userData) => {
-  //     setIsLoading(true);
-  //     try {
-  //       const response = await authService.register(userData);
-  //       setUser(response.data.user);
-  //       toast.success("Registration successful!");
-  //       return response;
-  //     } catch (error) {
-  //       console.error("Registration failed:", error);
-  //       toast.error(error.message || "Registration failed. Please try again.");
-  //       throw error;
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+  const register = async (userData) => {
+    dispatch({ type: "REGISTER_START" });
+    try {
+      const response = await authService.register(userData);
+      dispatch({
+        type: "REGISTER",
+      });
+      return response;
+    } catch (error) {
+      dispatch({ type: "REGISTER_FAILURE" });
+      throw error;
+    }
+  };
 
   const logout = async () => {
     try {
@@ -125,7 +128,13 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user: state.user, isLoading: state.isLoading, login, logout }}
+      value={{
+        user: state.user,
+        isLoading: state.isLoading,
+        login,
+        logout,
+        register,
+      }}
     >
       {children}
     </AuthContext.Provider>

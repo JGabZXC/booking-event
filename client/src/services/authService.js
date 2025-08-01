@@ -16,6 +16,14 @@ export const authService = {
       throw error.response?.data || error.message;
     }
   },
+  register: async (userData) => {
+    try {
+      const response = await api.post("/auth/register", userData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
   checkAuth: async () => {
     try {
       const response = await api.get("/auth/check");

@@ -1,5 +1,5 @@
 import { AuthLayout } from "../../../components/Auth/AuthLayout.jsx";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import Input from "../../../components/Auth/Input.jsx";
 import { Icons } from "../../../components/icons/icons.jsx";
