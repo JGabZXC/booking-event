@@ -40,3 +40,12 @@ export const logout = asyncHandler(async (req, res, next) => {
     message: "Logged out successfully",
   });
 });
+
+export const checkAuth = asyncHandler(async (req, res, next) => {
+  res.status(HTTPSTATUS.OK).json({
+    status: "success",
+    data: {
+      user: req.user,
+    },
+  });
+});
