@@ -86,14 +86,14 @@ export default function DesktopMenu({
           {user ? (
             <button
               onClick={handleLogout}
-              className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
+              className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
             >
               Log out
             </button>
           ) : (
             <Link
               to="login"
-              className="rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
+              className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
             >
               Log in
             </Link>

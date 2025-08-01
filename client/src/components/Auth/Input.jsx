@@ -26,7 +26,7 @@ export default function Input({
           placeholder={placeholder}
           type={type}
           onChange={onChange}
-          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition duration-200 pl-12 pr-12 ${
+          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-pink-500 transition duration-200 pl-12 pr-12 ${
             error ? "border-red-500" : "border-gray-300"
           }`}
         />

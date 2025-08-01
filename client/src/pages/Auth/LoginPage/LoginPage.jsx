@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login, isLoading } = useContext(AuthContext);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -23,8 +24,26 @@ export default function Login() {
     });
   };
 
+  function validateForm() {
+    const errors = {};
+
+    if (!formData.email) {
+      errors.email = "Email is required";
+    }
+    if (!formData.password) {
+      errors.password = "Password is required";
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       await login(formData);
@@ -57,6 +76,7 @@ export default function Login() {
             onChange={handleChange}
             placeholder="Enter your email"
             type="email"
+            error={errors.email}
           />
 
           {/* Password Field */}
@@ -69,6 +89,7 @@ export default function Login() {
             value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"
+            error={errors.password}
           >
             <button
               type="button"
