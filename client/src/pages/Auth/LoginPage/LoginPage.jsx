@@ -1,20 +1,20 @@
 import { AuthLayout } from "../../../components/Auth/AuthLayout.jsx";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth.jsx";
 import Input from "../../../components/Auth/Input.jsx";
 import { Icons } from "../../../components/icons/icons.jsx";
 import { AuthContext } from "../../../context/AuthContext.jsx";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, isLoading } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-
-  const { isLoading } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -26,7 +26,13 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await login(formData);
+    try {
+      await login(formData);
+      toast.success("Login successful!");
+      navigate("/", { replace: true });
+    } catch (error) {
+      toast.error(error.message || "Login failed. Please try again.");
+    }
   };
 
   return (

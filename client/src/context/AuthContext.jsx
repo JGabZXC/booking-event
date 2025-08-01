@@ -1,6 +1,5 @@
-import { createContext, useState, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import { authService } from "../services/authService";
-import { toast } from "react-toastify";
 
 export const AuthContext = createContext({
   user: null,
@@ -15,6 +14,21 @@ function authReducer(state, action) {
     return {
       ...state,
       user: action.payload.user,
+      isLoading: false,
+    };
+  }
+
+  if (action.type === "LOGIN_START") {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+
+  if (action.type === "LOGIN_FAILURE") {
+    return {
+      ...state,
+      isLoading: false,
     };
   }
 
@@ -22,8 +36,25 @@ function authReducer(state, action) {
     return {
       ...state,
       user: null,
+      isLoading: false,
     };
   }
+
+  if (action.type === "LOGOUT_START") {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+
+  if (action.type === "LOGOUT_FAILURE") {
+    return {
+      ...state,
+      isLoading: false,
+    };
+  }
+
+  return state;
 }
 
 export function AuthProvider({ children }) {
@@ -32,9 +63,26 @@ export function AuthProvider({ children }) {
     isLoading: false,
   });
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      dispatch({ type: "LOGIN_START" });
+      try {
+        const response = await authService.checkAuth();
+        dispatch({
+          type: "LOGIN",
+          payload: { user: response.data.user },
+        });
+      } catch (error) {
+        console.error("Failed to fetch current user:", error);
+        dispatch({ type: "LOGIN_FAILURE" });
+      }
+    };
+    checkAuth();
+  }, []);
+
   const login = async (credentials) => {
-    console.log("You are in login auth context");
     try {
+      dispatch({ type: "LOGIN_START" });
       const response = await authService.login(credentials);
       dispatch({
         type: "LOGIN",
@@ -42,8 +90,6 @@ export function AuthProvider({ children }) {
       });
       return response;
     } catch (error) {
-      console.error("Login failed:", error);
-      toast.error(error.message || "Login failed. Please try again.");
       dispatch({ type: "LOGIN_FAILURE" });
       throw error;
     }
@@ -67,11 +113,13 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await authService.logout();
-
-      toast.success("Logged out successfully!");
+      dispatch({ type: "LOGOUT_START" });
+      const response = await authService.logout();
+      dispatch({ type: "LOGOUT" });
+      return response;
     } catch (error) {
-      console.error("Logout failed:", error);
+      dispatch({ type: "LOGOUT_FAILURE" });
+      throw error;
     }
   };
 

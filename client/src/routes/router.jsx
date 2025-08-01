@@ -3,6 +3,7 @@ import RootLayout from "../pages/RootLayout";
 import HomePage from "../pages/HomePage/HomePage";
 import Login from "../pages/Auth/LoginPage/LoginPage";
 import SignUpPage from "../pages/Auth/SignupPage/SignupPage";
+import AuthChecker from "../components/Auth/AuthChecker";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -14,11 +15,19 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <AuthChecker>
+            <Login />
+          </AuthChecker>
+        ),
       },
       {
         path: "register",
-        element: <SignUpPage />,
+        element: (
+          <AuthChecker>
+            <SignUpPage />
+          </AuthChecker>
+        ),
       },
     ],
   },
