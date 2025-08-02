@@ -59,6 +59,14 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
     req.body
   );
 
+  res.cookie("jwt", updatedUser.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+  });
+
   res.status(HTTPSTATUS.OK).json({
     status: "success",
     data: updatedUser,
