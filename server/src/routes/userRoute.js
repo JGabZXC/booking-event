@@ -13,6 +13,11 @@ router.use(isAuthenticated);
 
 router.use("/:userId/user-tickets", userTicketRoute);
 
+router.route("/update/password").patch(userController.updatePassword);
+router
+  .route("/update/me")
+  .patch(sanitizeUserDetailsMiddleware, userController.updateMe);
+
 router
   .route("/")
   .get(
@@ -38,10 +43,5 @@ router
 router
   .route("/:identifier/password")
   .patch(isAuthorized("admin"), userController.updateUserPasswordAdmin);
-
-router.route("/update/password").patch(userController.updatePassword);
-router
-  .route("/update/me")
-  .patch(sanitizeUserDetailsMiddleware, userController.updateMe);
 
 export default router;
