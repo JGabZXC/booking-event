@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Input from "../../components/UI/Input";
 import { Icons } from "../../components/icons/icons";
+import { UserContext } from "../../context/UserContext";
+import { toast } from "react-toastify";
 
 export default function PasswordSettings() {
+  const { isLoading: isPasswordLoading, changePassword } =
+    useContext(UserContext);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
@@ -34,14 +38,26 @@ export default function PasswordSettings() {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    // Submit the form
+
+    try {
+      await changePassword(form);
+      toast.success("Password changed successfully");
+      setForm({
+        currentPassword: "",
+        password: "",
+        passwordConfirm: "",
+      });
+      setErrors({});
+    } catch (error) {
+      toast.error(error.message || "Failed to change password");
+    }
   };
 
   return (
@@ -53,6 +69,7 @@ export default function PasswordSettings() {
         placeholder="Enter your current password"
         type={showCurrentPassword ? "text" : "password"}
         onChange={handleChange}
+        value={form.currentPassword}
         error={errors.currentPassword}
       >
         {" "}
@@ -71,6 +88,7 @@ export default function PasswordSettings() {
         placeholder="Enter your new password"
         type={showPassword ? "text" : "password"}
         onChange={handleChange}
+        value={form.password}
         error={errors.password}
       >
         {" "}
@@ -79,7 +97,7 @@ export default function PasswordSettings() {
           onClick={() => setShowPassword(!showPassword)}
           className="absolute inset-y-0 right-0 pr-3 flex items-center"
         >
-          {showCurrentPassword ? Icons.EyeIcon : Icons.EyeCloseIcon}
+          {showPassword ? Icons.EyeIcon : Icons.EyeCloseIcon}
         </button>
       </Input>
       <Input
@@ -89,6 +107,7 @@ export default function PasswordSettings() {
         placeholder="Confirm your new password"
         type={showPassword ? "text" : "password"}
         onChange={handleChange}
+        value={form.passwordConfirm}
         error={errors.passwordConfirm}
       >
         {" "}
@@ -103,8 +122,9 @@ export default function PasswordSettings() {
       <button
         type="submit"
         className="w-full bg-pink-900 text-white py-3 px-4 rounded-lg hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        disabled={isPasswordLoading}
       >
-        Save New Password
+        {isPasswordLoading ? Icons.LoadingIcon : "Save New Password"}
       </button>
     </form>
   );
