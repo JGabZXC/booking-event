@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 export default function MainNavigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -30,10 +31,18 @@ export default function MainNavigation() {
           logo={logo}
           handleLogout={handleLogout}
           user={user}
+          showDropdown={showDropdown}
+          setShowDropdown={setShowDropdown}
         />
 
         {/* Mobile Menu */}
-        <MobileMenu menuOpen={menuOpen} user={user} logout={handleLogout} />
+        <MobileMenu
+          menuOpen={menuOpen}
+          user={user}
+          logout={handleLogout}
+          showDropdown={showDropdown}
+          setShowDropdown={setShowDropdown}
+        />
       </nav>
     </header>
   );

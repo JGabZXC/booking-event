@@ -2,13 +2,18 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Button } from "@headlessui/react";
 import { Link } from "react-router-dom";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 export default function DesktopMenu({
   menuOpen,
   setMenuOpen,
   logo,
   handleLogout,
+  showDropdown,
+  setShowDropdown,
 }) {
   const { user } = useContext(AuthContext);
+  console.log(user);
+
   return (
     <div className="mx-auto max-w-[80rem] px-2 sm:px-6 lg:px-8">
       <div className="relative flex h-16 items-center justify-between">
@@ -84,12 +89,64 @@ export default function DesktopMenu({
         </div>
         <div className="absolute hidden inset-y-0 right-0 sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="cursor-pointer rounded-md px-3 py-2 text-sm font-medium border border-pink-900 text-pink-900 hover:bg-pink-900 hover:text-white"
-            >
-              Log out
-            </button>
+            <div className="relative md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+              <button
+                type="button"
+                className="flex text-sm bg-pink-900 rounded-full md:me-00"
+                id="user-menu-button"
+                aria-expanded={showDropdown}
+                // data-dropdown-toggle="user-dropdown"
+                // data-dropdown-placement="bottom"
+                onClick={() => setShowDropdown((prev) => !prev)}
+              >
+                <span className="sr-only">Open user menu</span>
+                <UserCircleIcon className="w-8 h-8 text-white" />
+              </button>
+              <div
+                className={`absolute right-0 mt-2 z-50 ${
+                  showDropdown ? "block" : "hidden"
+                } w-56 text-base list-none bg-white divide-y divide-pink-100 rounded-lg shadow-sm dark:bg-pink-900 dark:divide-pink-800`}
+                id="user-dropdown"
+              >
+                <div className="px-4 py-3">
+                  <span className="block text-sm text-gray-900 dark:text-white">
+                    {user.name}
+                  </span>
+                  <span className="block text-sm  text-gray-500 truncate dark:text-gray-300">
+                    {user.email}
+                  </span>
+                </div>
+                <ul className="py-2" aria-labelledby="user-menu-button">
+                  <li>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                    >
+                      My Tickets
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                    >
+                      Account Settings
+                    </a>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setShowDropdown(false);
+                      }}
+                      className="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                    >
+                      Log out
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           ) : (
             <Link
               to="login"
