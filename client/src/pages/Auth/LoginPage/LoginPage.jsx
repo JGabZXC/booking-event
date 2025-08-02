@@ -1,7 +1,7 @@
 import { AuthLayout } from "../../../components/Auth/AuthLayout.jsx";
 import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import Input from "../../../components/Auth/Input.jsx";
+import Input from "../../../components/UI/Input.jsx";
 import { Icons } from "../../../components/icons/icons.jsx";
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import { toast } from "react-toastify";

@@ -1,5 +1,3 @@
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import { Button } from "@headlessui/react";
 import { Link } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
@@ -7,13 +5,11 @@ export default function DesktopMenu({
   menuOpen,
   setMenuOpen,
   logo,
+  user,
   handleLogout,
   showDropdown,
   setShowDropdown,
 }) {
-  const { user } = useContext(AuthContext);
-  console.log(user);
-
   return (
     <div className="mx-auto max-w-[80rem] px-2 sm:px-6 lg:px-8">
       <div className="relative flex h-16 items-center justify-between">
@@ -110,7 +106,7 @@ export default function DesktopMenu({
               >
                 <div className="px-4 py-3">
                   <span className="block text-sm text-gray-900 dark:text-white">
-                    {user.name}
+                    {user.name} {user.role !== "user" && `(${user.role})`}
                   </span>
                   <span className="block text-sm  text-gray-500 truncate dark:text-gray-300">
                     {user.email}
@@ -118,20 +114,22 @@ export default function DesktopMenu({
                 </div>
                 <ul className="py-2" aria-labelledby="user-menu-button">
                   <li>
-                    <a
-                      href="#"
+                    <Link
+                      to="/my-tickets"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                      onClick={() => setShowDropdown(false)}
                     >
                       My Tickets
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
-                      href="#"
+                    <Link
+                      to="/account-settings"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                      onClick={() => setShowDropdown(false)}
                     >
                       Account Settings
-                    </a>
+                    </Link>
                   </li>
                   <li>
                     <button

@@ -4,6 +4,8 @@ import HomePage from "../pages/HomePage/HomePage";
 import Login from "../pages/Auth/LoginPage/LoginPage";
 import SignUpPage from "../pages/Auth/SignupPage/SignupPage";
 import NotAuthenticatedRoute from "../components/Auth/NotAuthenticatedRoute";
+import AuthenticatedRoute from "../components/Auth/AuthenticatedRoute";
+import AccountSettings from "../pages/UserPage/AccountSettings";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
           <NotAuthenticatedRoute>
             <SignUpPage />
           </NotAuthenticatedRoute>
+        ),
+      },
+      {
+        path: "account-settings",
+        element: (
+          <AuthenticatedRoute>
+            <AccountSettings />
+          </AuthenticatedRoute>
         ),
       },
     ],

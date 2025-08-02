@@ -4,7 +4,7 @@ import { AuthLayout } from "../../../components/Auth/AuthLayout";
 import { Icons } from "../../../components/icons/icons";
 import { AuthContext } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
-import Input from "../../../components/Auth/Input";
+import Input from "../../../components/UI/Input";
 import { useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {

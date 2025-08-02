@@ -7,6 +7,7 @@ export const AuthContext = createContext({
   login: async (credentials) => {},
   register: async (userData) => {},
   logout: async () => {},
+  setUser: (user) => {},
 });
 
 function authReducer(state, action) {
@@ -134,6 +135,7 @@ export function AuthProvider({ children }) {
         login,
         logout,
         register,
+        setUser: (user) => dispatch({ type: "LOGIN", payload: { user } }),
       }}
     >
       {children}
