@@ -25,12 +25,16 @@ router
       "status",
       "genre",
       "createdAt",
+      "date",
+      "all",
       "-title",
       "-place",
       "-price",
       "-status",
       "-genre",
       "-createdAt",
+      "-date",
+      "-all",
     ]),
     eventController.getAllEvents
   )
