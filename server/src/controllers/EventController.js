@@ -10,11 +10,11 @@ import container from "../container/container.js";
 const eventService = container.get("eventService");
 
 export const getAllEvents = asyncHandler(async (req, res, next) => {
-  const { sort, page, limit } = req.query;
+  const { sort, page, limit, filter } = req.query;
 
-  const eventsData = await eventService.getAllEvents(sort, page, limit);
+  const eventsData = await eventService.getAllEvents(sort, page, limit, filter);
 
-  if (page > eventsData.totalPages)
+  if (eventsData.totalPages !== 0 && page > eventsData.totalPages)
     throw new BadRequestException("Page number exceeds total pages");
 
   res.status(HTTPSTATUS.OK).json({

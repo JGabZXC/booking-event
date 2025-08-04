@@ -3,11 +3,11 @@ import IEventRepository from "../interfaces/IEventRepository.js";
 import Event from "../models/Event.js";
 
 export default class MongoEventRepository extends IEventRepository {
-  async getAllEvents(sort = "_id", page = 1, limit = 10) {
+  async getAllEvents(sort = "_id", page = 1, limit = 10, filter = "") {
     const skip = (page - 1) * limit;
     const [events, totalDocs] = await Promise.all([
-      Event.find().sort(sort).skip(skip).limit(limit),
-      Event.countDocuments(),
+      Event.find({ genre: filter }).sort(sort).skip(skip).limit(limit),
+      Event.countDocuments({ genre: filter }),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
     return { totalDocs, totalPages, events };

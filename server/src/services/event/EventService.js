@@ -31,8 +31,13 @@ export default class EventService {
     return await event.save({ validateModifiedOnly: true });
   }
 
-  async getAllEvents(sort = "_id", page = 1, limit = 10) {
-    let events = await this.eventRepository.getAllEvents(sort, page, limit);
+  async getAllEvents(sort = "_id", page = 1, limit = 10, filter = "") {
+    let events = await this.eventRepository.getAllEvents(
+      sort,
+      page,
+      limit,
+      filter
+    );
     const updatedEvents = await this.imageUrlProvider.checkSignedExpiration(
       events.events,
       this.eventRepository
