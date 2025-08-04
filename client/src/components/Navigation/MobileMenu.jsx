@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 export default function MobileMenu({
@@ -14,24 +14,26 @@ export default function MobileMenu({
       id="mobile-menu"
     >
       <div className="space-y-1 px-2 pt-2 pb-3">
-        <Link
-          to=""
-          className="block rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            isActive
+              ? "block rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+              : "block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+          }
         >
           Home
-        </Link>
-        <Link
-          to=""
-          className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+        </NavLink>
+        <NavLink
+          to="/events"
+          className={({ isActive }) =>
+            isActive
+              ? "block rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+              : "block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+          }
         >
           Events
-        </Link>
-        <Link
-          to=""
-          className="block rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
-        >
-          Projects
-        </Link>
+        </NavLink>
         {user ? (
           <div className="relative md:order-2 px-2 pt-2 pb-3">
             <button
@@ -60,20 +62,22 @@ export default function MobileMenu({
               </div>
               <ul className="py-2" aria-labelledby="user-menu-button">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/me/my-tickets"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                    onClick={() => setShowDropdown(false)}
                   >
                     My Tickets
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/me/account-settings"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
+                    onClick={() => setShowDropdown(false)}
                   >
                     Account Settings
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <button

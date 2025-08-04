@@ -1,5 +1,5 @@
 import { Button } from "@headlessui/react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 export default function DesktopMenu({
   menuOpen,
@@ -61,25 +61,27 @@ export default function DesktopMenu({
           </div>
           <div className="hidden sm:ml-6 sm:block">
             <div className="flex space-x-4">
-              <Link
-                to=""
-                className="rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  isActive
+                    ? "rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+                    : "rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+                }
                 // aria-current="page"
               >
                 Home
-              </Link>
-              <Link
-                to=""
-                className="rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+              </NavLink>
+              <NavLink
+                to="/events?sort=status&type=asc&page=1&limit=10"
+                className={({ isActive }) =>
+                  isActive
+                    ? "rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"
+                    : "rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
+                }
               >
                 Events
-              </Link>
-              <Link
-                to=""
-                className="rounded-md px-3 py-2 text-sm font-medium text-pink-900 hover:bg-pink-700 hover:text-white"
-              >
-                Projects
-              </Link>
+              </NavLink>
             </div>
           </div>
         </div>
@@ -115,7 +117,7 @@ export default function DesktopMenu({
                 <ul className="py-2" aria-labelledby="user-menu-button">
                   <li>
                     <Link
-                      to="/my-tickets"
+                      to="/me/my-tickets"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
                       onClick={() => setShowDropdown(false)}
                     >
@@ -124,7 +126,7 @@ export default function DesktopMenu({
                   </li>
                   <li>
                     <Link
-                      to="/account-settings"
+                      to="/me/account-settings"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
                       onClick={() => setShowDropdown(false)}
                     >

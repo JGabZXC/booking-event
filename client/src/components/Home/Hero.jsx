@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
   return (
     <section className="relative text-white py-24 px-6 overflow-hidden">
@@ -14,12 +16,12 @@ export default function Hero() {
           place. Don’t just watch, be there!
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <a
-            href="#events"
+          <Link
+            to="/events"
             className="border-2 bg-pink-900 border-pink-900 hover:bg-pink-700 hover:border-pink-700 px-6 py-3 rounded-full font-semibold transition"
           >
             Browse Events
-          </a>
+          </Link>
           <a
             href="#how-it-works"
             className="border-2 border-pink-900 hover:bg-pink-900 px-6 py-3 rounded-full font-semibold transition"

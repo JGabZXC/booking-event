@@ -2,7 +2,7 @@ import Steps from "./Steps";
 
 export default function HowItWorks() {
   return (
-    <section className="py-20 text-gray-800">
+    <section id="how-it-works" className="py-20 text-gray-800">
       <div className="max-w-6xl mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           How <span className="text-pink-900">ShowUp</span> Works

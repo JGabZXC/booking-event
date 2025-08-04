@@ -6,6 +6,10 @@ import SignUpPage from "../pages/Auth/SignupPage/SignupPage";
 import NotAuthenticatedRoute from "../components/Auth/NotAuthenticatedRoute";
 import AuthenticatedRoute from "../components/Auth/AuthenticatedRoute";
 import AccountSettings from "../pages/UserPage/AccountSettings";
+import MeLayout from "../pages/MePage/MeLayout";
+import EventPage from "../pages/EventPage/EventPage";
+import EventLayout from "../pages/EventPage/EventLayout";
+import { loader as eventLoader } from "../pages/EventPage/EventPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,12 +36,30 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "account-settings",
+        path: "events",
+        element: <EventLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventPage />,
+            loader: eventLoader,
+          },
+        ],
+      },
+      {
+        path: "me",
         element: (
           <AuthenticatedRoute>
-            <AccountSettings />
+            <MeLayout />
           </AuthenticatedRoute>
         ),
+        children: [
+          {
+            path: "account-settings",
+            element: <AccountSettings />,
+          },
+          { path: "my-tickets", element: <div>This is your ticket page</div> }, // Placeholder for My Tickets page
+        ],
       },
     ],
   },
