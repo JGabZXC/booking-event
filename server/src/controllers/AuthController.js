@@ -1,5 +1,6 @@
 import { HTTPSTATUS } from "../config/http.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { cookieOptions } from "../config/cookieOption.js";
 import container from "../container/container.js";
 
 const authService = container.get("authService");
@@ -7,13 +8,15 @@ const authService = container.get("authService");
 export const login = asyncHandler(async (req, res, next) => {
   const user = await authService.login(req.body);
 
-  res.cookie("jwt", user.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: new Date(
+  const options = {
+    ...cookieOptions,
+    expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
     ),
-  });
+    maxAge: process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000,
+  };
+
+  res.cookie("jwt", user.token, options);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",
