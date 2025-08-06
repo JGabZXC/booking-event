@@ -10,6 +10,7 @@ import MeLayout from "../pages/MePage/MeLayout";
 import EventPage from "../pages/EventPage/EventPage";
 import EventLayout from "../pages/EventPage/EventLayout";
 import { loader as eventLoader } from "../pages/EventPage/EventPage";
+import EventDetails from "../pages/EventPage/EventDetails";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
             index: true,
             element: <EventPage />,
             loader: eventLoader,
+          },
+          {
+            path: ":eventSlug",
+            element: <EventDetails />, // Placeholder for Event Detail page
           },
         ],
       },

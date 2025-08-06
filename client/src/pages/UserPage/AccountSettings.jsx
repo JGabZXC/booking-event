@@ -62,55 +62,53 @@ export default function AccountSettings() {
   };
 
   return (
-    <>
-      <div className="max-w-md mx-auto mt-10 mb-10 p-6 bg-white rounded shadow">
-        <h2 className="text-2xl font-bold mb-6 text-pink-900">
-          Account Settings
-        </h2>
-        {message && (
-          <div className="mb-4 text-center text-pink-700">{message}</div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
-          <Input
-            label="First Name"
-            svg={Icons.UserIcon}
-            id="firstName"
-            type="text"
-            placeholder="Enter your first name"
-            value={form.firstName}
-            onChange={handleChange}
-            error={errors.firstName}
-          />
-          <Input
-            label="Last Name"
-            svg={Icons.UserIcon}
-            id="lastName"
-            type="text"
-            placeholder="Enter your last name"
-            value={form.lastName}
-            onChange={handleChange}
-            error={errors.lastName}
-          />
-          <Input
-            label="Email"
-            svg={Icons.EmailIcon}
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            value={form.email}
-            onChange={handleChange}
-            error={errors.email}
-          />
-          <button
-            type="submit"
-            className="w-full bg-pink-900 text-white py-3 px-4 rounded-lg hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            disabled={detailsLoading}
-          >
-            {detailsLoading ? Icons.LoadingIcon : "Update Settings"}
-          </button>
-        </form>
-        <PasswordSettings />
-      </div>
-    </>
+    <section className="max-w-md mx-auto mt-10 mb-10 p-6 bg-white rounded shadow">
+      <h2 className="text-2xl font-bold mb-6 text-pink-900">
+        Account Settings
+      </h2>
+      {message && (
+        <div className="mb-4 text-center text-pink-700">{message}</div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4 mb-4">
+        <Input
+          label="First Name"
+          svg={Icons.UserIcon}
+          id="firstName"
+          type="text"
+          placeholder="Enter your first name"
+          value={form.firstName}
+          onChange={handleChange}
+          error={errors.firstName}
+        />
+        <Input
+          label="Last Name"
+          svg={Icons.UserIcon}
+          id="lastName"
+          type="text"
+          placeholder="Enter your last name"
+          value={form.lastName}
+          onChange={handleChange}
+          error={errors.lastName}
+        />
+        <Input
+          label="Email"
+          svg={Icons.EmailIcon}
+          id="email"
+          type="email"
+          placeholder="Enter your email"
+          value={form.email}
+          onChange={handleChange}
+          error={errors.email}
+        />
+        <button
+          type="submit"
+          className="w-full bg-pink-900 text-white py-3 px-4 rounded-lg hover:bg-pink-800 focus:ring-4 focus:ring-pink-300 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          disabled={detailsLoading}
+        >
+          {detailsLoading ? Icons.LoadingIcon : "Update Settings"}
+        </button>
+      </form>
+      <PasswordSettings />
+    </section>
   );
 }

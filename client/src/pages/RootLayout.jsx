@@ -5,7 +5,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 
 export default function RootLayout() {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <ToastContainer
         position="top-center"
         autoClose={2500}
@@ -20,12 +20,10 @@ export default function RootLayout() {
         transition={Bounce}
       />
       <MainNavigation />
-      <main>
-        <div>
-          <Outlet />
-        </div>
+      <main className="flex-1">
+        <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
