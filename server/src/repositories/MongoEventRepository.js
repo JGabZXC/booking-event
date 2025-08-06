@@ -14,7 +14,7 @@ export default class MongoEventRepository extends IEventRepository {
     return { totalDocs, totalPages, events };
   }
 
-  async getEvent(identifier) {
+  async getEvent(identifier, populateOptions = {}) {
     let query;
     if (mongoose.Types.ObjectId.isValid(identifier)) {
       query = { _id: identifier };
@@ -22,7 +22,7 @@ export default class MongoEventRepository extends IEventRepository {
       query = { slug: identifier };
     }
 
-    const event = await Event.findOne(query);
+    const event = await Event.findOne(query).populate(populateOptions);
 
     return event;
   }

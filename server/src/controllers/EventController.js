@@ -25,7 +25,9 @@ export const getAllEvents = asyncHandler(async (req, res, next) => {
 
 export const getEvent = asyncHandler(async (req, res) => {
   const { identifier } = req.params;
-  const event = await eventService.getEvent(identifier);
+  const { populate } = req.query;
+  const populateOptions = populate ? JSON.parse(populate) : {};
+  const event = await eventService.getEvent(identifier, populateOptions);
 
   res.status(HTTPSTATUS.OK).json({
     status: "success",

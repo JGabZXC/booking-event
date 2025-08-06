@@ -50,8 +50,11 @@ export default class EventService {
     return events;
   }
 
-  async getEvent(identifier) {
-    let event = await this.eventRepository.getEvent(identifier);
+  async getEvent(identifier, populateOptions) {
+    let event = await this.eventRepository.getEvent(
+      identifier,
+      populateOptions
+    );
     if (!event)
       throw new NotFoundException(
         "No event found with the provided identifier"
