@@ -17,7 +17,7 @@ export default function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
-            to="/events"
+            to="/events?sort=date&type=asc&page=1&limit=10"
             className="border-2 bg-pink-900 border-pink-900 hover:bg-pink-700 hover:border-pink-700 px-6 py-3 rounded-full font-semibold transition"
           >
             Browse Events

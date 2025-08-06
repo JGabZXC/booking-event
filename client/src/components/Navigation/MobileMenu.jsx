@@ -25,7 +25,7 @@ export default function MobileMenu({
           Home
         </NavLink>
         <NavLink
-          to="/events"
+          to="/events?sort=date&type=asc&page=1&limit=10"
           className={({ isActive }) =>
             isActive
               ? "block rounded-md bg-pink-900 px-3 py-2 text-sm font-medium text-white"

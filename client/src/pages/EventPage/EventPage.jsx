@@ -58,6 +58,7 @@ export default function EventPage() {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request }) {
   const url = new URL(request.url);
   let sort = url.searchParams.get("sort") || "_id";
