@@ -27,20 +27,23 @@ export default function EventPage() {
         <Await resolve={events}>
           {(resolvedEvents) => (
             <>
-              {resolvedEvents.data.data.events.length > 0 &&
-                resolvedEvents.data.data.events.map((event) => (
-                  <EventCard
-                    key={event._id}
-                    eventTitle={event.title}
-                    eventDate={new Date(event.date).toLocaleDateString()}
-                    eventLocation={event.place}
-                    eventImage={event.coverImage?.url}
-                    eventDescription={event.description}
-                    eventSlug={event.slug}
-                    eventStatus={event.status}
-                    eventGenre={event.genre}
-                  />
-                ))}
+              {resolvedEvents.data.data.events.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {resolvedEvents.data.data.events.map((event) => (
+                    <EventCard
+                      key={event._id}
+                      eventTitle={event.title}
+                      eventDate={new Date(event.date).toLocaleDateString()}
+                      eventLocation={event.place}
+                      eventImage={event.coverImage?.url}
+                      eventDescription={event.description}
+                      eventSlug={event.slug}
+                      eventStatus={event.status}
+                      eventGenre={event.genre}
+                    />
+                  ))}
+                </div>
+              )}
 
               {resolvedEvents.data.data.events.length === 0 && (
                 <div className="text-center text-gray-500 h-100">

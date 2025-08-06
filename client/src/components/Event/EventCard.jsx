@@ -24,7 +24,7 @@ export default function EventCard({
     statusClass += " text-blue-600 bg-blue-100";
 
   return (
-    <div className="max-w-4xl mx-auto my-5 md:my-10 p-2 md:p-6 bg-white rounded-lg shadow-xl border border-pink-200">
+    <div className="max-w-4xl p-4 md:p-6 bg-white rounded-lg shadow-xl border border-pink-200">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-pink-900 mb-2">{eventTitle}</h1>
         <p className="text-gray-600">
@@ -44,14 +44,17 @@ export default function EventCard({
         <img
           src={eventImage}
           alt={eventTitle}
-          className="w-full h-100 object-cover rounded"
+          className="w-full object-cover rounded"
         />
       </div>
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-pink-900 mb-2">
           About this event
         </h2>
-        <p className="text-gray-700">{eventDescription}</p>
+        <p className="text-gray-700">
+          {eventDescription.slice(0, 100)}
+          {eventDescription.length > 100 && "..."}
+        </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-4">
         <Link

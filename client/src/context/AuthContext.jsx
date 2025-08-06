@@ -67,12 +67,11 @@ function authReducer(state, action) {
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
-    isLoading: false,
+    isLoading: true,
   });
 
   useEffect(() => {
     const checkAuth = async () => {
-      dispatch({ type: "LOGIN_START" });
       try {
         const response = await authService.checkAuth();
         dispatch({

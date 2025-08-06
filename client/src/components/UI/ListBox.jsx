@@ -9,7 +9,7 @@ import clsx from "clsx";
 
 export default function ListBox({ types, title, value, onChange }) {
   return (
-    <div className="w-full max-w-md px-4">
+    <div className="w-full max-w-md">
       <label className="text-sm font-medium text-pink-900 block mb-1">
         {title}
       </label>
