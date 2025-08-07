@@ -26,6 +26,8 @@ export default class PaymentService {
     );
 
     tickets.forEach((ticket, idx) => {
+      if (!ticket) throw new NotFoundException(`Ticket not found`);
+
       ticketSelections.push({
         ticketType: ticket.type,
         amount: ticket.price * paymentData.ticketSelections[idx].quantity,
@@ -35,7 +37,6 @@ export default class PaymentService {
 
     const insertedUserTickets = await Promise.all(
       paymentData.ticketSelections.map(async (selection) => {
-        console.log(selection);
         return this.userTicketService.createUserTicket({
           user: paymentData.user,
           ticket: selection.ticket,
@@ -54,6 +55,22 @@ export default class PaymentService {
       paymentData
     );
     return paymentRecord;
+  }
+
+  async getPayment(id) {
+    const payment = await this.paymentRepository.getPaymentById(id);
+    if (!payment)
+      throw new NotFoundException(`Payment not found with id: ${id}`);
+    return payment;
+  }
+
+  async deletePayment(id) {
+    const payment = await this.paymentRepository.getPaymentById(id);
+    Promise.all(
+      payment.ticket.map(async (ticket) => {
+        await this.userTicketService.deleteUserTicket(ticket);
+      })
+    );
   }
 
   async processPayment(data, currency = "php", populateOptions) {
