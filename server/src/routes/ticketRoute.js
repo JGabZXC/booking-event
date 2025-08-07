@@ -15,18 +15,16 @@ import {
 
 const router = express.Router({ mergeParams: true });
 
-router.use(isAuthenticated);
-
 router
   .route("/")
-  .get(isAuthorized("admin"), getAllTickets)
-  .post(isAuthorized("admin"), validateBody, createTicket)
-  .delete(isAuthorized("admin"), deleteAllTickets);
+  .get(getAllTickets)
+  .post(isAuthenticated, isAuthorized("admin"), validateBody, createTicket)
+  .delete(isAuthenticated, isAuthorized("admin"), deleteAllTickets);
 
 router
   .route("/:id")
-  .get(isAuthorized("admin"), getTicket)
-  .patch(isAuthorized("admin"), validateBody, updateTicket)
-  .delete(isAuthorized("admin"), deleteTicket);
+  .get(isAuthenticated, isAuthorized("admin"), getTicket)
+  .patch(isAuthenticated, isAuthorized("admin"), validateBody, updateTicket)
+  .delete(isAuthenticated, isAuthorized("admin"), deleteTicket);
 
 export default router;

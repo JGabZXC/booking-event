@@ -21,6 +21,9 @@ import TicketService from "../services/ticket/TicketService.js";
 import MongoTicketRepository from "../repositories/MongoTicketRepository.js";
 import MongoUserTicketRepository from "../repositories/MongoUserTicketRepository.js";
 import UserTicketService from "../services/ticket/UserTicketService.js";
+import StripePaymentStrategy from "../strategies/payment/StripePaymentStrategy.js";
+import PaymentService from "../services/payment/PaymentService.js";
+import MongoPaymentRepository from "../repositories/MongoPaymentRepository.js";
 
 class DIContainer {
   constructor() {
@@ -80,6 +83,9 @@ class DIContainer {
     this.register("userTicketRepository", () => {
       return new MongoUserTicketRepository();
     });
+    this.register("paymentRepository", () => {
+      return new MongoPaymentRepository();
+    });
 
     // SERVICE
     this.register("tokenService", () => new TokenService());
@@ -122,6 +128,14 @@ class DIContainer {
         container.get("ticketRepository")
       );
     });
+    this.register("paymentService", (container) => {
+      return new PaymentService(
+        container.get("paymentStrategy"),
+        container.get("paymentRepository"),
+        container.get("ticketRepository"),
+        container.get("userTicketService")
+      );
+    });
 
     // STRATEGY
     this.register("emailPasswordStrategy", (container) => {
@@ -136,6 +150,9 @@ class DIContainer {
     });
     this.register("imageStrategy", (container) => {
       return new S3Strategy(container.get("imageUrlProvider"));
+    });
+    this.register("paymentStrategy", () => {
+      return new StripePaymentStrategy();
     });
   }
 }

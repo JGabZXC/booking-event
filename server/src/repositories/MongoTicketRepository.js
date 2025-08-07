@@ -6,8 +6,8 @@ export default class MongoTicketRepository extends ITicketRepository {
     return await Ticket.create(ticketData);
   }
 
-  async getTicket(id) {
-    return await Ticket.findById(id);
+  async getTicket(id, populateOptions = null) {
+    return await Ticket.findById(id).populate(populateOptions);
   }
 
   async getAllTickets(sort = "_id", page = 1, limit = 10, query = {}) {

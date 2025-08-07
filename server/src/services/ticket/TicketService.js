@@ -16,8 +16,8 @@ export default class TicketService {
     return await this.ticketRepository.createTicket(ticketData);
   }
 
-  async getTicket(id) {
-    const ticket = await this.ticketRepository.getTicket(id);
+  async getTicket(id, populateOptions = null) {
+    const ticket = await this.ticketRepository.getTicket(id, populateOptions);
     if (!ticket) throw new NotFoundException("Ticket not found");
     return ticket;
   }

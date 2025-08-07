@@ -8,12 +8,7 @@ import sanitizeSortMiddleware from "../middlewares/sanitizeSortMiddleware.js";
 import ticketRoute from "./ticketRoute.js";
 const router = express.Router();
 
-router.use(
-  "/:eventId/tickets",
-  authMiddleware.isAuthenticated,
-  authMiddleware.isAuthorized("admin"),
-  ticketRoute
-);
+router.use("/:eventId/tickets", ticketRoute);
 
 router
   .route("/")

@@ -9,6 +9,7 @@ import authRoute from "./src/routes/authRoute.js";
 import userRoute from "./src/routes/userRoute.js";
 import ticketRoute from "./src/routes/ticketRoute.js";
 import userTicketRoute from "./src/routes/userTicketRoute.js";
+import paymentRoute from "./src/routes/paymentRoute.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/tickets", ticketRoute);
 app.use("/api/v1/user-tickets", userTicketRoute);
+app.use("/api/v1/payments", paymentRoute);
 
 app.use(errorHandler);
 
