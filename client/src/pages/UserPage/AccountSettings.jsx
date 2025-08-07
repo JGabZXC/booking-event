@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 export default function AccountSettings() {
   const { user } = useContext(AuthContext);
   const { updateUser, isLoading: detailsLoading } = useContext(UserContext);
-  console.log(user);
   const [form, setForm] = useState({
     firstName: user && user.name.split(" ").slice(0, -1).join(" "),
     lastName: user && user.name.split(" ")[user.name.split(" ").length - 1],

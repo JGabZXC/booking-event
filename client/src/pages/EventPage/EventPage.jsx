@@ -13,7 +13,7 @@ export default function EventPage() {
   const location = useLocation();
 
   return (
-    <section className="max-w-[80rem] mx-auto mt-5 px-2 sm:px-6 lg:px-8">
+    <section className="max-w-[80rem] mx-auto my-5 px-2 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto my-5 md:my-10 flex flex-col sm:flex-row gap-4">
         <Sort />
         <SortType />
