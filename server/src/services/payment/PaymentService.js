@@ -13,40 +13,49 @@ export default class PaymentService {
     this.userTicketService = userTicketService;
   }
 
-  async createPayment(paymentData) {
-    paymentData.isPaid = true;
-    paymentData.status = "succeeded";
-
-    const ticketSelections = [];
-
+  async buildTicketSelections(ticketSelections) {
     const tickets = await Promise.all(
-      paymentData.ticketSelections.map((selection) =>
+      ticketSelections.map((selection) =>
         this.ticketRepository.getTicket(selection.ticket)
       )
     );
 
-    tickets.forEach((ticket, idx) => {
-      if (!ticket) throw new NotFoundException(`Ticket not found`);
+    return tickets.map((ticket, idx) => {
+      if (!ticket) throw new NotFoundException("Ticket not found");
+      return {
+        type: ticket.type,
+        price: ticket.price,
+        quantity: ticketSelections[idx].quantity,
+        ticket: ticket._id,
+      };
+    });
+  }
 
-      ticketSelections.push({
-        ticketType: ticket.type,
-        amount: ticket.price * paymentData.ticketSelections[idx].quantity,
-        quantity: paymentData.ticketSelections[idx].quantity,
+  async insertUserTickets(user, ticketSelections) {
+    const userTickets = ticketSelections.map((selection) => {
+      return this.userTicketService.createUserTicket({
+        user,
+        ticket: selection.ticket,
+        quantity: selection.quantity,
       });
     });
+    return Promise.all(userTickets);
+  }
 
-    const insertedUserTickets = await Promise.all(
-      paymentData.ticketSelections.map(async (selection) => {
-        return this.userTicketService.createUserTicket({
-          user: paymentData.user,
-          ticket: selection.ticket,
-          quantity: selection.quantity,
-        });
-      })
+  async createPayment(paymentData) {
+    const ticketSelections = await this.buildTicketSelections(
+      paymentData.ticketSelections
     );
 
+    const insertedUserTickets = await this.insertUserTickets(
+      paymentData.user,
+      ticketSelections
+    );
+
+    paymentData.isPaid = true;
+    paymentData.status = "succeeded";
     paymentData.amount = ticketSelections.reduce(
-      (sum, t) => sum + t.amount * t.quantity,
+      (sum, t) => sum + t.price * t.quantity,
       0
     );
     paymentData.ticket = insertedUserTickets.map((ticket) => ticket._id);
@@ -54,6 +63,7 @@ export default class PaymentService {
     const paymentRecord = await this.paymentRepository.createPayment(
       paymentData
     );
+
     return paymentRecord;
   }
 
@@ -65,12 +75,17 @@ export default class PaymentService {
   }
 
   async deletePayment(id) {
-    const payment = await this.paymentRepository.getPaymentById(id);
+    const payment = await this.paymentRepository.deletePayment(id);
+    if (!payment)
+      throw new NotFoundException(`Payment not found with id: ${id}`);
+
     Promise.all(
-      payment.ticket.map(async (ticket) => {
-        await this.userTicketService.deleteUserTicket(ticket);
+      payment.ticket.map((ticket) => {
+        this.userTicketService.deleteUserTicket(ticket);
       })
     );
+
+    return payment;
   }
 
   async processPayment(data, currency = "php", populateOptions) {

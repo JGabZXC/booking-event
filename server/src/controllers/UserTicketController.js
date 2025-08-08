@@ -1,4 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { NotFoundException } from "../utils/appError.js";
 import container from "../container/container.js";
 
 const userTicketService = container.get("userTicketService");
