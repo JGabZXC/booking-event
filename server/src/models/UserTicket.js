@@ -16,6 +16,11 @@ const userTicketSchema = new mongoose.Schema({
     required: true,
     min: 1,
   },
+  quantityUsed: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
   purchasedDate: {
     type: Date,
     default: Date.now,

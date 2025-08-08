@@ -7,12 +7,17 @@ const userTicketService = container.get("userTicketService");
 export const getAllUserTickets = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId || req.user._id;
   const { sort, page, limit, populateOptions } = req.query;
+  let parsedPopulateOptions = null;
+  if (populateOptions) {
+    parsedPopulateOptions = JSON.parse(populateOptions);
+  }
+
   const userTickets = await userTicketService.getAllUserTickets(
     sort,
     page,
     limit,
     userId && { user: userId },
-    populateOptions
+    parsedPopulateOptions
   );
 
   res.status(200).json({
