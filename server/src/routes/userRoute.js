@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.use(isAuthenticated);
 
-router.use("/:userId/user-tickets", userTicketRoute);
+router.use("/:userId/user-tickets", isAuthorized("admin"), userTicketRoute);
+router.use("/my-tickets", userTicketRoute);
 
 router.route("/update/password").patch(userController.updatePassword);
 router

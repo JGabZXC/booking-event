@@ -5,12 +5,13 @@ import container from "../container/container.js";
 const userTicketService = container.get("userTicketService");
 
 export const getAllUserTickets = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId || req.user._id;
   const { sort, page, limit, populateOptions } = req.query;
   const userTickets = await userTicketService.getAllUserTickets(
     sort,
     page,
     limit,
-    req.params.userId && { user: req.params.userId },
+    userId && { user: userId },
     populateOptions
   );
 
