@@ -3,6 +3,8 @@ import { Icons } from "../../components/icons/icons";
 import { useQuery } from "@tanstack/react-query";
 import { eventService } from "../../services/eventService";
 import EventImagesCarousel from "../../components/Event/EventImagesCarousel";
+import TicketsDialog from "../../components/Event/TicketsDialog";
+
 async function fetchEventDetails(eventSlug) {
   try {
     const response = await eventService.getEvent(eventSlug);
@@ -80,9 +82,7 @@ export default function EventDetails() {
             </span>
           </div>
         </div>
-        <button className="w-full md:w-auto px-8 py-3 bg-pink-900 hover:bg-pink-700 text-white font-semibold rounded transition">
-          Buy Ticket
-        </button>
+        <TicketsDialog eventId={eventDetails.data._id} />
       </div>
 
       {/* Description and Organizers */}

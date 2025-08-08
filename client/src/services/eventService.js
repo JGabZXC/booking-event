@@ -21,4 +21,12 @@ export const eventService = {
       throw error.message || "An error occurred while fetching the event.";
     }
   },
+  getEventTickets: async (eventId) => {
+    try {
+      const response = await api.get(`/events/${eventId}/tickets`);
+      return response;
+    } catch (error) {
+      throw error.message || "An error occurred while fetching tickets.";
+    }
+  },
 };
