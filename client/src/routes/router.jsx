@@ -11,6 +11,7 @@ import EventPage from "../pages/EventPage/EventPage";
 import EventLayout from "../pages/EventPage/EventLayout";
 import { loader as eventLoader } from "../pages/EventPage/EventPage";
 import EventDetails from "../pages/EventPage/EventDetails";
+import MyTickets from "../pages/MePage/MyTickets/MyTickets";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
             path: "account-settings",
             element: <AccountSettings />,
           },
-          { path: "my-tickets", element: <div>This is your ticket page</div> }, // Placeholder for My Tickets page
+          { path: "my-tickets", element: <MyTickets /> },
         ],
       },
     ],
