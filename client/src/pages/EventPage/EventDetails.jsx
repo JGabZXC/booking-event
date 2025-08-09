@@ -100,13 +100,6 @@ export default function EventDetails() {
           <ul className="space-y-2">
             {eventDetails.data.organizers.map((organizer, index) => (
               <li key={index} className="flex items-center gap-3">
-                {organizer.avatar && (
-                  <img
-                    src={organizer.avatar}
-                    alt={organizer.name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                )}
                 <span className="text-gray-700 font-medium">
                   {organizer.name}
                 </span>
