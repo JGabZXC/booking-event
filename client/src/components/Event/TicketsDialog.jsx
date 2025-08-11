@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import ModalDialog from "../Dialog/ModalDialog";
 import { eventService } from "../../services/eventService";
 import { useQuery } from "@tanstack/react-query";
+import TicketsDialogCart from "./TicketsDialogCart";
+import { CartContext } from "../../context/CartContext";
 
 async function fetchTickets(eventId) {
   try {
@@ -14,6 +16,7 @@ async function fetchTickets(eventId) {
 }
 
 export default function TicketsDialog({ eventId }) {
+  const { cartItems } = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
   const [quantities, setQuantities] = useState({});
   const [cart, setCart] = useState([]);
@@ -57,6 +60,7 @@ export default function TicketsDialog({ eventId }) {
       return [
         ...prev,
         {
+          eventId: ticket.eventId,
           ticketId: ticket._id,
           type: ticket.type,
           price: ticket.price,
@@ -67,22 +71,12 @@ export default function TicketsDialog({ eventId }) {
     });
   };
 
-  // Update quantity directly in cart
-  const handleCartQuantityChange = (ticketId, value, max) => {
-    const val = Math.max(1, Math.min(Number(value), max));
-    setCart((prev) =>
-      prev.map((item) =>
-        item.ticketId === ticketId ? { ...item, quantity: val } : item
-      )
-    );
-  };
-
-  // Remove from cart
-  const handleRemoveFromCart = (ticketId) => {
-    setCart((prev) => prev.filter((item) => item.ticketId !== ticketId));
-  };
-
   let content = null;
+
+  useEffect(() => {
+    const eventCart = cartItems.filter((item) => item.eventId === eventId);
+    if (eventCart.length > 0) setCart(eventCart);
+  }, [cartItems, eventId]);
 
   if (isLoading)
     content = (
@@ -102,10 +96,12 @@ export default function TicketsDialog({ eventId }) {
         {ticketsData.data.tickets.map((ticket) => (
           <div
             key={ticket._id}
-            className="p-4 border border-pink-900 rounded shadow-sm flex flex-col md:flex-row md:items-center md:gap-4 bg-pink-50"
+            className="p-4 border border-pink-900 rounded shadow-sm flex flex-col md:flex-row md:items-center gap-2 md:gap-4 bg-pink-50"
           >
             <div className="flex-1">
-              <p className="text-pink-900 font-bold">{ticket.type}</p>
+              <p className="text-pink-900 font-bold">
+                {ticket.type[0].toUpperCase() + ticket.type.slice(1)}
+              </p>
               <p className="text-pink-700">
                 Price:{" "}
                 {ticket.price.toLocaleString("en-PH", {
@@ -132,62 +128,21 @@ export default function TicketsDialog({ eventId }) {
               className="w-16 border border-pink-900 rounded px-2 py-1 mr-2 text-pink-900"
             />
             <button
-              onClick={() => handleAddToCart(ticket)}
-              className="bg-pink-900 hover:bg-pink-700 text-white px-4 py-2 rounded"
+              onClick={() => handleAddToCart({ ...ticket, eventId: eventId })}
+              className={`bg-pink-900 hover:bg-pink-700 ${
+                ticket.availableQuantity < 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              } text-white px-4 py-2 rounded`}
+              disabled={ticket.availableQuantity < 1}
             >
-              Add to Cart
+              Add
             </button>
           </div>
         ))}
 
         {/* Cart Preview */}
-        {cart.length > 0 && (
-          <div className="mt-6 p-4 border border-pink-900 rounded-lg bg-pink-100">
-            <h3 className="text-lg font-semibold text-pink-900 mb-2">Cart</h3>
-            <ul>
-              {cart.map((item) => (
-                <li
-                  key={item.ticketId}
-                  className="flex items-center justify-between mb-2"
-                >
-                  <span className="text-pink-900 font-medium">{item.type}</span>
-                  <input
-                    type="number"
-                    min={1}
-                    max={item.availableQuantity}
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleCartQuantityChange(
-                        item.ticketId,
-                        e.target.value,
-                        item.availableQuantity
-                      )
-                    }
-                    className="w-14 border border-pink-900 rounded px-2 py-1 mx-2 text-pink-900"
-                  />
-                  <span className="text-pink-700">
-                    ₱{item.price * item.quantity}
-                  </span>
-                  <button
-                    onClick={() => handleRemoveFromCart(item.ticketId)}
-                    className="ml-2 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <div className="font-bold mt-2 text-pink-900">
-              Total: ₱{cart.reduce((sum, t) => sum + t.price * t.quantity, 0)}
-            </div>
-            <button
-              className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-              onClick={() => alert("Add to Cart")}
-            >
-              Add To Cart
-            </button>
-          </div>
-        )}
+        {cart.length > 0 && <TicketsDialogCart cart={cart} setCart={setCart} />}
       </div>
     );
   } else if (ticketsData && ticketsData.data.tickets.length === 0) {

@@ -1,6 +1,6 @@
 import { createContext, useReducer } from "react";
 
-const CartContext = createContext({
+export const CartContext = createContext({
   addToCart: () => {},
   removeFromCart: () => {},
   clearCart: () => {},
@@ -10,12 +10,42 @@ const CartContext = createContext({
 
 function cartReducer(state, action) {
   switch (action.type) {
-    case "ADD_TO_CART":
+    case "ADD_TO_CART": {
+      const newItems = action.payload;
+      let updatedCart = [...state.cartItems];
+
+      newItems.forEach((newItem) => {
+        const idx = updatedCart.findIndex(
+          (item) => item.ticketId === newItem.ticketId
+        );
+        const quantityToAdd = Number(newItem.quantity); // Always ensure quantity is a number
+
+        if (idx !== -1) {
+          updatedCart[idx] = {
+            ...updatedCart[idx],
+            quantity: Number(updatedCart[idx].quantity) + quantityToAdd,
+          };
+        } else {
+          updatedCart.push({
+            ...newItem,
+            quantity: quantityToAdd,
+          });
+        }
+      });
+
+      const newTotal = updatedCart.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+
+      console.log("UPDATED CART: ", updatedCart);
+
       return {
         ...state,
-        cartItems: [...state.cartItems, action.payload],
-        totalAmount: state.totalAmount + action.payload.price,
+        cartItems: updatedCart,
+        totalAmount: newTotal,
       };
+    }
     case "REMOVE_FROM_CART":
       return {
         ...state,
