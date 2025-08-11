@@ -14,7 +14,7 @@ export default class MongoEventRepository extends IEventRepository {
     return { totalDocs, totalPages, events };
   }
 
-  async getEvent(identifier, populateOptions = {}) {
+  async getEvent(identifier, populateOptions = null) {
     let query;
     if (mongoose.Types.ObjectId.isValid(identifier)) {
       query = { _id: identifier };

@@ -4,6 +4,8 @@ export const CartContext = createContext({
   addToCart: () => {},
   removeFromCart: () => {},
   clearCart: () => {},
+  updateCartQuantity: () => {},
+  updateCartItem: () => {},
   cartItems: [],
   totalAmount: 0,
 });
@@ -38,28 +40,68 @@ function cartReducer(state, action) {
         0
       );
 
-      console.log("UPDATED CART: ", updatedCart);
-
       return {
         ...state,
         cartItems: updatedCart,
         totalAmount: newTotal,
       };
     }
-    case "REMOVE_FROM_CART":
+    case "REMOVE_FROM_CART": {
+      const updatedCart = [...state.cartItems];
+      const itemToRemove = updatedCart.find(
+        (item) => item.ticketId === action.payload.ticketId
+      );
+      if (itemToRemove) {
+        updatedCart.splice(updatedCart.indexOf(itemToRemove), 1);
+      }
+
       return {
         ...state,
         cartItems: state.cartItems.filter(
-          (item) => item.id !== action.payload.id
+          (item) => item.ticketId !== action.payload.ticketId
         ),
-        totalAmount: state.totalAmount - action.payload.price,
+        totalAmount:
+          state.totalAmount - itemToRemove.price * itemToRemove.quantity,
       };
+    }
     case "CLEAR_CART":
       return {
         ...state,
         cartItems: [],
         totalAmount: 0,
       };
+    case "UPDATE_QUANTITY": {
+      const { ticketId, quantity } = action.payload;
+      const updatedCartItems = state.cartItems.map((item) =>
+        item.ticketId === ticketId
+          ? { ...item, quantity: Number(quantity) }
+          : item
+      );
+      const newTotal = updatedCartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      return {
+        ...state,
+        cartItems: updatedCartItems,
+        totalAmount: newTotal,
+      };
+    }
+    case "UPDATE_CART_ITEM": {
+      const { ticketId, updates } = action.payload;
+      const updatedCartItems = state.cartItems.map((item) =>
+        item.ticketId === ticketId ? { ...item, ...updates } : item
+      );
+      const newTotal = updatedCartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      return {
+        ...state,
+        cartItems: updatedCartItems,
+        totalAmount: newTotal,
+      };
+    }
     default:
       return state;
   }
@@ -75,12 +117,20 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: "ADD_TO_CART", payload: item });
   };
 
-  const removeFromCart = (id) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: { id } });
+  const removeFromCart = (ticketId) => {
+    dispatch({ type: "REMOVE_FROM_CART", payload: { ticketId } });
   };
 
   const clearCart = () => {
     dispatch({ type: "CLEAR_CART" });
+  };
+
+  const updateCartQuantity = (ticketId, quantity) => {
+    dispatch({ type: "UPDATE_QUANTITY", payload: { ticketId, quantity } });
+  };
+
+  const updateCartItem = (ticketId, updates) => {
+    dispatch({ type: "UPDATE_CART_ITEM", payload: { ticketId, updates } });
   };
 
   return (
@@ -91,6 +141,8 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         clearCart,
+        updateCartQuantity,
+        updateCartItem,
       }}
     >
       {children}

@@ -15,7 +15,7 @@ async function fetchTickets(eventId) {
   }
 }
 
-export default function TicketsDialog({ eventId }) {
+export default function TicketsDialog({ eventId, eventName }) {
   const { cartItems } = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
   const [quantities, setQuantities] = useState({});
@@ -61,6 +61,7 @@ export default function TicketsDialog({ eventId }) {
         ...prev,
         {
           eventId: ticket.eventId,
+          eventName: ticket.eventName,
           ticketId: ticket._id,
           type: ticket.type,
           price: ticket.price,
@@ -128,7 +129,13 @@ export default function TicketsDialog({ eventId }) {
               className="w-16 border border-pink-900 rounded px-2 py-1 mr-2 text-pink-900"
             />
             <button
-              onClick={() => handleAddToCart({ ...ticket, eventId: eventId })}
+              onClick={() =>
+                handleAddToCart({
+                  ...ticket,
+                  eventId: eventId,
+                  eventName: eventName,
+                })
+              }
               className={`bg-pink-900 hover:bg-pink-700 ${
                 ticket.availableQuantity < 1
                   ? "opacity-50 cursor-not-allowed"

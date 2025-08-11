@@ -82,7 +82,10 @@ export default function EventDetails() {
             </span>
           </div>
         </div>
-        <TicketsDialog eventId={eventDetails.data._id} />
+        <TicketsDialog
+          eventId={eventDetails.data._id}
+          eventName={eventDetails.data.title}
+        />
       </div>
 
       {/* Description and Organizers */}

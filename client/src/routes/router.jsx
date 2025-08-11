@@ -12,6 +12,7 @@ import EventLayout from "../pages/EventPage/EventLayout";
 import { loader as eventLoader } from "../pages/EventPage/EventPage";
 import EventDetails from "../pages/EventPage/EventDetails";
 import MyTickets from "../pages/MePage/MyTickets/MyTickets";
+import CartPage from "../pages/CartPage/CartPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,6 +66,7 @@ const router = createBrowserRouter([
             element: <AccountSettings />,
           },
           { path: "my-tickets", element: <MyTickets /> },
+          { path: "cart", element: <CartPage /> },
         ],
       },
     ],

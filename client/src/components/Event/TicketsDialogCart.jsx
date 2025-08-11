@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
+import { toast } from "react-toastify";
 
 export default function TicketsDialogCart({ cart, setCart }) {
-  const { addToCart, cartItems } = useContext(CartContext);
+  const { addToCart } = useContext(CartContext);
 
   const handleCartQuantityChange = (ticketId, value, max) => {
     const val = Math.max(1, Math.min(Number(value), max));
@@ -19,9 +20,14 @@ export default function TicketsDialogCart({ cart, setCart }) {
 
   const addToMainCart = () => {
     addToCart(cart);
+    toast.success("Added to cart successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      draggable: true,
+    });
   };
-
-  console.log(cartItems);
 
   return (
     <div className="mt-6 p-4 border border-pink-900 rounded-lg bg-pink-100">
