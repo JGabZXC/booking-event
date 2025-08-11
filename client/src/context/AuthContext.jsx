@@ -1,13 +1,14 @@
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 import { authService } from "../services/authService";
 
 export const AuthContext = createContext({
   user: null,
   isLoading: false,
-  login: async (credentials) => {},
-  register: async (userData) => {},
+  isAuthChecking: true,
+  login: async () => {},
+  register: async () => {},
   logout: async () => {},
-  setUser: (user) => {},
+  setUser: () => {},
 });
 
 function authReducer(state, action) {
@@ -67,8 +68,10 @@ function authReducer(state, action) {
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
-    isLoading: true,
+    isLoading: false,
   });
+
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -78,11 +81,20 @@ export function AuthProvider({ children }) {
           type: "LOGIN",
           payload: { user: response.data.user },
         });
+        localStorage.setItem("auth", true);
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         dispatch({ type: "LOGIN_FAILURE" });
+      } finally {
+        setIsAuthChecking(false);
       }
     };
-    checkAuth();
+
+    if (localStorage.getItem("auth")) {
+      checkAuth();
+    } else {
+      setIsAuthChecking(false);
+    }
   }, []);
 
   const login = async (credentials) => {
@@ -93,6 +105,7 @@ export function AuthProvider({ children }) {
         type: "LOGIN",
         payload: { user: response.data.user },
       });
+      localStorage.setItem("auth", true);
       return response;
     } catch (error) {
       dispatch({ type: "LOGIN_FAILURE" });
@@ -119,6 +132,7 @@ export function AuthProvider({ children }) {
       dispatch({ type: "LOGOUT_START" });
       const response = await authService.logout();
       dispatch({ type: "LOGOUT" });
+      localStorage.removeItem("auth");
       return response;
     } catch (error) {
       dispatch({ type: "LOGOUT_FAILURE" });
@@ -131,6 +145,7 @@ export function AuthProvider({ children }) {
       value={{
         user: state.user,
         isLoading: state.isLoading,
+        isAuthChecking,
         login,
         logout,
         register,

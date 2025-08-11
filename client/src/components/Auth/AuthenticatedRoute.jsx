@@ -4,9 +4,9 @@ import { Navigate } from "react-router-dom";
 import Loading from "../UI/Loading";
 
 export default function AuthenticatedRoute({ children }) {
-  const { user, isLoading } = useContext(AuthContext);
+  const { user, isAuthChecking } = useContext(AuthContext);
 
-  if (isLoading) {
+  if (isAuthChecking) {
     return <Loading message="Please wait" />;
   }
 
