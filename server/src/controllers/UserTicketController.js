@@ -27,11 +27,13 @@ export const getAllUserTickets = asyncHandler(async (req, res, next) => {
 });
 
 export const createUserTicket = asyncHandler(async (req, res, next) => {
-  const userTicket = await userTicketService.createUserTicket(req.body);
+  const tickets = await Promise.all(
+    req.body.tickets.map((ticket) => userTicketService.createUserTicket(ticket))
+  );
 
   res.status(201).json({
     status: "success",
-    data: userTicket,
+    data: tickets,
   });
 });
 

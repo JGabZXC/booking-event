@@ -30,6 +30,9 @@ export const userTicketValidateBody = (req, res, next) => {
   }
 
   req.body.user = req.user._id;
-  if (req.body.purchasedDate) delete req.body.purchasedDate;
+  req.body.tickets.forEach((ticket) => {
+    ticket.user = req.user._id;
+    if (ticket.purchasedDate) delete ticket.purchasedDate;
+  });
   next();
 };

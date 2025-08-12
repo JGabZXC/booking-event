@@ -37,11 +37,17 @@ export class UserTicketValidator {
     const errors = [];
 
     if (method !== "PATCH") {
-      if (!ticketData.ticket) errors.push("Ticket is requred");
-      if (!ticketData.quantity) errors.push("Quantity is required");
+      ticketData.tickets.forEach((ticket) => {
+        if (!ticket.ticket) errors.push("Ticket is required");
+        if (!ticket.quantity) errors.push("Quantity is required");
+        if (Number.isNaN(Number(ticket.quantity)) || ticket.quantity <= 0)
+          errors.push("Invalid quantity");
+
+        if (errors.length > 0) return errors;
+      });
+      // if (Number.isNaN(Number(ticketData.quantity)) || ticketData.quantity <= 0)
+      //   errors.push("Invalid quantity");
     }
-    if (Number.isNaN(Number(ticketData.quantity)) || ticketData.quantity <= 0)
-      errors.push("Invalid quantity");
 
     if (errors.length > 0)
       return {

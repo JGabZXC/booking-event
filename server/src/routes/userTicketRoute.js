@@ -21,7 +21,7 @@ router
 router
   .route("/:userTicketId")
   .get(getUserTicket)
-  .patch(userTicketValidateBody, updateUserTicket)
+  .patch(updateUserTicket)
   .delete(deleteUserTicket);
 
 export default router;
