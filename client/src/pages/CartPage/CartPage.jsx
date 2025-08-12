@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
 import { CartContext } from "../../context/CartContext";
-import { toast } from "react-toastify";
 import { ticketService } from "../../services/ticketService";
+import { Link } from "react-router-dom";
 
-function groupByEventId(items) {
+export function groupByEventId(items) {
   return items.reduce((acc, item) => {
     const key = item.eventName || "unknown";
     if (!acc[key]) acc[key] = [];
@@ -133,15 +133,12 @@ export default function CartPage() {
               Clear Cart
             </button>
           </div>
-          <button
-            className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition"
-            onClick={() => {
-              console.log(cartItems);
-              toast.success("Proceeding to checkout...");
-            }}
+          <Link
+            to="/checkout"
+            className="block text-center w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition"
           >
             Proceed to Checkout
-          </button>
+          </Link>
         </>
       )}
     </section>
