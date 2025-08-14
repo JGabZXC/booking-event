@@ -5,7 +5,7 @@ import { HTTPSTATUS } from "../config/http.js";
 const paymentService = container.get("paymentService");
 
 export const createPayment = asyncHandler(async (req, res, next) => {
-  req.body.user = String(req.user._id);
+  req.body.user = req.user._id;
   req.body.userEmail = req.user.email;
 
   const paymentRecord = await paymentService.createPayment(req.body);
@@ -15,7 +15,7 @@ export const createPayment = asyncHandler(async (req, res, next) => {
 });
 
 export const checkoutSession = asyncHandler(async (req, res, next) => {
-  req.body.user = String(req.user._id);
+  req.body.user = req.user._id;
   req.body.userEmail = req.user.email;
 
   const session = await paymentService.processPayment(req.body, "php", [
@@ -24,6 +24,20 @@ export const checkoutSession = asyncHandler(async (req, res, next) => {
   res.status(HTTPSTATUS.OK).json({
     status: "success",
     session,
+  });
+});
+
+export const checkoutIntent = asyncHandler(async (req, res, next) => {
+  req.body.user = req.user._id;
+  req.body.userEmail = req.user.email;
+
+  const intent = await paymentService.processPaymentIntent(req.body, "php", [
+    { path: "event", select: "title slug" },
+  ]);
+
+  res.status(HTTPSTATUS.OK).json({
+    status: "success",
+    intent,
   });
 });
 

@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-
-import { BadRequestException, ConflictException } from "../utils/appError.js";
-import { ErrorCode } from "../config/errorCode.js";
 
 const userSchema = new mongoose.Schema({
   name: {

@@ -48,10 +48,11 @@ export default class PaymentService {
     );
 
     const insertedUserTickets = await this.insertUserTickets(
-      paymentData.user,
+      paymentData.clientReferenceId,
       ticketSelections
     );
 
+    paymentData.user = paymentData.clientReferenceId;
     paymentData.isPaid = true;
     paymentData.status = "succeeded";
     paymentData.amount = ticketSelections.reduce(
@@ -144,6 +145,70 @@ export default class PaymentService {
 
     return {
       sessionId: session.id,
+      paymentRecord,
+    };
+  }
+
+  async processPaymentIntent(data, currency = "php", populateOptions) {
+    console.log(data);
+    const tickets = await Promise.all(
+      data.tickets.map((selection) =>
+        this.ticketRepository.getTicket(selection.ticket, populateOptions)
+      )
+    );
+
+    const ticketSelections = [];
+    let eventName = null;
+    let eventSlug = null;
+
+    for (const ticket of tickets) {
+      if (!ticket)
+        throw new NotFoundException(
+          `Ticket not found: ${data.tickets[idx].ticketId}`
+        );
+
+      if (ticket) {
+        eventName = ticket.event.title;
+        eventSlug = ticket.event.slug;
+        break;
+      }
+    }
+
+    tickets.forEach((ticket, idx) => {
+      ticketSelections.push({
+        ticket: ticket._id,
+        ticketType: ticket.type,
+        amount: ticket.price * data.tickets[idx].quantity,
+        quantity: data.tickets[idx].quantity,
+      });
+    });
+
+    // Prepare data for Stripe
+    const paymentData = {
+      eventName,
+      eventSlug,
+      clientReferenceId: data.user,
+      customerEmail: data.userEmail,
+      ticketSelections,
+    };
+
+    // Create Stripe payment intent
+    const paymentIntent = await this.paymentStrategy.createIntent(
+      {
+        ...paymentData,
+        clientReferenceId: String(paymentData.clientReferenceId),
+      },
+      currency
+    );
+
+    // Save payment record
+    paymentData.stripePaymentIntentId = paymentIntent.id;
+    paymentData.amount = ticketSelections.reduce((sum, t) => sum + t.amount, 0);
+    paymentData.paymentMethod = "stripe";
+    const paymentRecord = await this.createPayment(paymentData);
+
+    return {
+      paymentIntentId: paymentIntent.id,
       paymentRecord,
     };
   }

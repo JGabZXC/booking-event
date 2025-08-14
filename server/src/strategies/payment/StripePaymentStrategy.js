@@ -28,4 +28,32 @@ export default class StripePaymentStrategy {
     });
     return session;
   }
+
+  async createIntent(data, currency = "php") {
+    const line_items = data.ticketSelections.map((ticket) => ({
+      price_data: {
+        currency,
+        product_data: {
+          name: `${data.eventName} - ${ticket.ticketType}`,
+        },
+        unit_amount: ticket.amount * 100, // Convert to cents
+      },
+      quantity: ticket.quantity || 1,
+    }));
+
+    const intent = await this.stripe.paymentIntents.create({
+      amount: line_items.reduce(
+        (sum, item) => sum + item.price_data.unit_amount * item.quantity,
+        0
+      ),
+      currency,
+      payment_method_types: ["card"],
+      metadata: {
+        client_reference_id: data.clientReferenceId,
+        customer_email: data.customerEmail,
+      },
+    });
+
+    return intent;
+  }
 }
