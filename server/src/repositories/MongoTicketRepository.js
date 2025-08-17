@@ -2,7 +2,10 @@ import ITicketRepository from "../interfaces/ITicketRepository.js";
 import Ticket from "../models/Ticket.js";
 
 export default class MongoTicketRepository extends ITicketRepository {
-  async createTicket(ticketData) {
+  async createTicket(ticketData, session = null) {
+    if (session) {
+      return await Ticket.create([ticketData], { session });
+    }
     return await Ticket.create(ticketData);
   }
 

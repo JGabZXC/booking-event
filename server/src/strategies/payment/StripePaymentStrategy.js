@@ -34,14 +34,20 @@ export default class StripePaymentStrategy {
       price_data: {
         currency,
         product_data: {
-          name: `${data.eventName} - ${ticket.ticketType}`,
+          name: `${ticket.eventName} - ${ticket.ticketType}`,
         },
         unit_amount: ticket.amount * 100, // Convert to cents
       },
       quantity: ticket.quantity || 1,
     }));
 
+    const customer = await this.stripe.customers.create({
+      email: data.customerEmail,
+      name: data.customerName,
+    });
+
     const intent = await this.stripe.paymentIntents.create({
+      customer: customer.id,
       amount: line_items.reduce(
         (sum, item) => sum + item.price_data.unit_amount * item.quantity,
         0

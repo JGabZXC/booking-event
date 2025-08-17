@@ -12,7 +12,10 @@ export default class MongoUserRepository extends IRepository {
     return { totalDocs, totalPages, users };
   }
 
-  async createUser(userData) {
+  async createUser(userData, session = null) {
+    if (session) {
+      return await User.create([userData], { session });
+    }
     return await User.create(userData);
   }
 

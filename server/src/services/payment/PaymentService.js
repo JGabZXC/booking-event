@@ -89,6 +89,9 @@ export default class PaymentService {
     return payment;
   }
 
+  /*
+    DEPRECATED CHECKOUT SESSION
+  */
   async processPayment(data, currency = "php", populateOptions) {
     const tickets = await Promise.all(
       data.ticketSelections.map((selection) =>
@@ -150,29 +153,52 @@ export default class PaymentService {
   }
 
   async processPaymentIntent(data, currency = "php", populateOptions) {
-    console.log(data);
+    const ticketSelections = [];
     const tickets = await Promise.all(
       data.tickets.map((selection) =>
         this.ticketRepository.getTicket(selection.ticket, populateOptions)
       )
     );
 
+    tickets.forEach((ticket, idx) => {
+      ticketSelections.push({
+        eventName: ticket.event.title,
+        ticket: ticket._id,
+        ticketType: ticket.type,
+        amount: ticket.price * data.tickets[idx].quantity,
+        quantity: data.tickets[idx].quantity,
+      });
+    });
+
+    const intentData = {
+      ticketSelections,
+      clientReferenceId: String(data.user), // Stripe accepts String users
+      customerEmail: data.userEmail,
+      customerName: data.userName,
+    };
+
+    // Create Stripe payment intent
+    const paymentIntent = await this.paymentStrategy.createIntent(
+      intentData,
+      currency
+    );
+
+    console.log(paymentIntent);
+
+    return {
+      paymentIntentId: paymentIntent.id,
+      clientSecret: paymentIntent.client_secret,
+    };
+  }
+
+  async insertPayment(data, currency = "php", populateOptions) {
     const ticketSelections = [];
-    let eventName = null;
-    let eventSlug = null;
 
-    for (const ticket of tickets) {
-      if (!ticket)
-        throw new NotFoundException(
-          `Ticket not found: ${data.tickets[idx].ticketId}`
-        );
-
-      if (ticket) {
-        eventName = ticket.event.title;
-        eventSlug = ticket.event.slug;
-        break;
-      }
-    }
+    const tickets = await Promise.all(
+      data.tickets.map((selection) =>
+        this.ticketRepository.getTicket(selection.ticket, populateOptions)
+      )
+    );
 
     tickets.forEach((ticket, idx) => {
       ticketSelections.push({
@@ -185,21 +211,10 @@ export default class PaymentService {
 
     // Prepare data for Stripe
     const paymentData = {
-      eventName,
-      eventSlug,
       clientReferenceId: data.user,
       customerEmail: data.userEmail,
       ticketSelections,
     };
-
-    // Create Stripe payment intent
-    const paymentIntent = await this.paymentStrategy.createIntent(
-      {
-        ...paymentData,
-        clientReferenceId: String(paymentData.clientReferenceId),
-      },
-      currency
-    );
 
     // Save payment record
     paymentData.stripePaymentIntentId = paymentIntent.id;
@@ -208,7 +223,6 @@ export default class PaymentService {
     const paymentRecord = await this.createPayment(paymentData);
 
     return {
-      paymentIntentId: paymentIntent.id,
       paymentRecord,
     };
   }
