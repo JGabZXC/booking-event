@@ -4,7 +4,7 @@ import UserTicket from "../models/UserTicket.js";
 export default class MongoUserTicketRepository extends IUserTicketRepository {
   async createUserTicket(userTicketData, session = null) {
     if (session) {
-      return await UserTicket.create([userTicketData], { session });
+      return await UserTicket.create(userTicketData, { session });
     }
     return await UserTicket.create(userTicketData);
   }
@@ -36,10 +36,16 @@ export default class MongoUserTicketRepository extends IUserTicketRepository {
     return await UserTicket.findById(id).populate(populateOptions);
   }
 
-  async updateUserTicket(id, userTicketData, populateOptions = null) {
+  async updateUserTicket(
+    id,
+    userTicketData,
+    populateOptions = null,
+    session = null
+  ) {
     return await UserTicket.findByIdAndUpdate(id, userTicketData, {
       new: true,
       runValidators: true,
+      session,
     }).populate(populateOptions);
   }
 

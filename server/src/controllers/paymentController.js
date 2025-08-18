@@ -46,6 +46,14 @@ export const checkoutIntent = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const confirmPayment = asyncHandler(async (req, res, next) => {
+  req.body.user = req.user._id;
+  const payment = await paymentService.insertPayment(req.body, [
+    { path: "event", select: "title slug" },
+  ]);
+  res.status(HTTPSTATUS.OK).json({ status: "success", data: payment });
+});
+
 export const getPayment = asyncHandler(async (req, res, next) => {
   const payment = await paymentService.getPayment(req.params.id);
   res.status(HTTPSTATUS.OK).json({ status: "success", data: payment });

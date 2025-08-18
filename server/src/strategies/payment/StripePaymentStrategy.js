@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { NotFoundException } from "../../utils/appError.js";
 
 export default class StripePaymentStrategy {
   constructor() {
@@ -61,5 +62,15 @@ export default class StripePaymentStrategy {
     });
 
     return intent;
+  }
+
+  async retrieveIntent(intentId) {
+    const paymentIntent = await this.stripe.paymentIntents.retrieve(intentId);
+    if (!paymentIntent) {
+      throw new NotFoundException(
+        `Payment intent with ID ${intentId} not found`
+      );
+    }
+    return paymentIntent;
   }
 }

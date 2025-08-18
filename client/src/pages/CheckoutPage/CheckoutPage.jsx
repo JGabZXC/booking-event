@@ -10,16 +10,34 @@ import {
 import { toast } from "react-toastify";
 import { Navigate } from "react-router-dom";
 import { groupByEventId } from "../CartPage/CartPage";
+import { useMutation } from "@tanstack/react-query";
+import { paymentService } from "../../services/paymentService";
 
 const stripePromise = loadStripe(
   "pk_test_51RqElNBsccdH4nMqJZuMkeEehRQKbMniJk463nl602CTDtmx18Sv0bh4p4diOLgC1T9Qap7pOtBCPKpcWSdIdsrJ0059K7VdCk"
 );
 
+const createPaymentIntent = async (tickets) => {
+  try {
+    const res = await paymentService.createIntent(tickets);
+    return res.data;
+  } catch (error) {
+    console.error("Error creating payment intent:", error);
+    throw error;
+  }
+};
+
 function CheckoutForm() {
-  const { cartItems, clearCart } = useContext(CartContext);
+  const { cartItems } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const mutation = useMutation({
+    mutationFn: createPaymentIntent,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+  });
 
   // Only include available tickets
   const availableItems = useMemo(
@@ -44,25 +62,25 @@ function CheckoutForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/payments/create-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tickets: availableItems }),
-      });
-      const { clientSecret } = await res.json();
+      const { intent } = await mutation.mutateAsync(availableItems);
+      const { paymentIntent } = await stripe.confirmCardPayment(
+        intent.clientSecret,
+        {
+          payment_method: {
+            card: elements.getElement(CardElement),
+          },
+        }
+      );
 
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
-      });
+      console.log(paymentIntent);
 
-      if (result.error) {
-        throw new Error(result.error.message);
-      } else if (result.paymentIntent.status === "succeeded") {
-        clearCart();
+      if (paymentIntent.status === "succeeded") {
         toast.success("Payment successful!");
-        // Redirect or show success page here
+        const body = {
+          tickets: availableItems,
+          paymentIntentId: paymentIntent.id,
+        };
+        await paymentService.confirmPayment(body);
       }
     } catch (error) {
       toast.error("Payment failed. Please try again.");

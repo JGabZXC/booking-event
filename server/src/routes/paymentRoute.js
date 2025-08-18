@@ -10,6 +10,7 @@ import {
   createPayment,
   deletePayment,
   getPayment,
+  confirmPayment,
 } from "../controllers/PaymentController.js";
 import { validatePayment } from "../middlewares/paymentMiddleware.js";
 
@@ -18,6 +19,7 @@ const router = express.Router();
 router.use(isAuthenticated);
 router.route("/process-payment-ticket").post(checkoutSession);
 router.route("/process-payment-intent").post(checkoutIntent);
+router.route("/confirm-payment").post(confirmPayment);
 router
   .route("/manual-payment")
   .post(isAuthorized("admin"), validatePayment, createPayment);

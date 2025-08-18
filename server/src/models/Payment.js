@@ -28,7 +28,6 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     enum: ["stripe", "manual"],
   },
-  stripeSessionId: String,
   paymentIntentId: String, // This can be Official Receipt if Manual Payment
   status: {
     type: String,
@@ -38,5 +37,7 @@ const paymentSchema = new mongoose.Schema({
   },
   isPaid: { type: Boolean, default: false },
 });
+
+paymentSchema.index({ paymentIntentId: 1 });
 
 export default mongoose.model("Payment", paymentSchema);

@@ -2,7 +2,13 @@ import IPaymentRepository from "../interfaces/IPaymentRepository.js";
 import Payment from "../models/Payment.js";
 
 export default class MongoPaymentRepository extends IPaymentRepository {
-  async createPayment(paymentData) {
+  async createPayment(paymentData, session) {
+    if (session) {
+      const payment = await Payment.create([paymentData], { session });
+      console.log(payment);
+      return payment;
+    }
+
     return await Payment.create(paymentData);
   }
 

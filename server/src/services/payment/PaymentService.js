@@ -1,4 +1,8 @@
-import { NotFoundException } from "../../utils/appError.js";
+import mongoose from "mongoose";
+import {
+  BadRequestException,
+  NotFoundException,
+} from "../../utils/appError.js";
 
 export default class PaymentService {
   constructor(
@@ -31,38 +35,22 @@ export default class PaymentService {
     });
   }
 
-  async insertUserTickets(user, ticketSelections) {
+  async insertUserTickets(user, ticketSelections, session) {
     const userTickets = ticketSelections.map((selection) => {
       return this.userTicketService.createUserTicket({
         user,
         ticket: selection.ticket,
         quantity: selection.quantity,
+        session,
       });
     });
     return Promise.all(userTickets);
   }
 
-  async createPayment(paymentData) {
-    const ticketSelections = await this.buildTicketSelections(
-      paymentData.ticketSelections
-    );
-
-    const insertedUserTickets = await this.insertUserTickets(
-      paymentData.clientReferenceId,
-      ticketSelections
-    );
-
-    paymentData.user = paymentData.clientReferenceId;
-    paymentData.isPaid = true;
-    paymentData.status = "succeeded";
-    paymentData.amount = ticketSelections.reduce(
-      (sum, t) => sum + t.price * t.quantity,
-      0
-    );
-    paymentData.ticket = insertedUserTickets.map((ticket) => ticket._id);
-
+  async createPayment(paymentData, session) {
     const paymentRecord = await this.paymentRepository.createPayment(
-      paymentData
+      paymentData,
+      session
     );
 
     return paymentRecord;
@@ -153,37 +141,30 @@ export default class PaymentService {
   }
 
   async processPaymentIntent(data, currency = "php", populateOptions) {
-    const ticketSelections = [];
     const tickets = await Promise.all(
       data.tickets.map((selection) =>
         this.ticketRepository.getTicket(selection.ticket, populateOptions)
       )
     );
-
-    tickets.forEach((ticket, idx) => {
-      ticketSelections.push({
-        eventName: ticket.event.title,
-        ticket: ticket._id,
-        ticketType: ticket.type,
-        amount: ticket.price * data.tickets[idx].quantity,
-        quantity: data.tickets[idx].quantity,
-      });
-    });
+    const ticketSelections = tickets.map((ticket, idx) => ({
+      eventName: ticket.event.title,
+      ticket: ticket._id,
+      ticketType: ticket.type,
+      amount: ticket.price * data.tickets[idx].quantity,
+      quantity: data.tickets[idx].quantity,
+    }));
 
     const intentData = {
       ticketSelections,
-      clientReferenceId: String(data.user), // Stripe accepts String users
+      clientReferenceId: String(data.user),
       customerEmail: data.userEmail,
       customerName: data.userName,
     };
 
-    // Create Stripe payment intent
     const paymentIntent = await this.paymentStrategy.createIntent(
       intentData,
       currency
     );
-
-    console.log(paymentIntent);
 
     return {
       paymentIntentId: paymentIntent.id,
@@ -191,39 +172,76 @@ export default class PaymentService {
     };
   }
 
-  async insertPayment(data, currency = "php", populateOptions) {
-    const ticketSelections = [];
+  async insertPayment(data, populateOptions) {
+    // 1. Verify payment intent
+    const paymentIntent = await this.paymentStrategy.retrieveIntent(
+      data.paymentIntentId
+    );
 
+    if (paymentIntent.status !== "succeeded")
+      throw new BadRequestException("Payment not successful");
+
+    // 2. Build ticket selections
     const tickets = await Promise.all(
       data.tickets.map((selection) =>
-        this.ticketRepository.getTicket(selection.ticket, populateOptions)
+        this.ticketRepository.getTicket(selection.ticketId, populateOptions)
       )
     );
 
-    tickets.forEach((ticket, idx) => {
-      ticketSelections.push({
-        ticket: ticket._id,
-        ticketType: ticket.type,
-        amount: ticket.price * data.tickets[idx].quantity,
-        quantity: data.tickets[idx].quantity,
-      });
-    });
+    const ticketSelections = tickets.map((ticket, idx) => ({
+      ticket: ticket._id,
+      ticketType: ticket.type,
+      amount: ticket.price * data.tickets[idx].quantity,
+      quantity: data.tickets[idx].quantity,
+    }));
 
-    // Prepare data for Stripe
-    const paymentData = {
-      clientReferenceId: data.user,
-      customerEmail: data.userEmail,
-      ticketSelections,
-    };
+    try {
+      const session = await mongoose.startSession();
+      session.startTransaction();
 
-    // Save payment record
-    paymentData.stripePaymentIntentId = paymentIntent.id;
-    paymentData.amount = ticketSelections.reduce((sum, t) => sum + t.amount, 0);
-    paymentData.paymentMethod = "stripe";
-    const paymentRecord = await this.createPayment(paymentData);
+      // 3. Update Tickets Available Quantity
+      await Promise.all(
+        tickets.map((ticket, idx) => {
+          return this.ticketRepository.updateTicket(
+            ticket._id,
+            {
+              availableQuantity:
+                ticket.availableQuantity - data.tickets[idx].quantity,
+            },
+            null,
+            session
+          );
+        })
+      );
 
-    return {
-      paymentRecord,
-    };
+      // 4. Create user tickets
+      const insertedUserTickets = await this.insertUserTickets(
+        data.user,
+        ticketSelections,
+        session
+      );
+
+      // 5. Save payment record
+      const paymentData = {
+        user: data.user,
+        customerEmail: data.userEmail,
+        ticketSelections,
+        stripePaymentIntentId: paymentIntent.id,
+        amount: ticketSelections.reduce((sum, t) => sum + t.amount, 0),
+        paymentMethod: "stripe",
+        isPaid: true,
+        status: "succeeded",
+        ticket: insertedUserTickets.map((ticket) => ticket._id),
+      };
+      const paymentRecord = await this.createPayment(paymentData, session);
+
+      await session.commitTransaction();
+      session.endSession();
+      return { paymentRecord };
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   }
 }
