@@ -23,7 +23,15 @@ export default class MongoTicketRepository extends ITicketRepository {
     return { totalDocs, totalPages, tickets };
   }
 
-  async updateTicket(id, ticketData) {
+  async updateTicket(id, ticketData, session = null) {
+    if (session) {
+      return await Ticket.findByIdAndUpdate(id, ticketData, {
+        new: true,
+        runValidators: true,
+        session,
+      });
+    }
+
     return await Ticket.findByIdAndUpdate(id, ticketData, {
       new: true,
       runValidators: true,

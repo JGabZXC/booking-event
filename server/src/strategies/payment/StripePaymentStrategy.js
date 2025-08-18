@@ -37,11 +37,10 @@ export default class StripePaymentStrategy {
         product_data: {
           name: `${ticket.eventName} - ${ticket.ticketType}`,
         },
-        unit_amount: ticket.amount * 100, // Convert to cents
+        unit_amount: ticket.price * 100, // Convert to cents
       },
       quantity: ticket.quantity || 1,
     }));
-
     const customer = await this.stripe.customers.create({
       email: data.customerEmail,
       name: data.customerName,
@@ -72,5 +71,20 @@ export default class StripePaymentStrategy {
       );
     }
     return paymentIntent;
+  }
+
+  async refundPayment(intentId, reason, metadata = {}) {
+    const paymentIntent = await this.retrieveIntent(intentId);
+    if (paymentIntent.status !== "succeeded") {
+      throw new NotFoundException("Payment intent not successful");
+    }
+
+    const refund = await this.stripe.refunds.create({
+      payment_intent: intentId,
+      reason,
+      metadata,
+    });
+
+    return refund;
   }
 }

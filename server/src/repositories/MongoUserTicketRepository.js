@@ -4,7 +4,7 @@ import UserTicket from "../models/UserTicket.js";
 export default class MongoUserTicketRepository extends IUserTicketRepository {
   async createUserTicket(userTicketData, session = null) {
     if (session) {
-      return await UserTicket.create(userTicketData, { session });
+      return await UserTicket.create([userTicketData], { session });
     }
     return await UserTicket.create(userTicketData);
   }

@@ -5,7 +5,6 @@ export default class MongoPaymentRepository extends IPaymentRepository {
   async createPayment(paymentData, session) {
     if (session) {
       const payment = await Payment.create([paymentData], { session });
-      console.log(payment);
       return payment;
     }
 
