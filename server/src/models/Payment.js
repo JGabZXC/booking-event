@@ -28,7 +28,10 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     enum: ["stripe", "manual"],
   },
-  paymentIntentId: String, // This can be Official Receipt if Manual Payment
+  paymentIntentId: {
+    type: String,
+    unique: true,
+  }, // This can be Official Receipt if Manual Payment
   status: {
     type: String,
     required: true,

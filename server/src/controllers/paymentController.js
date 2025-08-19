@@ -35,7 +35,6 @@ export const checkoutIntent = asyncHandler(async (req, res, next) => {
   // const intent = await paymentService.processPaymentIntent(req.body, "php", [
   //   { path: "event", select: "title slug" },
   // ]);
-
   const intent = await paymentService.processPaymentIntent(req.body, "php", [
     { path: "event", select: "title slug" },
   ]);
@@ -48,6 +47,7 @@ export const checkoutIntent = asyncHandler(async (req, res, next) => {
 
 export const confirmPayment = asyncHandler(async (req, res, next) => {
   req.body.user = req.user._id;
+
   const payment = await paymentService.insertPayment(req.body, [
     { path: "event", select: "title slug" },
   ]);

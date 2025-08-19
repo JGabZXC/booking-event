@@ -22,6 +22,12 @@ export default class MongoPaymentRepository extends IPaymentRepository {
     return await Payment.findById(paymentId);
   }
 
+  async getPaymentByIntent(intentId) {
+    return await Payment.findOne({
+      paymentIntentId: intentId,
+    });
+  }
+
   async geAllPayments(sort = "_id", page = 1, limit = 10, filter = "") {
     const skip = (page - 1) * limit;
     const filterType = filter === "all" ? {} : { status: filter };

@@ -17,6 +17,9 @@ export default class PaymentService {
     this.userTicketService = userTicketService;
   }
 
+  /*
+    HELPER METHODS
+  */
   async buildTicketSelections(ticketSelections, populateOptions) {
     const tickets = await Promise.all(
       ticketSelections.map((selection) =>
@@ -24,7 +27,7 @@ export default class PaymentService {
       )
     );
 
-    return tickets.map((ticket, idx) => {
+    const selections = tickets.map((ticket, idx) => {
       if (!ticket) throw new NotFoundException("Ticket not found");
       return {
         eventName: ticket.event.title,
@@ -34,6 +37,7 @@ export default class PaymentService {
         ticket: ticket._id,
       };
     });
+    return { ticketSelections: selections, tickets };
   }
 
   async insertUserTickets(user, ticketSelections, session) {
@@ -45,7 +49,43 @@ export default class PaymentService {
         session,
       });
     });
-    return Promise.all(userTickets);
+    return await Promise.all(userTickets);
+  }
+
+  async validatePaymentIntent(paymentIntentId, userId) {
+    const paymentIntent = await this.paymentStrategy.retrieveIntent(
+      paymentIntentId
+    );
+
+    const existingPayment = await this.paymentRepository.getPaymentByIntent(
+      paymentIntent.id
+    );
+
+    if (existingPayment)
+      throw new BadRequestException("Payment already exists for this intent");
+
+    if (paymentIntent.status !== "succeeded")
+      throw new BadRequestException("Payment not successful");
+
+    if (
+      paymentIntent.metadata &&
+      paymentIntent.metadata.client_reference_id !== String(userId)
+    )
+      throw new BadRequestException("Payment not authorized");
+
+    return paymentIntent;
+  }
+
+  async updateTickets(tickets, ticketSelections, session) {
+    return await Promise.all(
+      tickets.map((ticket, idx) => {
+        return this.ticketRepository.updateTicket(
+          ticket._id,
+          { $inc: { availableQuantity: -ticketSelections[idx].quantity } },
+          session
+        );
+      })
+    );
   }
 
   async createPayment(paymentData, session) {
@@ -142,7 +182,7 @@ export default class PaymentService {
   }
 
   async processPaymentIntent(data, currency = "php", populateOptions) {
-    const ticketSelections = await this.buildTicketSelections(
+    const { ticketSelections } = await this.buildTicketSelections(
       data.tickets,
       populateOptions
     );
@@ -166,47 +206,21 @@ export default class PaymentService {
   }
 
   async insertPayment(data, populateOptions) {
-    const paymentIntent = await this.paymentStrategy.retrieveIntent(
-      data.paymentIntentId
+    const paymentIntent = await this.validatePaymentIntent(
+      data.paymentIntentId,
+      data.user
     );
 
-    if (paymentIntent.status !== "succeeded")
-      throw new BadRequestException("Payment not successful");
-
-    if (
-      paymentIntent.metadata &&
-      paymentIntent.metadata.client_reference_id !== String(data.user)
-    )
-      throw new BadRequestException("Payment not authorized");
-
-    const tickets = await Promise.all(
-      data.tickets.map((selection) =>
-        this.ticketRepository.getTicket(selection.ticketId, populateOptions)
-      )
+    const { ticketSelections, tickets } = await this.buildTicketSelections(
+      data.tickets,
+      populateOptions
     );
-
-    const ticketSelections = tickets.map((ticket, idx) => ({
-      ticket: ticket._id,
-      ticketType: ticket.type,
-      amount: ticket.price * data.tickets[idx].quantity,
-      quantity: data.tickets[idx].quantity,
-    }));
 
     const session = await mongoose.startSession();
     session.startTransaction();
+
     try {
-      await Promise.all(
-        tickets.map((ticket, idx) => {
-          return this.ticketRepository.updateTicket(
-            ticket._id,
-            {
-              availableQuantity:
-                ticket.availableQuantity - data.tickets[idx].quantity,
-            },
-            session
-          );
-        })
-      );
+      await this.updateTickets(tickets, ticketSelections, session);
 
       const insertedUserTickets = await this.insertUserTickets(
         data.user,
@@ -218,26 +232,30 @@ export default class PaymentService {
         user: data.user,
         ticketSelections,
         paymentIntentId: paymentIntent.id,
-        amount: ticketSelections.reduce((sum, t) => sum + t.amount, 0),
+        amount: ticketSelections.reduce(
+          (sum, t) => sum + t.price * t.quantity,
+          0
+        ),
         paymentMethod: "stripe",
         isPaid: true,
         status: "succeeded",
         ticket: insertedUserTickets.map((ticket) => ticket._id),
       };
+
       const paymentRecord = await this.createPayment(paymentData, session);
 
       await session.commitTransaction();
-      session.endSession();
       return { paymentRecord };
     } catch (err) {
       await session.abortTransaction();
-      session.endSession();
-      this.paymentStrategy.refundPayment(
+      await this.paymentStrategy.refundPayment(
         paymentIntent.id,
         "requested_by_customer",
         { system_reason: "Ticket purchase failed" }
       );
       throw err;
+    } finally {
+      session.endSession();
     }
   }
 }
