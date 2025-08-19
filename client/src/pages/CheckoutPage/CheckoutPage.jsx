@@ -72,15 +72,14 @@ function CheckoutForm() {
         }
       );
 
-      console.log(paymentIntent);
-
       if (paymentIntent.status === "succeeded") {
         toast.success("Payment successful!");
         const body = {
           tickets: availableItems,
           paymentIntentId: paymentIntent.id,
         };
-        await paymentService.confirmPayment(body);
+
+        await paymentService.confirmPayment(availableItems, paymentIntent.id);
       }
     } catch (error) {
       toast.error("Payment failed. Please try again.");
