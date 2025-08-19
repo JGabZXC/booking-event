@@ -73,16 +73,18 @@ function CheckoutForm() {
       );
 
       if (paymentIntent.status === "succeeded") {
-        toast.success("Payment successful!");
-        const body = {
-          tickets: availableItems,
-          paymentIntentId: paymentIntent.id,
-        };
-
-        await paymentService.confirmPayment(availableItems, paymentIntent.id);
+        await toast.promise(
+          paymentService.confirmPayment(availableItems, paymentIntent.id),
+          {
+            pending: "Processing your payment",
+            success: "Payment successful",
+            error:
+              "Payment succeeded but order failed. Payment will be refunded immediately.",
+          }
+        );
       }
     } catch (error) {
-      toast.error("Payment failed. Please try again.");
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
