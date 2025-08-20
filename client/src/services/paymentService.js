@@ -21,4 +21,23 @@ export const paymentService = {
     };
     return api.post("/payments/confirm-payment", newTicketForm);
   },
+  getAllPayments: () => {
+    const populateOptions = [
+      {
+        path: "ticket",
+        select: "quantity quantityUsed ticket",
+        populate: {
+          path: "ticket",
+          select: "event type",
+          populate: {
+            path: "event",
+            select: "title slug",
+          },
+        },
+      },
+    ];
+    return api.get(
+      `/payments?populateOptions=${JSON.stringify(populateOptions)}`
+    );
+  },
 };

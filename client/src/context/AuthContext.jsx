@@ -85,6 +85,7 @@ export function AuthProvider({ children }) {
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
         dispatch({ type: "LOGIN_FAILURE" });
+        localStorage.removeItem("auth");
       } finally {
         setIsAuthChecking(false);
       }

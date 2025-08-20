@@ -14,6 +14,9 @@ export const createPayment = asyncHandler(async (req, res, next) => {
     .json({ status: "success", data: paymentRecord });
 });
 
+/*
+  @DEPRECATED
+*/
 export const checkoutSession = asyncHandler(async (req, res, next) => {
   req.body.user = req.user._id;
   req.body.userEmail = req.user.email;
@@ -62,4 +65,20 @@ export const getPayment = asyncHandler(async (req, res, next) => {
 export const deletePayment = asyncHandler(async (req, res, next) => {
   await paymentService.deletePayment(req.params.id);
   res.status(HTTPSTATUS.NO_CONTENT).json({ status: "success", data: null });
+});
+
+export const getAllPayments = asyncHandler(async (req, res, next) => {
+  const { sort, page, limit } = req.query;
+  const filter = { user: req.user._id };
+  const populateOptions = req.query.populateOptions
+    ? JSON.parse(req.query.populateOptions)
+    : [];
+  const payments = await paymentService.getAllPayments(
+    sort,
+    page,
+    limit,
+    filter,
+    populateOptions
+  );
+  res.status(HTTPSTATUS.OK).json({ status: "success", data: payments });
 });

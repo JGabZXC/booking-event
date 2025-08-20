@@ -11,10 +11,11 @@ import {
   deletePayment,
   getPayment,
   confirmPayment,
+  getAllPayments,
 } from "../controllers/PaymentController.js";
 import { validatePayment } from "../middlewares/paymentMiddleware.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.use(isAuthenticated);
 router.route("/process-payment-ticket").post(checkoutSession);
@@ -23,6 +24,8 @@ router.route("/confirm-payment").post(confirmPayment);
 router
   .route("/manual-payment")
   .post(isAuthorized("admin"), validatePayment, createPayment);
+
+router.route("/").get(getAllPayments);
 
 router
   .route("/:id")

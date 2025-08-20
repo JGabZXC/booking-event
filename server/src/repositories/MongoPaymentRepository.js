@@ -28,12 +28,21 @@ export default class MongoPaymentRepository extends IPaymentRepository {
     });
   }
 
-  async geAllPayments(sort = "_id", page = 1, limit = 10, filter = "") {
+  async getAllPayments(
+    sort = "_id",
+    page = 1,
+    limit = 10,
+    filter = {},
+    populateOptions = null
+  ) {
     const skip = (page - 1) * limit;
-    const filterType = filter === "all" ? {} : { status: filter };
     const [payments, totalDocs] = await Promise.all([
-      Payment.find(filterType).sort(sort).skip(skip).limit(limit),
-      Payment.countDocuments(filterType),
+      Payment.find(filter)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .populate(populateOptions),
+      Payment.countDocuments(filter),
     ]);
     const totalPages = Math.ceil(totalDocs / limit);
     return { payments, totalDocs, totalPages };

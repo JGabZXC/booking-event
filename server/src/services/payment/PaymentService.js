@@ -118,6 +118,22 @@ export default class PaymentService {
     return payment;
   }
 
+  async getAllPayments(
+    sort = "_id",
+    page = 1,
+    limit = 10,
+    filter,
+    populateOptions
+  ) {
+    return await this.paymentRepository.getAllPayments(
+      sort,
+      page,
+      limit,
+      filter,
+      populateOptions
+    );
+  }
+
   /*
     DEPRECATED CHECKOUT SESSION
   */
