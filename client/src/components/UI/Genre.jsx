@@ -1,17 +1,7 @@
-import ListBox from "../UI/ListBox";
+import ListBox from "./ListBox";
 import { useSearchParams } from "react-router-dom";
 
-const genreTypes = [
-  { value: "all", label: "All Types" },
-  { value: "concert", label: "Concert" },
-  { value: "theater", label: "Theater" },
-  { value: "sports", label: "Sports" },
-  { value: "exhibition", label: "Exhibition" },
-  { value: "festival", label: "Festival" },
-  { value: "other", label: "Other" },
-];
-
-export default function Genre() {
+export default function Genre({ genreTypes }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const genre = searchParams.get("genre") || "all";
 

@@ -1,16 +1,7 @@
-import ListBox from "../UI/ListBox";
+import ListBox from "./ListBox";
 import { useSearchParams } from "react-router-dom";
 
-const sortTypes = [
-  { value: "all", label: "All Events" },
-  { value: "date", label: "Date" },
-  { value: "place", label: "Place" },
-  { value: "title", label: "Title" },
-  { value: "price", label: "Price" },
-  { value: "status", label: "Status" },
-];
-
-export default function Sort() {
+export default function Sort({ sortTypes }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const sortType = searchParams.get("sort") || "asc";
 

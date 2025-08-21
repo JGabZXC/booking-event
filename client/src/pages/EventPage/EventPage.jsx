@@ -3,10 +3,10 @@ import EventCard from "../../components/Event/EventCard";
 import { eventService } from "../../services/eventService";
 import { Suspense } from "react";
 import Loading from "../../components/UI/Loading";
-import Sort from "../../components/Event/Sort";
-import Genre from "../../components/Event/Genre";
-import SortType from "../../components/Event/SortType";
-import Limit from "../../components/Event/Limit";
+import Sort from "../../components/UI/Sort";
+import Genre from "../../components/UI/Genre";
+import SortType from "../../components/UI/SortType";
+import Limit from "../../components/UI/Limit";
 
 export default function EventPage() {
   const { events } = useLoaderData();
@@ -15,10 +15,42 @@ export default function EventPage() {
   return (
     <section className="max-w-[80rem] mx-auto my-5 px-2 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto my-5 md:my-10 flex flex-col sm:flex-row gap-4">
-        <Sort />
-        <SortType />
-        <Genre />
-        <Limit />
+        <Sort
+          sortTypes={[
+            { value: "all", label: "All Events" },
+            { value: "date", label: "Date" },
+            { value: "place", label: "Place" },
+            { value: "title", label: "Title" },
+            { value: "price", label: "Price" },
+            { value: "status", label: "Status" },
+          ]}
+        />
+        <SortType
+          sortTypes={[
+            { value: "asc", label: "Ascending" },
+            { value: "desc", label: "Descending" },
+          ]}
+        />
+        <Genre
+          genreTypes={[
+            { value: "all", label: "All Types" },
+            { value: "concert", label: "Concert" },
+            { value: "theater", label: "Theater" },
+            { value: "sports", label: "Sports" },
+            { value: "exhibition", label: "Exhibition" },
+            { value: "festival", label: "Festival" },
+            { value: "other", label: "Other" },
+          ]}
+        />
+        <Limit
+          limitTypes={[
+            { value: "10", label: "10" },
+            { value: "20", label: "20" },
+            { value: "30", label: "30" },
+            { value: "40", label: "40" },
+            { value: "50", label: "50" },
+          ]}
+        />
       </div>
       <Suspense
         fallback={<Loading message="Loading events" />}

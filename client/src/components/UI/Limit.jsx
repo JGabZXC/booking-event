@@ -1,15 +1,7 @@
-import ListBox from "../UI/ListBox";
+import ListBox from "./ListBox";
 import { useSearchParams } from "react-router-dom";
 
-const limitTypes = [
-  { value: "10", label: "10" },
-  { value: "20", label: "20" },
-  { value: "30", label: "30" },
-  { value: "40", label: "40" },
-  { value: "50", label: "50" },
-];
-
-export default function Limit() {
+export default function Limit({ limitTypes }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const limit = searchParams.get("limit") || "10";
 
