@@ -73,6 +73,7 @@ export const getAllPayments = asyncHandler(async (req, res, next) => {
   const populateOptions = req.query.populateOptions
     ? JSON.parse(req.query.populateOptions)
     : [];
+
   const payments = await paymentService.getAllPayments(
     sort,
     page,
@@ -80,5 +81,6 @@ export const getAllPayments = asyncHandler(async (req, res, next) => {
     filter,
     populateOptions
   );
+
   res.status(HTTPSTATUS.OK).json({ status: "success", data: payments });
 });

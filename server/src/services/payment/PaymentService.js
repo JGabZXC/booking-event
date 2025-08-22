@@ -41,15 +41,18 @@ export default class PaymentService {
   }
 
   async insertUserTickets(user, ticketSelections, session) {
-    const userTickets = ticketSelections.map((selection) => {
-      return this.userTicketService.createUserTicket({
-        user,
-        ticket: selection.ticket,
-        quantity: selection.quantity,
-        session,
-      });
-    });
-    return await Promise.all(userTickets);
+    return await Promise.all(
+      ticketSelections.map((selection) => {
+        return this.userTicketService.createUserTicket(
+          {
+            user,
+            ticket: selection.ticket,
+            quantity: selection.quantity,
+          },
+          session
+        );
+      })
+    );
   }
 
   async validatePaymentIntent(paymentIntentId, userId) {
