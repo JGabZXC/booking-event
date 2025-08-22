@@ -21,7 +21,7 @@ export const paymentService = {
     };
     return api.post("/payments/confirm-payment", newTicketForm);
   },
-  getAllPayments: () => {
+  getAllPayments: (sort = "_id", page = 1, limit = 10) => {
     const populateOptions = [
       {
         path: "ticket",
@@ -37,7 +37,9 @@ export const paymentService = {
       },
     ];
     return api.get(
-      `/payments?populateOptions=${JSON.stringify(populateOptions)}`
+      `/payments?sort=${sort}&page=${page}&limit=${limit}&populateOptions=${JSON.stringify(
+        populateOptions
+      )}`
     );
   },
 };
