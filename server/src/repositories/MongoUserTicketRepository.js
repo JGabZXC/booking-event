@@ -42,11 +42,16 @@ export default class MongoUserTicketRepository extends IUserTicketRepository {
     populateOptions = null,
     session = null
   ) {
-    return await UserTicket.findByIdAndUpdate(id, userTicketData, {
+    let query = UserTicket.findByIdAndUpdate(id, userTicketData, {
       new: true,
       runValidators: true,
-      session,
     }).populate(populateOptions);
+
+    if (session) {
+      query = query.session(session);
+    }
+
+    return await query;
   }
 
   async deleteUserTicket(id) {
