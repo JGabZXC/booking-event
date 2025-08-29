@@ -1,5 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
+import { Icons } from "../icons/icons";
 
 export default function MobileMenu({
   menuOpen,
@@ -36,6 +37,9 @@ export default function MobileMenu({
         </NavLink>
         {user ? (
           <div className="relative md:order-2 px-2 pt-2 pb-3">
+            <NavLink to="/me/cart" className="flex items-center mb-2">
+              {Icons.CartIcon}
+            </NavLink>
             <button
               type="button"
               className="flex items-center gap-2 text-sm bg-pink-900 rounded-full md:me-0"

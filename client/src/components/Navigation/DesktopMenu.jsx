@@ -2,6 +2,7 @@ import { Button } from "@headlessui/react";
 import { Link, NavLink } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { Icons } from "../icons/icons";
+import DesktopDropDown from "./DesktopDropDown";
 export default function DesktopMenu({
   menuOpen,
   setMenuOpen,
@@ -83,6 +84,7 @@ export default function DesktopMenu({
               >
                 Events
               </NavLink>
+              {user && user.role === "admin" && <DesktopDropDown />}
             </div>
           </div>
         </div>

@@ -96,7 +96,7 @@ export default function EventPage() {
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader({ request }) {
   const url = new URL(request.url);
-  let sort = url.searchParams.get("sort") || "_id";
+  let sort = url.searchParams.get("sort") || "date";
   const sortType = url.searchParams.get("type") || "asc";
   const genre = url.searchParams.get("genre") || "all";
   const page = url.searchParams.get("page") || 1;

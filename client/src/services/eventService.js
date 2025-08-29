@@ -2,13 +2,14 @@ import api from "../api/axios";
 
 export const eventService = {
   getAllEvents: async (sort = "-title", page = 1, limit = 10, filter = "") => {
+    console.log(sort);
     try {
       const response = await api.get("/events", {
         params: { sort, page, limit, filter },
       });
       return response;
     } catch (error) {
-      throw error.message || "An error occurred while fetching events.";
+      throw error.response?.data || "An error occurred while fetching events.";
     }
   },
   getEvent: async (eventSlug) => {
@@ -18,7 +19,9 @@ export const eventService = {
       );
       return response;
     } catch (error) {
-      throw error.message || "An error occurred while fetching the event.";
+      throw (
+        error.response?.data || "An error occurred while fetching the event."
+      );
     }
   },
   getEventTickets: async (eventId) => {
@@ -26,7 +29,7 @@ export const eventService = {
       const response = await api.get(`/events/${eventId}/tickets`);
       return response;
     } catch (error) {
-      throw error.message || "An error occurred while fetching tickets.";
+      throw error.response?.data || "An error occurred while fetching tickets.";
     }
   },
 };
