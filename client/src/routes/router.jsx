@@ -14,6 +14,10 @@ import EventDetails from "../pages/EventPage/EventDetails";
 import MyTickets from "../pages/MePage/MyTickets/MyTickets";
 import CartPage from "../pages/CartPage/CartPage";
 import CheckoutPage from "../pages/CheckoutPage/CheckoutPage";
+import AwaitErrorPage from "../pages/ErrorPage/AwaitErrorPage";
+import AdminLayout from "../pages/Admin/AdminLayout";
+import CheckUser from "../pages/Admin/User/CheckUser";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -47,6 +51,7 @@ const router = createBrowserRouter([
             index: true,
             element: <EventPage />,
             loader: eventLoader,
+            errorElement: <AwaitErrorPage title="Event Page Error" />,
           },
           {
             path: ":eventSlug",
@@ -77,6 +82,20 @@ const router = createBrowserRouter([
             <CheckoutPage />
           </AuthenticatedRoute>
         ),
+      },
+      {
+        path: "admin",
+        element: (
+          <AuthenticatedRoute>
+            <AdminLayout />
+          </AuthenticatedRoute>
+        ),
+        children: [
+          {
+            path: "check-user",
+            element: <CheckUser />,
+          },
+        ],
       },
     ],
   },

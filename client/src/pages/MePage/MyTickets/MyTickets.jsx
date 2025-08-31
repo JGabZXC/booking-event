@@ -19,6 +19,28 @@ async function fetchUserTickets(sort = "paymentData", page = 1, limit = 2) {
   }
 }
 
+function combineSameTitleTicket(tickets) {
+  if (Array.isArray(tickets) === false) return [];
+  const grouped = {};
+
+  tickets.forEach((ticketObj) => {
+    const slug = ticketObj.ticket?.event?.slug;
+    if (!slug) return;
+
+    if (!grouped[slug]) {
+      grouped[slug] = {
+        slug,
+        title: ticketObj.ticket?.event?.title || "Untitled",
+        tickets: [ticketObj],
+      };
+    } else {
+      grouped[slug].tickets.push(ticketObj);
+    }
+  });
+
+  return Object.values(grouped);
+}
+
 export default function MyTickets() {
   const { user } = useContext(AuthContext);
   const [openPaymentId, setOpenPaymentId] = useState(null);
@@ -125,22 +147,31 @@ export default function MyTickets() {
               {openPaymentId === paymentTicket._id && (
                 <div className="mt-4 border-t border-t-pink-800 pt-4">
                   {Array.isArray(paymentTicket.ticket) ? (
-                    paymentTicket.ticket.map((ticketObj, idx) => (
-                      <div key={ticketObj._id || idx} className="mb-2">
-                        <div className="font-medium text-pink-800">
-                          {ticketObj.ticket?.event?.title || "N/A"}
+                    combineSameTitleTicket(paymentTicket.ticket).map(
+                      (group, idx) => (
+                        <div key={group.slug || idx} className="mb-4">
+                          <div className="font-bold text-pink-800 text-lg">
+                            {group.title}
+                          </div>
+                          {group.tickets.map((ticketObj, tIdx) => (
+                            <div
+                              key={ticketObj._id || tIdx}
+                              className="ml-4 mb-2"
+                            >
+                              <div className="text-gray-700 text-sm">
+                                Type: {ticketObj.ticket?.type || "N/A"}
+                              </div>
+                              <div className="text-gray-700 text-sm">
+                                Quantity: {ticketObj.quantity}
+                              </div>
+                              <div className="text-gray-700 text-sm">
+                                Used: {ticketObj.quantityUsed}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div className="text-gray-700 text-sm">
-                          Type: {ticketObj.ticket?.type || "N/A"}
-                        </div>
-                        <div className="text-gray-700 text-sm">
-                          Quantity: {ticketObj.quantity}
-                        </div>
-                        <div className="text-gray-700 text-sm">
-                          Used: {ticketObj.quantityUsed}
-                        </div>
-                      </div>
-                    ))
+                      )
+                    )
                   ) : (
                     <div>
                       <div className="font-medium">
