@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Icons } from "../../components/icons/icons";
 import { useQuery } from "@tanstack/react-query";
 import { eventService } from "../../services/eventService";
 import EventImagesCarousel from "../../components/Event/EventImagesCarousel";
 import TicketsDialog from "../../components/Event/TicketsDialog";
+import { AuthContext } from "../../context/AuthContext";
 
 async function fetchEventDetails(eventSlug) {
   try {
@@ -16,6 +18,7 @@ async function fetchEventDetails(eventSlug) {
 }
 
 export default function EventDetails() {
+  const { user } = useContext(AuthContext);
   const { eventSlug } = useParams();
   const {
     data: eventDetails,
@@ -82,10 +85,12 @@ export default function EventDetails() {
             </span>
           </div>
         </div>
-        <TicketsDialog
-          eventId={eventDetails.data._id}
-          eventName={eventDetails.data.title}
-        />
+        {user && (
+          <TicketsDialog
+            eventId={eventDetails.data._id}
+            eventName={eventDetails.data.title}
+          />
+        )}
       </div>
 
       {/* Description and Organizers */}

@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState, Fragment } from "react";
+import { useContext, useMemo, useState } from "react";
 import { CartContext } from "../../context/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -8,7 +8,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { toast } from "react-toastify";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { groupByEventId } from "../CartPage/CartPage";
 import { useMutation } from "@tanstack/react-query";
 import { paymentService } from "../../services/paymentService";
@@ -28,16 +28,15 @@ const createPaymentIntent = async (tickets) => {
 };
 
 function CheckoutForm() {
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, clearCart } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const mutation = useMutation({
     mutationFn: createPaymentIntent,
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
+
+  const navigate = useNavigate();
 
   // Only include available tickets
   const availableItems = useMemo(
@@ -77,7 +76,13 @@ function CheckoutForm() {
           paymentService.confirmPayment(availableItems, paymentIntent.id),
           {
             pending: "Processing your payment",
-            success: "Payment successful",
+            success: {
+              render() {
+                clearCart();
+                navigate("/me/my-tickets", { replace: true });
+                return "Payment successful";
+              },
+            },
             error:
               "Payment succeeded but order failed. Payment will be refunded immediately.",
           }

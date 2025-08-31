@@ -42,13 +42,11 @@ export default function CartPage() {
         }
       }
     }
-    console.log("i got run");
+
     if (cartItems.length > 0) syncCartWithServer();
     // Only run on mount, not on every cartItems change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log(cartItems);
 
   const grouped = groupByEventId(cartItems);
 
