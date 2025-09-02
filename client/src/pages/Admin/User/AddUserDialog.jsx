@@ -5,6 +5,8 @@ import Input from "../../../components/UI/Input";
 import { isValidEmail } from "../../../utils/emailValidator";
 import CustomListBox from "../../../components/UI/CustomListBox";
 import { userServiceAdmin } from "../../../services/Admin/User/userServiceAdmin";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const roles = [
   { value: "user", label: "User" },
@@ -15,6 +17,7 @@ const roles = [
 async function createUser(userData) {
   try {
     const response = await userServiceAdmin.createUser(userData);
+    console.log(response);
     return response;
   } catch (error) {
     throw error;
@@ -35,6 +38,7 @@ export default function AddUserDialog() {
     passwordConfirm: "",
     role: "user",
   });
+  const queryClient = useQueryClient();
 
   const btnClass =
     "inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400";
@@ -96,11 +100,32 @@ export default function AddUserDialog() {
 
     try {
       setIsLoading(true);
-      const newFormData = formData;
-      newFormData.name = `${formData.firstName} ${formData.lastName}`;
-      const response = await createUser(newFormData);
-      console.log(response);
+      const payload = {
+        ...formData,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+      };
+
+      const result = await createUser(payload);
+
+      if (result.status === "error") {
+        toast.error(result.message || "Error creating user");
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+        role: "user",
+      });
+      setErrors({});
+      setIsOpen(false);
+      toast.success("User created successfully!");
     } catch (err) {
+      toast.error("Error creating user");
       console.error("Error creating user:", err);
     } finally {
       setIsLoading(false);
@@ -121,24 +146,26 @@ export default function AddUserDialog() {
       buttonClassName={btnClass}
     >
       <form onSubmit={handleSubmit} class="space-y-4">
-        <Input
-          label="First Name"
-          svg={Icons.UserIcon}
-          id="firstName"
-          placeholder="John"
-          type="text"
-          onChange={handleChange}
-          error={errors.firstName}
-        />
-        <Input
-          label="Last Name"
-          svg={Icons.UserIcon}
-          id="lastName"
-          placeholder="Doe"
-          type="text"
-          onChange={handleChange}
-          error={errors.lastName}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="First Name"
+            svg={Icons.UserIcon}
+            id="firstName"
+            placeholder="John"
+            type="text"
+            onChange={handleChange}
+            error={errors.firstName}
+          />
+          <Input
+            label="Last Name"
+            svg={Icons.UserIcon}
+            id="lastName"
+            placeholder="Doe"
+            type="text"
+            onChange={handleChange}
+            error={errors.lastName}
+          />
+        </div>
         <Input
           label="Email Address"
           svg={Icons.EmailIcon}
@@ -148,44 +175,46 @@ export default function AddUserDialog() {
           onChange={handleChange}
           error={errors.email}
         />
-        <Input
-          label="Password"
-          svg={Icons.PasswordIcon}
-          id="password"
-          placeholder="Enter your password"
-          type={showPassword ? "text" : "password"}
-          onChange={handleChange}
-          error={errors.password}
-        >
-          {" "}
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-          >
-            {showPassword ? Icons.EyeIcon : Icons.EyeCloseIcon}
-          </button>
-        </Input>
 
-        {/* Password Confirmation Field */}
-        <Input
-          label="Confirm Password"
-          svg={Icons.PasswordIcon}
-          id="passwordConfirm"
-          placeholder="Confirm your password"
-          type={showPasswordConfirm ? "text" : "password"}
-          onChange={handleChange}
-          error={errors.passwordConfirm}
-        >
-          {" "}
-          <button
-            type="button"
-            onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Password"
+            svg={Icons.PasswordIcon}
+            id="password"
+            placeholder="Enter your password"
+            type={showPassword ? "text" : "password"}
+            onChange={handleChange}
+            error={errors.password}
           >
-            {showPasswordConfirm ? Icons.EyeIcon : Icons.EyeCloseIcon}
-          </button>
-        </Input>
+            {" "}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              {showPassword ? Icons.EyeIcon : Icons.EyeCloseIcon}
+            </button>
+          </Input>
+          <Input
+            label="Confirm Password"
+            svg={Icons.PasswordIcon}
+            id="passwordConfirm"
+            placeholder="Confirm your password"
+            type={showPasswordConfirm ? "text" : "password"}
+            onChange={handleChange}
+            error={errors.passwordConfirm}
+          >
+            {" "}
+            <button
+              type="button"
+              onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              {showPasswordConfirm ? Icons.EyeIcon : Icons.EyeCloseIcon}
+            </button>
+          </Input>
+        </div>
+
         <CustomListBox
           types={roles}
           title="Role"
