@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/UI/Loading";
 import { userServiceAdmin } from "../../../services/Admin/User/userServiceAdmin";
 import { Icons } from "../../../components/icons/icons";
+import AddUserDialog from "./AddUserDialog";
 function fetchUsers() {
   return userServiceAdmin.getAllUsers();
 }
@@ -28,14 +29,14 @@ export default function CheckUser() {
         <h2 className="text-3xl font-extrabold text-pink-700 tracking-tight">
           User List
         </h2>
-
-        <button
+        <AddUserDialog />
+        {/* <button
           className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400"
           // onClick={handleCreateUser} // Uncomment and implement this handler as needed
         >
           {Icons.PlusUserIcon}
           Create User
-        </button>
+        </button> */}
       </div>
       <div className="overflow-x-auto rounded-lg">
         <table className="min-w-full text-sm text-left text-gray-700">

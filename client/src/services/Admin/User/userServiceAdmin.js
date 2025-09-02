@@ -23,4 +23,14 @@ export const userServiceAdmin = {
       );
     }
   },
+  createUser: async (userData) => {
+    try {
+      const response = await api.post(`/auth/register/admin`, userData);
+      return response;
+    } catch (error) {
+      return (
+        error.response?.data || "An error occured while creating the user."
+      );
+    }
+  },
 };

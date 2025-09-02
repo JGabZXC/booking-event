@@ -40,8 +40,8 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
     return { token, user: sanitizeUser };
   }
 
-  async register(userData) {
-    const { name, email, password } = userData;
+  async register(userData, isAdmin = false) {
+    const { name, email, password, role } = userData;
 
     const passwordHash = await this.passwordService.hash(password);
 
@@ -50,6 +50,7 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
       email,
       password: passwordHash,
       passwordConfirm: passwordHash,
+      role: isAdmin ? role : "user",
     };
 
     return sanitizeReturnUserObject(

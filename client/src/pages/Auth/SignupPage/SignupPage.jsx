@@ -6,6 +6,7 @@ import { AuthContext } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 import Input from "../../../components/UI/Input";
 import { useNavigate } from "react-router-dom";
+import { isValidEmail } from "../../../utils/emailValidator";
 
 export default function SignUpPage() {
   const { register, isLoading } = useContext(AuthContext);
@@ -56,10 +57,9 @@ export default function SignUpPage() {
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
       newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!isValidEmail(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
 

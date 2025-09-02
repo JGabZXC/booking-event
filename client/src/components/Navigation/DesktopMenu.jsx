@@ -110,7 +110,7 @@ export default function DesktopMenu({
                 <div
                   className={`absolute right-0 mt-2 z-50 ${
                     showDropdown ? "block" : "hidden"
-                  } w-56 text-base list-none bg-white divide-y divide-pink-100 rounded-lg shadow-sm dark:bg-pink-900 dark:divide-pink-800`}
+                  } w-56 text-base list-none bg-white divide-y divide-pink-100 rounded-lg shadow-md border border-pink-200 dark:bg-pink-900 dark:divide-pink-800`}
                   id="user-dropdown"
                 >
                   <div className="px-4 py-3">

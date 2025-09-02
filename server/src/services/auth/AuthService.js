@@ -11,7 +11,7 @@ export default class AuthService {
     return await this.authStrategy.authenticate(credentials);
   }
 
-  async register(userData) {
-    return this.authStrategy.register(userData);
+  async register(userData, isAdmin) {
+    return this.authStrategy.register(userData, isAdmin);
   }
 }
