@@ -40,7 +40,7 @@ export default function DesktopDropDown() {
           </li>
           <li>
             <Link
-              to="/me/account-settings"
+              to="/admin/check-user"
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-100 dark:hover:bg-pink-600 dark:text-pink-200 dark:hover:text-white"
               onClick={() => setShowDropdown(false)}
             >
