@@ -1,16 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/UI/Loading";
 import { userServiceAdmin } from "../../../services/Admin/User/userServiceAdmin";
-import { Icons } from "../../../components/icons/icons";
 import AddUserDialog from "./AddUserDialog";
+import { Icons } from "../../../components/icons/icons";
+import Input from "../../../components/UI/Input";
+import { useState, useEffect } from "react";
 function fetchUsers() {
-  return userServiceAdmin.getAllUsers();
+  return userServiceAdmin.getAllUsers("-_id");
+}
+
+function fetchUsersBySearch(search) {
+  return userServiceAdmin.searchUser(search);
 }
 
 export default function CheckUser() {
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
+    queryKey: ["users", debouncedSearch],
+    queryFn: debouncedSearch
+      ? () => fetchUsersBySearch(debouncedSearch)
+      : fetchUsers,
   });
 
   if (isLoading) {
@@ -21,7 +39,7 @@ export default function CheckUser() {
     return <div className="text-red-500">Failed to load users.</div>;
   }
 
-  const users = data?.data?.users || [];
+  const users = data?.data?.users || data?.data || [];
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-gradient-to-br from-white to-pink-50 rounded-xl shadow-lg border border-pink-200 mt-8">
@@ -30,15 +48,17 @@ export default function CheckUser() {
           User List
         </h2>
         <AddUserDialog />
-        {/* <button
-          className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400"
-          // onClick={handleCreateUser} // Uncomment and implement this handler as needed
-        >
-          {Icons.PlusUserIcon}
-          Create User
-        </button> */}
       </div>
       <div className="overflow-x-auto rounded-lg">
+        <form className="mb-4 flex gap-4 justify-items-center">
+          <Input
+            id="search-user"
+            svg={Icons.SearchIcon}
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </form>
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead>
             <tr className="bg-gradient-to-r from-pink-100 to-pink-200 text-pink-900">

@@ -24,9 +24,11 @@ router
   .get(
     isAuthorized("admin"),
     sanitizeSortMiddleware([
+      "_id",
       "name",
       "role",
       "email",
+      "-_id",
       "-name",
       "-role",
       "-email",

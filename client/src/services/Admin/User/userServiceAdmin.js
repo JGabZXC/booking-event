@@ -1,10 +1,10 @@
 import api from "../../../api/axios";
 
 export const userServiceAdmin = {
-  getAllUsers: async (sort = "_id", page = 1, limit = 10, filter = "") => {
+  getAllUsers: async (sort = "_id", page = 1, limit = 10, filter = {}) => {
     try {
       const response = await api.get("/users", {
-        query: { sort, page, limit, filter },
+        params: { sort, page, limit, filter },
       });
       return response.data;
     } catch (error) {
@@ -13,7 +13,7 @@ export const userServiceAdmin = {
       );
     }
   },
-  checkUser: async (identifier) => {
+  searchUser: async (identifier) => {
     try {
       const response = await api.get(`/users/${identifier}`);
       return response.data;

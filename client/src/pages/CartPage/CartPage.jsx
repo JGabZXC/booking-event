@@ -34,7 +34,6 @@ export default function CartPage() {
           else if (item.quantity > latest.data.availableQuantity)
             newQuantity = latest.data.availableQuantity;
 
-          console.log(newQuantity, latest.data.availableQuantity);
           updateCartItem(item.ticketId, {
             availableQuantity: latest.data.availableQuantity,
             quantity: newQuantity,

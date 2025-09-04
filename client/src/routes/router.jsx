@@ -17,11 +17,17 @@ import CheckoutPage from "../pages/CheckoutPage/CheckoutPage";
 import AwaitErrorPage from "../pages/ErrorPage/AwaitErrorPage";
 import AdminLayout from "../pages/Admin/AdminLayout";
 import CheckUser from "../pages/Admin/User/CheckUser";
+import AuthWatcher from "../services/authWatcher";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    element: (
+      <>
+        <AuthWatcher />
+        <RootLayout />
+      </>
+    ),
     children: [
       {
         index: true,
@@ -94,6 +100,10 @@ const router = createBrowserRouter([
           {
             path: "check-user",
             element: <CheckUser />,
+          },
+          {
+            path: "check-payment",
+            element: <div>Check Payment Page - To be implemented</div>,
           },
         ],
       },

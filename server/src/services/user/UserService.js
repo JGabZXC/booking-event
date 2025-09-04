@@ -14,7 +14,7 @@ export default class UserService {
     this.passwordService = passwordService;
   }
 
-  async getAllUsers(sort, page = 1, limit = 10) {
+  async getAllUsers(sort = "_id", page = 1, limit = 10) {
     return this.userRepository.getAllUsers(sort, page, limit).then((data) => ({
       users: data.users.map((user) =>
         sanitizeReturnUserObject(user, [
@@ -33,8 +33,9 @@ export default class UserService {
     const isEmail = validation.validateEmail(identifier);
 
     let user;
-    if (isEmail) user = await this.userRepository.getUserByEmail(identifier);
-    else user = await this.userRepository.getUserById(identifier);
+    // if (isEmail)
+    user = await this.userRepository.getUserByEmail(identifier);
+    // else user = await this.userRepository.getUserById(identifier);
 
     if (!user)
       throw new BadRequestException(
@@ -51,12 +52,12 @@ export default class UserService {
   }
 
   async getUserByIdOrEmailAuth(identifier) {
-    const isEmail = validation.validateEmail(identifier);
+    // const isEmail = validation.validateEmail(identifier);
 
     let user;
-    if (isEmail)
-      user = await this.userRepository.getUserByEmailAuth(identifier);
-    else user = await this.userRepository.getUserByIdAuth(identifier);
+    // if (isEmail)
+    user = await this.userRepository.getUserByEmailAuth(identifier);
+    // else user = await this.userRepository.getUserByIdAuth(identifier);
 
     if (!user)
       throw new BadRequestException(

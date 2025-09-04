@@ -3,6 +3,7 @@ import User from "../models/User.js";
 
 export default class MongoUserRepository extends IRepository {
   async getAllUsers(sort = "_id", page = 1, limit = 10) {
+    console.log(sort, page, limit);
     const skip = (page - 1) * limit;
     const [users, totalDocs] = await Promise.all([
       User.find().sort(sort).skip(skip).limit(limit),
@@ -46,10 +47,16 @@ export default class MongoUserRepository extends IRepository {
   }
 
   async getUserByEmail(email) {
-    return await User.findOne({ email });
+    const user = await User.find({
+      email: { $regex: `.*${email}.*`, $options: "i" },
+    });
+    return user;
   }
 
   async getUserByEmailAuth(email) {
-    return await User.findOne({ email }).select("+password");
+    console.log(email);
+    return await User.find({
+      email: { $regex: `.*${email}.*`, $options: "i" },
+    }).select("+password");
   }
 }

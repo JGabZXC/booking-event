@@ -2,7 +2,6 @@ import api from "../api/axios";
 
 export const eventService = {
   getAllEvents: async (sort = "-title", page = 1, limit = 10, filter = "") => {
-    console.log(sort);
     try {
       const response = await api.get("/events", {
         params: { sort, page, limit, filter },
