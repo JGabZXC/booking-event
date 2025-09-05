@@ -26,7 +26,6 @@ async function createUser(userData) {
 
 export default function AddUserDialog() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -95,6 +94,7 @@ export default function AddUserDialog() {
     e.preventDefault();
 
     if (!validateForm()) {
+      console.log(errors);
       return;
     }
 
@@ -143,7 +143,7 @@ export default function AddUserDialog() {
           Create User
         </span>
       }
-      buttonClassName={btnClass}
+      buttonClassName="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400"
     >
       <form onSubmit={handleSubmit} class="space-y-4">
         <div className="grid grid-cols-2 gap-4">
@@ -200,17 +200,17 @@ export default function AddUserDialog() {
             svg={Icons.PasswordIcon}
             id="passwordConfirm"
             placeholder="Confirm your password"
-            type={showPasswordConfirm ? "text" : "password"}
+            type={showPassword ? "text" : "password"}
             onChange={handleChange}
             error={errors.passwordConfirm}
           >
             {" "}
             <button
               type="button"
-              onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+              onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
-              {showPasswordConfirm ? Icons.EyeIcon : Icons.EyeCloseIcon}
+              {showPassword ? Icons.EyeIcon : Icons.EyeCloseIcon}
             </button>
           </Input>
         </div>

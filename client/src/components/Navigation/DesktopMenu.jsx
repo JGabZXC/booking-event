@@ -2,7 +2,8 @@ import { Button } from "@headlessui/react";
 import { Link, NavLink } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { Icons } from "../icons/icons";
-import DesktopDropDown from "./DesktopDropDown";
+import DesktopDropDown from "./DesktopDrownDown";
+
 export default function DesktopMenu({
   menuOpen,
   setMenuOpen,

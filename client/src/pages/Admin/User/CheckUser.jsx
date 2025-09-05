@@ -31,10 +31,6 @@ export default function CheckUser() {
       : fetchUsers,
   });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   if (isError) {
     return <div className="text-red-500">Failed to load users.</div>;
   }
@@ -59,48 +55,54 @@ export default function CheckUser() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </form>
-        <table className="min-w-full text-sm text-left text-gray-700">
-          <thead>
-            <tr className="bg-gradient-to-r from-pink-100 to-pink-200 text-pink-900">
-              <th className="py-3 px-4 font-semibold">ID</th>
-              <th className="py-3 px-4 font-semibold">Name</th>
-              <th className="py-3 px-4 font-semibold">Email</th>
-              <th className="py-3 px-4 font-semibold">Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="text-center py-6 text-gray-400 font-medium"
-                >
-                  No users found.
-                </td>
+
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <table className="min-w-full text-sm text-left text-gray-700">
+            <thead>
+              <tr className="bg-gradient-to-r from-pink-100 to-pink-200 text-pink-900">
+                <th className="py-3 px-4 font-semibold">ID</th>
+                <th className="py-3 px-4 font-semibold">Name</th>
+                <th className="py-3 px-4 font-semibold">Email</th>
+                <th className="py-3 px-4 font-semibold">Role</th>
+                <th className="py-3 px-4 font-semibold">Actions</th>
               </tr>
-            ) : (
-              users.map((user, idx) => (
-                <tr
-                  key={user._id}
-                  className={`transition-colors ${
-                    idx % 2 === 0 ? "bg-white" : "bg-pink-50"
-                  } hover:bg-pink-100`}
-                >
-                  <td className="py-3 px-4 max-w-[120px] truncate text-xs text-gray-500">
-                    {user._id}
-                  </td>
-                  <td className="py-3 px-4 font-medium">{user.name}</td>
-                  <td className="py-3 px-4">{user.email}</td>
-                  <td className="py-3 px-4">
-                    <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-pink-100 text-pink-700">
-                      {user.role}
-                    </span>
+            </thead>
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="text-center py-6 text-gray-400 font-medium"
+                  >
+                    No users found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                users.map((user, idx) => (
+                  <tr
+                    key={user._id}
+                    className={`transition-colors ${
+                      idx % 2 === 0 ? "bg-white" : "bg-pink-50"
+                    } hover:bg-pink-100`}
+                  >
+                    <td className="py-3 px-4 max-w-[120px] truncate text-xs text-gray-500">
+                      {user._id}
+                    </td>
+                    <td className="py-3 px-4 font-medium">{user.name}</td>
+                    <td className="py-3 px-4">{user.email}</td>
+                    <td className="py-3 px-4">
+                      <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-pink-100 text-pink-700">
+                        {user.role}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
