@@ -14,28 +14,25 @@ export default class UserService {
     this.passwordService = passwordService;
   }
 
-  async getAllUsers(sort = "_id", page = 1, limit = 10) {
-    return this.userRepository.getAllUsers(sort, page, limit).then((data) => ({
-      users: data.users.map((user) =>
-        sanitizeReturnUserObject(user, [
-          "password",
-          "validTokenDate",
-          "passwordChangedAt",
-          "ticketsPurchased",
-        ])
-      ),
-      totalDocs: data.totalDocs,
-      totalPages: data.totalPages,
-    }));
+  async getAllUsers(sort = "_id", page = 1, limit = 10, options) {
+    return this.userRepository
+      .getAllUsers(sort, page, limit, options)
+      .then((data) => ({
+        users: data.users.map((user) =>
+          sanitizeReturnUserObject(user, [
+            "password",
+            "validTokenDate",
+            "passwordChangedAt",
+            "ticketsPurchased",
+          ])
+        ),
+        totalDocs: data.totalDocs,
+        totalPages: data.totalPages,
+      }));
   }
 
-  async getUserByIdOrEmail(identifier) {
-    const isEmail = validation.validateEmail(identifier);
-
-    let user;
-    // if (isEmail)
-    user = await this.userRepository.getUserByEmail(identifier);
-    // else user = await this.userRepository.getUserById(identifier);
+  async getUser(identifier, options, isAdmin = false) {
+    const user = await this.userRepository.getUser(identifier, options);
 
     if (!user)
       throw new BadRequestException(
@@ -44,31 +41,10 @@ export default class UserService {
       );
 
     return sanitizeReturnUserObject(user, [
-      "password",
+      !isAdmin && "password",
       "validTokenDate",
       "passwordChangedAt",
       "ticketsPurchased",
-    ]);
-  }
-
-  async getUserByIdOrEmailAuth(identifier) {
-    // const isEmail = validation.validateEmail(identifier);
-
-    let user;
-    // if (isEmail)
-    user = await this.userRepository.getUserByEmailAuth(identifier);
-    // else user = await this.userRepository.getUserByIdAuth(identifier);
-
-    if (!user)
-      throw new BadRequestException(
-        "User not found",
-        ErrorCode.AUTH_USER_NOT_FOUND
-      );
-
-    return sanitizeReturnUserObject(user, [
-      "password",
-      "validTokenDate",
-      "passwordChangedAt",
     ]);
   }
 
@@ -81,11 +57,7 @@ export default class UserService {
         ErrorCode.VALIDATION_ERROR
       );
 
-    const isEmail = validation.validateEmail(identifier);
-    let user;
-    if (isEmail)
-      user = await this.userRepository.getUserByEmailAuth(identifier);
-    else user = await this.userRepository.getUserByIdAuth(identifier);
+    const user = await this.userRepository.getUser(identifier);
 
     if (!user)
       throw new BadRequestException(
@@ -143,11 +115,7 @@ export default class UserService {
       data.name = capitalizeEachWord(data.name);
     }
 
-    const isEmail = validation.validateEmail(identifier);
-    let user;
-    if (isEmail)
-      user = await this.userRepository.updateUserByEmail(identifier, data);
-    else user = await this.userRepository.updateUserById(identifier, data);
+    const user = await this.userRepository.updateUser(identifier, data);
 
     if (!user)
       throw new BadRequestException(
@@ -164,7 +132,7 @@ export default class UserService {
 
   async validateAuthenticatedUser(token) {
     const decoded = await this.tokenService.verifyToken(token);
-    const user = await this.userRepository.getUserById(decoded.id);
+    const user = await this.userRepository.getUser(decoded.id);
 
     if (!user)
       throw new UnauthorizedException(

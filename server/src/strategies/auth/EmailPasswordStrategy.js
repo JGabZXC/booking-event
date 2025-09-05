@@ -4,9 +4,9 @@ import { sanitizeReturnUserObject } from "../../sanitizers/userSanitizer.js";
 import { BadRequestException } from "../../utils/appError.js";
 
 export default class EmailPasswordStrategy extends IAuthStrategy {
-  constructor(userRepository, passwordService, tokenService) {
+  constructor(userService, passwordService, tokenService) {
     super();
-    this.userRepository = userRepository;
+    this.userService = userService;
     this.passwordService = passwordService;
     this.tokenService = tokenService;
   }
@@ -14,7 +14,12 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
   async authenticate(credentials) {
     const { email, password } = credentials;
 
-    const user = await this.userRepository.getUserByEmailAuth(email);
+    const options = {
+      select: "+password",
+    };
+
+    const user = await this.userService.getUser(email, options, true);
+
     if (!user)
       throw new BadRequestException("User not found", ErrorCode.USER_NOT_FOUND);
 
@@ -33,7 +38,7 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
       "passwordChangedAt",
     ]);
 
-    await this.userRepository.updateUserById(user._id, {
+    await this.userService.updateUserDetails(user._id, {
       validTokenDate: new Date(),
     });
 
@@ -54,7 +59,7 @@ export default class EmailPasswordStrategy extends IAuthStrategy {
     };
 
     return sanitizeReturnUserObject(
-      await this.userRepository.createUser(newUser),
+      await this.userService.createUser(newUser),
       ["password", "validTokenDate", "passwordChangedAt", "ticketsPurchased"]
     );
   }

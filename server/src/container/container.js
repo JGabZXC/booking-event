@@ -140,7 +140,7 @@ class DIContainer {
     // STRATEGY
     this.register("emailPasswordStrategy", (container) => {
       return new EmailPasswordStrategy(
-        container.get("userRepository"),
+        container.get("userService"),
         container.get("passwordService"),
         container.get("tokenService")
       );

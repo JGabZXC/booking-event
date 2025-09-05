@@ -6,9 +6,23 @@ import { BadRequestException } from "../utils/appError.js";
 const userService = container.get("userService");
 
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  const { sort, page, limit } = req.query;
+  const { sort, page, limit, options } = req.query;
 
-  const usersData = await userService.getAllUsers(sort, page, limit);
+  const newOptions = options ? JSON.parse(options) : {};
+
+  if (newOptions.filter?.email) {
+    newOptions.filter.email = {
+      $regex: newOptions.filter.email,
+      $options: "i",
+    };
+  }
+
+  const usersData = await userService.getAllUsers(
+    sort,
+    page,
+    limit,
+    newOptions
+  );
 
   if (page > usersData.totalPages)
     throw new BadRequestException("Page number exceeds total pages");
@@ -20,7 +34,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
-  const user = await userService.getUserByIdOrEmail(req.params.identifier);
+  const user = await userService.getUser(req.params.identifier);
 
   return res.status(HTTPSTATUS.OK).json({
     status: "success",

@@ -41,7 +41,6 @@ export const getUserTicket = asyncHandler(async (req, res, next) => {
   let populateOptions = null;
   if (req.query.populateOptions) {
     populateOptions = JSON.parse(req.query.populateOptions);
-    console.log(populateOptions);
   }
 
   const userTicket = await userTicketService.userTicketRepository.getUserTicket(

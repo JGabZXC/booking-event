@@ -14,8 +14,16 @@ export const userServiceAdmin = {
     }
   },
   searchUser: async (identifier) => {
+    const options = {
+      filter: {
+        email: identifier,
+      },
+    };
+
     try {
-      const response = await api.get(`/users/${identifier}`);
+      const response = await api.get(`/users`, {
+        params: { options: JSON.stringify(options) },
+      });
       return response.data;
     } catch (error) {
       return (
