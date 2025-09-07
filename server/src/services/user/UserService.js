@@ -130,6 +130,10 @@ export default class UserService {
     ]);
   }
 
+  async createUser(data) {
+    return this.userRepository.createUser(data);
+  }
+
   async validateAuthenticatedUser(token) {
     const decoded = await this.tokenService.verifyToken(token);
     const user = await this.userRepository.getUser(decoded.id);
