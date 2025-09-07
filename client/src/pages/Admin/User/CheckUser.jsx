@@ -5,6 +5,11 @@ import AddUserDialog from "./AddUserDialog";
 import { Icons } from "../../../components/icons/icons";
 import Input from "../../../components/UI/Input";
 import { useState, useEffect } from "react";
+import { MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
+import EditUserModal from "./EditUserModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
 function fetchUsers() {
   return userServiceAdmin.getAllUsers("-_id");
 }
@@ -13,9 +18,22 @@ function fetchUsersBySearch(search) {
   return userServiceAdmin.searchUser(search);
 }
 
+function actionUser(identifier, data, action) {
+  if (action === "edit") {
+    return userServiceAdmin.updateUserDetails(identifier, data);
+  } else if (action === "delete") {
+    console.log("Not implemented yet");
+    return;
+  }
+}
+
 export default function CheckUser() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -31,6 +49,23 @@ export default function CheckUser() {
       : fetchUsers,
   });
 
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveUser = async (updatedData) => {
+    const response = await userServiceAdmin.updateUserDetails(
+      selectedUser._id,
+      updatedData
+    );
+    console.log(response);
+
+    queryClient.invalidateQueries({ queryKey: ["users"] });
+    toast.success("User updated successfully!");
+    // Optionally refetch users here
+  };
+
   if (isError) {
     return <div className="text-red-500">Failed to load users.</div>;
   }
@@ -39,6 +74,12 @@ export default function CheckUser() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-gradient-to-br from-white to-pink-50 rounded-xl shadow-lg border border-pink-200 mt-8">
+      <EditUserModal
+        isOpen={editModalOpen}
+        setIsOpen={setEditModalOpen}
+        user={selectedUser}
+        onSave={handleSaveUser}
+      />
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-extrabold text-pink-700 tracking-tight">
           User List
@@ -50,7 +91,7 @@ export default function CheckUser() {
           <Input
             id="search-user"
             svg={Icons.SearchIcon}
-            placeholder="Search users..."
+            placeholder="Search email"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -96,6 +137,20 @@ export default function CheckUser() {
                       <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-pink-100 text-pink-700">
                         {user.role}
                       </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-2">
+                        <button
+                          className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
+                          onClick={() => handleEditClick(user)}
+                        >
+                          <PencilSquareIcon className="size-4 fill-yellow-500/80" />
+                        </button>
+
+                        <button className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors">
+                          <MinusCircleIcon className="size-4 fill-red-500/80" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

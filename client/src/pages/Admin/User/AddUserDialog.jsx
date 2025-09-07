@@ -39,9 +39,6 @@ export default function AddUserDialog() {
   });
   const queryClient = useQueryClient();
 
-  const btnClass =
-    "inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400";
-
   function handleChange(e) {
     if (e.target === undefined) {
       const { value, label } = e;

@@ -41,4 +41,12 @@ export const userServiceAdmin = {
       );
     }
   },
+  updateUserDetails: async (identifier, userData) => {
+    try {
+      const response = await api.patch(`/users/${identifier}`, userData);
+      return response.data;
+    } catch (err) {
+      return err.response?.data || "An error occured while updating the user.";
+    }
+  },
 };
