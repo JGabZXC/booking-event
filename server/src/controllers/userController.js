@@ -42,6 +42,15 @@ export const getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const deleteUser = asyncHandler(async (req, res, next) => {
+  const user = await userService.deleteUser(req.params.identifier);
+
+  return res.status(HTTPSTATUS.NO_CONTENT).json({
+    status: "success",
+    data: user,
+  });
+});
+
 export const updateUserAdmin = asyncHandler(async (req, res, next) => {
   const updatedUser = await userService.updateUserDetails(
     req.params.identifier,

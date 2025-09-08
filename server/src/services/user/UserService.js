@@ -134,6 +134,23 @@ export default class UserService {
     return this.userRepository.createUser(data);
   }
 
+  async deleteUser(identifier) {
+    const user = await this.userRepository.deleteUser(identifier);
+
+    if (!user)
+      throw new BadRequestException(
+        "User not found",
+        ErrorCode.AUTH_USER_NOT_FOUND
+      );
+
+    return sanitizeReturnUserObject(user, [
+      "password",
+      "validTokenDate",
+      "passwordChangedAt",
+      "ticketsPurchased",
+    ]);
+  }
+
   async validateAuthenticatedUser(token) {
     const decoded = await this.tokenService.verifyToken(token);
     const user = await this.userRepository.getUser(decoded.id);

@@ -42,7 +42,9 @@ router
     isAuthorized("admin"),
     sanitizeUserDetailsMiddleware,
     userController.updateUserAdmin
-  );
+  )
+  .delete(isAuthorized("admin"), userController.deleteUser);
+
 router
   .route("/:identifier/password")
   .patch(isAuthorized("admin"), userController.updateUserPasswordAdmin);
