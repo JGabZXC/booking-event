@@ -49,4 +49,12 @@ export const userServiceAdmin = {
       return err.response?.data || "An error occured while updating the user.";
     }
   },
+  deleteUser: async (identifier) => {
+    try {
+      const response = await api.delete(`/users/${identifier}`);
+      return response.data;
+    } catch (err) {
+      return err.response?.data || "An error occured while deleting the user.";
+    }
+  },
 };

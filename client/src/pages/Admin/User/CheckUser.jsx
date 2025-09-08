@@ -9,6 +9,7 @@ import { MinusCircleIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
 import EditUserModal from "./EditUserModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import DeleteUserModal from "./DeleteUserModal";
 
 function fetchUsers() {
   return userServiceAdmin.getAllUsers("-_id");
@@ -32,6 +33,7 @@ export default function CheckUser() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const queryClient = useQueryClient();
 
@@ -59,11 +61,31 @@ export default function CheckUser() {
       selectedUser._id,
       updatedData
     );
-    console.log(response);
 
-    queryClient.invalidateQueries({ queryKey: ["users"] });
-    toast.success("User updated successfully!");
-    // Optionally refetch users here
+    if (response.status === "success") {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User updated successfully!");
+    } else {
+      toast.error("Failed to update user.");
+    }
+  };
+
+  const handleDeleteClick = (user) => {
+    setSelectedUser(user);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteUser = async (user) => {
+    console.log("Delete user function called for:", user);
+
+    try {
+      await userServiceAdmin.deleteUser(user._id);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User deleted successfully!");
+      setDeleteModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to delete user.");
+    }
   };
 
   if (isError) {
@@ -79,6 +101,12 @@ export default function CheckUser() {
         setIsOpen={setEditModalOpen}
         user={selectedUser}
         onSave={handleSaveUser}
+      />
+      <DeleteUserModal
+        isOpen={deleteModalOpen}
+        setIsOpen={setDeleteModalOpen}
+        user={selectedUser}
+        onDelete={handleDeleteUser}
       />
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-extrabold text-pink-700 tracking-tight">
@@ -147,7 +175,10 @@ export default function CheckUser() {
                           <PencilSquareIcon className="size-4 fill-yellow-500/80" />
                         </button>
 
-                        <button className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors">
+                        <button
+                          className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
+                          onClick={() => handleDeleteClick(user)}
+                        >
                           <MinusCircleIcon className="size-4 fill-red-500/80" />
                         </button>
                       </div>
