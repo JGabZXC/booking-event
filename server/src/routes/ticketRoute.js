@@ -23,7 +23,7 @@ router
 
 router
   .route("/:id")
-  .get(isAuthenticated, isAuthorized("admin"), getTicket)
+  .get(isAuthenticated, getTicket)
   .patch(isAuthenticated, isAuthorized("admin"), validateBody, updateTicket)
   .delete(isAuthenticated, isAuthorized("admin"), deleteTicket);
 
