@@ -32,9 +32,7 @@ export default function CheckUser() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [modal, setModal] = useState({ type: null, user: null });
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -51,38 +49,31 @@ export default function CheckUser() {
       : fetchUsers,
   });
 
-  const handleEditClick = (user) => {
-    setSelectedUser(user);
-    setEditModalOpen(true);
-  };
+  const openEditModal = (user) => setModal({ type: "edit", user });
+  const openDeleteModal = (user) => setModal({ type: "delete", user });
+  const openAddModal = () => setModal({ type: "add", user: null });
+  const closeModal = () => setModal({ type: null, user: null });
 
   const handleSaveUser = async (updatedData) => {
     const response = await userServiceAdmin.updateUserDetails(
-      selectedUser._id,
+      modal.user._id,
       updatedData
     );
-
     if (response.status === "success") {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User updated successfully!");
+      closeModal();
     } else {
       toast.error("Failed to update user.");
     }
   };
 
-  const handleDeleteClick = (user) => {
-    setSelectedUser(user);
-    setDeleteModalOpen(true);
-  };
-
   const handleDeleteUser = async (user) => {
-    console.log("Delete user function called for:", user);
-
     try {
       await userServiceAdmin.deleteUser(user._id);
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("User deleted successfully!");
-      setDeleteModalOpen(false);
+      closeModal();
     } catch (error) {
       toast.error("Failed to delete user.");
     }
@@ -96,23 +87,38 @@ export default function CheckUser() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-gradient-to-br from-white to-pink-50 rounded-xl shadow-lg border border-pink-200 mt-8">
-      <EditUserModal
-        isOpen={editModalOpen}
-        setIsOpen={setEditModalOpen}
-        user={selectedUser}
-        onSave={handleSaveUser}
-      />
-      <DeleteUserModal
-        isOpen={deleteModalOpen}
-        setIsOpen={setDeleteModalOpen}
-        user={selectedUser}
-        onDelete={handleDeleteUser}
-      />
+      {/* Optimized Dialogs */}
+      {modal.type === "edit" && (
+        <EditUserModal
+          isOpen={true}
+          setIsOpen={closeModal}
+          user={modal.user}
+          onSave={handleSaveUser}
+        />
+      )}
+      {modal.type === "delete" && (
+        <DeleteUserModal
+          isOpen={true}
+          setIsOpen={closeModal}
+          user={modal.user}
+          onDelete={handleDeleteUser}
+        />
+      )}
+      {modal.type === "add" && (
+        <AddUserDialog isOpen={true} setIsOpen={closeModal} />
+      )}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-extrabold text-pink-700 tracking-tight">
           User List
         </h2>
-        <AddUserDialog />
+        {/* Pass openAddModal to AddUserDialog */}
+        <button
+          className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow transition-colors focus:outline-none focus:ring-2 focus:ring-pink-400"
+          onClick={openAddModal}
+        >
+          {Icons.PlusUserIcon}
+          Create User
+        </button>
       </div>
       <div className="overflow-x-auto rounded-lg">
         <form className="mb-4 flex gap-4 justify-items-center">
@@ -124,7 +130,6 @@ export default function CheckUser() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </form>
-
         {isLoading ? (
           <Loading />
         ) : (
@@ -170,14 +175,13 @@ export default function CheckUser() {
                       <div className="flex gap-2">
                         <button
                           className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
-                          onClick={() => handleEditClick(user)}
+                          onClick={() => openEditModal(user)}
                         >
                           <PencilSquareIcon className="size-4 fill-yellow-500/80" />
                         </button>
-
                         <button
                           className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
-                          onClick={() => handleDeleteClick(user)}
+                          onClick={() => openDeleteModal(user)}
                         >
                           <MinusCircleIcon className="size-4 fill-red-500/80" />
                         </button>

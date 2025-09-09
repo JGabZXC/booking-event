@@ -2,12 +2,9 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Link } from "react-router-dom";
 import {
   ChevronDownIcon,
-  Square2StackIcon,
-  ArchiveBoxXMarkIcon,
-  PencilIcon,
-  TrashIcon,
   UserIcon,
   CreditCardIcon,
+  MapIcon,
 } from "@heroicons/react/20/solid";
 
 export default function DesktopDropDown() {
@@ -31,6 +28,15 @@ export default function DesktopDropDown() {
             >
               <UserIcon className="size-4 fill-white/80" />
               Check User
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <Link
+              to="/admin/check-user"
+              className="group flex w-full items-center gap-2 rounded-lg text-white/80 px-3 py-1.5 data-focus:bg-white/10"
+            >
+              <MapIcon className="size-4 fill-white/80" />
+              Create Event
             </Link>
           </MenuItem>
           <div className="my-1 h-px bg-white/50" />
