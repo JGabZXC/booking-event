@@ -36,7 +36,7 @@ export default function ModalDialog({
                   {title}
                 </DialogTitle>
                 <XMarkIcon
-                  className="size-6 fill-white bg-pink-300 rounded"
+                  className="size-6 fill-white bg-pink-300 rounded hover:fill-pink-300 hover:bg-white cursor-pointer transition-colors"
                   onClick={close}
                 />
               </div>

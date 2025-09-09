@@ -17,7 +17,6 @@ const roles = [
 async function createUser(userData) {
   try {
     const response = await userServiceAdmin.createUser(userData);
-    console.log(response);
     return response;
   } catch (error) {
     throw error;

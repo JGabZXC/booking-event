@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import ModalDialog from "../../../components/Dialog/ModalDialog";
+import { userServiceAdmin } from "../../../services/Admin/User/userServiceAdmin";
 
-export default function EditUserModal({ isOpen, setIsOpen, user, onSave }) {
+export default function EditUserModal({ isOpen, setIsOpen, user }) {
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
     role: user?.role || "user",
   });
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (user) {
@@ -18,6 +22,21 @@ export default function EditUserModal({ isOpen, setIsOpen, user, onSave }) {
     }
   }, [user]);
 
+  const handleSaveUser = async (updatedData) => {
+    const response = await userServiceAdmin.updateUserDetails(
+      user._id,
+      updatedData
+    );
+
+    if (response.status === "success") {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User updated successfully!");
+      setIsOpen();
+    } else {
+      toast.error("Failed to update user.");
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -28,7 +47,7 @@ export default function EditUserModal({ isOpen, setIsOpen, user, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    handleSaveUser(formData);
     setIsOpen(false);
   };
 
