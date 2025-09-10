@@ -1,6 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../components/UI/Loading";
-import { userServiceAdmin } from "../../../services/Admin/User/userServiceAdmin";
 import AddUserDialog from "./AddUserDialog";
 import { Icons } from "../../../components/icons/icons";
 import Input from "../../../components/UI/Input";
@@ -10,14 +8,7 @@ import EditUserModal from "./EditUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import PageIndicator from "../../../components/UI/PageIndicator";
 import { useSearchParams } from "react-router-dom";
-
-function fetchUsers(sort, page, limit) {
-  return userServiceAdmin.getAllUsers(sort, page, limit);
-}
-
-function fetchUsersBySearch(search) {
-  return userServiceAdmin.searchUser(search);
-}
+import { getAllUsers, searchUsers } from "../../../hooks/useUsers";
 
 export default function CheckUser() {
   const [search, setSearch] = useState("");
@@ -38,12 +29,9 @@ export default function CheckUser() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["users", debouncedSearch, page, limit, sort],
-    queryFn: debouncedSearch
-      ? () => fetchUsersBySearch(debouncedSearch)
-      : () => fetchUsers(sort, page, limit),
-  });
+  const { data, isLoading, isError } = debouncedSearch
+    ? searchUsers(debouncedSearch)
+    : getAllUsers(sort, page, limit);
 
   if (sortType === "desc") {
     sort = `-${sort}`;
@@ -146,7 +134,6 @@ export default function CheckUser() {
                             onClick={() => openEditModal(user)}
                           >
                             <PencilSquareIcon className="size-4 fill-yellow-500/80" />
-                            v
                           </button>
                           <button
                             className="p-2 cursor-pointer bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
